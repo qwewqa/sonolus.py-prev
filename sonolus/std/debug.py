@@ -1,0 +1,72 @@
+from sonolus.backend.callback import DEBUG_CALLBACK_TYPE
+from sonolus.backend.cfg import Cfg
+from sonolus.backend.compiler import compile_statement, CompilationInfo
+from sonolus.backend.graph import get_flat_cfg
+from sonolus.backend.ir import IRComment
+from sonolus.engine.statements.primitive import Number, Boolean, invoke_builtin
+from sonolus.engine.statements.statement import Statement
+from sonolus.engine.statements.void import Void
+from sonolus.std.function import sono_function
+
+__all__ = (
+    "IsDebug",
+    "DebugPause",
+    "DebugLog",
+    "Comment",
+    "get_generated_src",
+    "debug_compilation",
+    "compile_function",
+    "visualize",
+)
+
+
+@sono_function(ast=False)
+def IsDebug() -> Boolean:
+    return invoke_builtin("IsDebug", [], Boolean)
+
+
+@sono_function(ast=False)
+def DebugPause() -> Void:
+    return invoke_builtin("DebugPause", [])
+
+
+@sono_function(ast=False)
+def DebugLog(n: Number | Boolean, /) -> Void:
+    if isinstance(n, (int, float, bool)):
+        n = Number(n)
+    return invoke_builtin("DebugLog", [n])
+
+
+def Comment(message) -> Void:
+    return Void(IRComment(str(message)))
+
+
+def get_generated_src(fn, /):
+    return fn._get_processed_()._generated_src_
+
+
+def debug_compilation():
+    return CompilationInfo(DEBUG_CALLBACK_TYPE, {})
+
+
+def compile_function(fn, /):
+    """
+    Compiles the given function and returns the result.
+    The function may be standalone or a callback, but must not have any parameters without a default value,
+    excluding the self parameter for callbacks.
+    """
+    with debug_compilation():
+        if isinstance(fn, Statement):
+            return compile_statement(fn)
+        elif callable(fn) and hasattr(fn, "_script_"):
+            return compile_statement(fn(fn._script_.create_for_evaluation()))
+        elif callable(fn):
+            return compile_statement(fn())
+        else:
+            raise TypeError("Unsupported function.")
+
+
+def visualize(fn, /):
+    if isinstance(fn, Cfg):
+        return get_flat_cfg(fn)
+    return get_flat_cfg(compile_function(fn))

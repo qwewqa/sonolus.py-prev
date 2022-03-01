@@ -1,0 +1,179 @@
+import ast
+import functools
+import inspect
+import re
+import sys
+import textwrap
+from inspect import get_annotations
+from types import FunctionType
+from typing import TypeVar, Any
+
+from sonolus.engine.statements.dataclass_transform import __dataclass_transform__
+from sonolus.engine.statements.struct import Struct
+
+
+@__dataclass_transform__(eq_default=True)
+class GenericStruct(Struct, _no_init_struct=True):
+    type_vars: Any = None
+
+    def __init__(self, *args, **kwargs):
+        if self.type_vars is None:
+            raise TypeError("Cannot instantiate generic struct directly.")
+        super().__init__(*args, **kwargs)
+
+    def __init_subclass__(cls, type_vars=None, _typed_subclass=False, **kwargs):
+        if _typed_subclass:
+            super().__init_subclass__(**kwargs)
+            return
+        else:  # cls should be a direct subclass
+            if hasattr(cls, "_type_subclasses_"):
+                raise TypeError("Cannot subclass a generic struct.")
+            if type_vars is None:
+                raise ValueError("Generic is missing type_vars argument.")
+            cls._typed_subclasses_ = {}
+            cls._type_arg_type_ = type_vars
+            if not (
+                isinstance(cls._type_arg_type_, type)
+                and issubclass(cls._type_arg_type_, tuple)
+                and hasattr(cls._type_arg_type_, "_fields")
+            ):
+                raise TypeError("Expected type_vars to be a namedtuple type.")
+
+    def __class_getitem__(cls, item):
+        if cls.type_vars is not None:
+            raise TypeError("Class is already a constructed generic.")
+        if not isinstance(item, tuple):
+            item = (item,)
+        if item not in cls._typed_subclasses_:
+            type_vars = cls._type_arg_type_(*item)
+            cls._typed_subclasses_[item] = cls._create_typed_subclass(type_vars)
+        return cls._typed_subclasses_[item]
+
+    @classmethod
+    def _create_typed_subclass(cls, type_vars):
+        globalns = dict(getattr(sys.modules.get(cls.__module__, None), "__dict__", {}))
+        localns = dict(vars(cls))
+        for field in cls._type_arg_type_._fields:
+            if field in cls.__dict__:
+                raise ValueError(
+                    f"Class has member {field} which conflicts with a type variable."
+                )
+            localns[field] = getattr(type_vars, field)
+        localns["type_vars"] = type_vars
+        hints = get_annotations(cls, globals=globalns, locals=localns, eval_str=True)
+        hints = {k: v for k, v in hints.items() if k in cls.__annotations__}
+
+        for name, hint in hints.items():
+            if isinstance(hint, TypeVar):
+                if hasattr(type_vars, hint.__name__):
+                    hints[name] = getattr(type_vars, hint.__name__)
+                else:
+                    KeyError(f'No type arg with name "{hint.__name__}" found.')
+
+        class Typed(cls, _typed_subclass=True, _override_hints=hints):
+            pass
+
+        Typed.type_vars = type_vars
+
+        Typed.__name__ = f"{cls.__name__}_{cls._format_type_vars(type_vars)}"
+        Typed.__qualname__ = Typed.__name__
+
+        return Typed
+
+    @classmethod
+    def _format_type_vars(cls, type_vars: tuple):
+        return "_".join(cls._clean_type_arg(arg) for arg in type_vars)
+
+    @classmethod
+    def _clean_type_arg(cls, type_arg):
+        if hasattr(type_arg, "__name__"):
+            return type_arg.__name__
+        else:
+            return re.sub("[^a-zA-Z0-9]", "", str(type_arg))
+
+
+T = TypeVar("T", bound=FunctionType)
+
+
+def generic_function(fn: T = None, /) -> T:
+    """
+    Decorator to make a function generic.
+    Causes the function to be re-evaluated with generic type variables
+    injected into the global namespace for each concrete type.
+    Should only be used on methods of a generic struct.
+    Must be the last decorator applied to a function.
+    """
+
+    def wrap(fn):
+        return GenericFunction(fn)
+
+    if fn is None:
+        return wrap
+
+    return wrap(fn)
+
+
+class GenericFunction:
+    def __init__(self, fn: FunctionType):
+        self.fn = fn
+        original = getattr(fn, "__wrapped__", fn)
+        self.source_file = inspect.getsourcefile(original)
+
+        lines, lnum = inspect.getsourcelines(fn)
+        tree = ast.parse(textwrap.dedent("".join(lines)))
+        ast.increment_lineno(tree, lnum - 1)
+        self.transformed = GenericFunctionTransformer().visit(tree)
+        ast.fix_missing_locations(self.transformed)
+
+        # Same as how it's done in ast_function
+        closure = inspect.getclosurevars(original)
+        self.gbl = {}
+        self.gbl.update(vars(inspect.getmodule(fn)))
+        self.gbl.update(fn.__globals__)
+        self.gbl.update(closure.globals)
+        self.gbl.update(closure.nonlocals)
+        self.gbl.update(closure.builtins)
+        self.loc = {}
+
+        self.cache = {}
+
+    def __call__(self, cls, *args, **kwargs):
+        raise TypeError("Cannot call generic function directly.")
+
+    def __get__(self, instance, owner=None):
+        if not hasattr(owner, "type_vars"):
+            raise TypeError("Cannot access generic function on a non-generic class.")
+        if owner.type_vars is None:  # Base generic class
+
+            @functools.wraps(self.fn)
+            def wrapper(_self, *args, **kwargs):
+                return self.__get__(_self, type(_self))(*args, **kwargs)
+
+            return wrapper
+        else:  # Concrete generic class
+            if owner not in self.cache:
+                compiled = compile(self.transformed, self.source_file, "exec")
+                gbl = {**self.gbl}
+                loc = {**self.loc}
+                gbl.update(
+                    {k: v for k, v in zip(owner.type_vars._fields, owner.type_vars)}
+                )
+                gbl["type_vars"] = owner.type_vars
+                exec(compiled, gbl, loc)
+                concrete = loc[self.fn.__name__]
+                self.cache[owner] = concrete
+            return self.cache[owner].__get__(instance, owner)
+
+
+class GenericFunctionTransformer(ast.NodeTransformer):
+    # Remove all decorators
+    def visit_FunctionDef(self, node: ast.FunctionDef) -> Any:
+        result = ast.FunctionDef(
+            node.name,
+            node.args,
+            node.body,
+            node.decorator_list[1:],
+            node.returns,
+            node.type_comment,
+        )
+        return ast.copy_location(result, node)
