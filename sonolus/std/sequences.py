@@ -29,6 +29,7 @@ __all__ = (
     "All",
     "Max",
     "Min",
+    "Reduce",
     "Empty",
     "NotEmpty",
     "SizeLimitedArray",
@@ -146,7 +147,9 @@ def All(
 
 
 @overload
-def Max(iterable: SonoIterable[T], /, *, key: Callable[[T], Any] = None, default: T = None) -> T:
+def Max(
+    iterable: SonoIterable[T], /, *, key: Callable[[T], Any] = None, default: T = None
+) -> T:
     pass
 
 
@@ -237,7 +240,9 @@ def _max_iterable_key(iterable: SonoIterable[T], /, *, key: Callable, _ret):
 
 
 @overload
-def Min(iterable: SonoIterable[T], /, *, key: Callable[[T], Any] = None, default: T = None) -> T:
+def Min(
+    iterable: SonoIterable[T], /, *, key: Callable[[T], Any] = None, default: T = None
+) -> T:
     pass
 
 
@@ -325,6 +330,47 @@ def _min_iterable_key(iterable: SonoIterable[T], /, *, key: Callable, _ret):
             min_value @= v
             min_key @= keyed
     return min_value
+
+
+@sono_function(ast=False)
+def Reduce(
+    func: Callable[[R, T], R], iterable: SonoIterable[T], /, initializer: R = None
+):
+    """
+    Returns a copy of the result of the reduction of the iterable using the given function.
+    """
+    if initializer is None:
+        return _reduce_no_initializer(
+            func, iterable, _ret=type(Iter(iterable)._item_()).new()
+        )
+    else:
+        initializer = convert_value(initializer)
+        return _reduce_with_initializer(func, iterable, _ret=initializer.copy())
+
+
+@sono_function
+def _reduce_no_initializer(
+    f: Callable[[T, T], T], iterable: SonoIterable[T], /, *, _ret: T
+):
+    if Empty(iterable):
+        return
+    iterator = Iter(iterable)
+    result = Next(iterator)
+    for v in iterator:
+        result @= f(result, v)
+    return result
+
+
+@sono_function
+def _reduce_with_initializer(
+    f: Callable[[R, T], R], iterable: SonoIterable[T], /, *, _ret: R
+):
+    # _ret acts as the initializer
+    if Empty(iterable):
+        return
+    for v in Iter(iterable):
+        _ret @= f(_ret, v)
+    return
 
 
 @sono_function

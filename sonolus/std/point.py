@@ -15,12 +15,16 @@ class Point(Struct):
     def __add__(self, other: Point | Number) -> Point:
         if isinstance(other, Point):
             return Point.new(self.x + other.x, self.y + other.y)
+        if isinstance(other, (Number, int, float)):
+            return Point.new(self.x + other, self.y + other)
         return NotImplemented
 
     @sono_function(ast=False)
     def __sub__(self, other: Point | Number) -> Point:
         if isinstance(other, Point):
             return Point.new(self.x - other.x, self.y - other.y)
+        if isinstance(other, (Number, int, float)):
+            return Point.new(self.x - other, self.y - other)
         return NotImplemented
 
     @sono_function(ast=False)

@@ -14,9 +14,7 @@ class MappingIteratorTypeVars(NamedTuple):
     map: Callable[[...], TOut]
 
 
-class MappingIterator(
-    GenericStruct, Generic[TSrc], type_vars=MappingIteratorTypeVars
-):
+class MappingIterator(GenericStruct, Generic[TSrc], type_vars=MappingIteratorTypeVars):
     source: TSrc
 
     @classmethod
