@@ -2,15 +2,13 @@ from __future__ import annotations
 
 from typing import ClassVar, Type, TypeVar, Generic, Sequence, Iterator, Iterable
 
-from sonolus.backend.ir import IRConst, IRFunc, Location, TempRef
+from sonolus.backend.ir import Location, TempRef
 from sonolus.engine.functions.sls_func import convert_value
 from sonolus.engine.statements.control_flow import ExecuteVoid
 from sonolus.engine.statements.iterator import (
     SequenceIterator,
     IndexedSequenceIterator,
     SlsIterator,
-    SlsSequence,
-    Len,
 )
 from sonolus.engine.statements.primitive import Number
 from sonolus.engine.statements.tuple import SlsTuple
