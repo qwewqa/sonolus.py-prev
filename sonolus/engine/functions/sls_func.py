@@ -10,7 +10,7 @@ from sonolus.engine.statements.value import Value
 T = TypeVar("T", bound=Callable)
 
 
-def sono_function(fn: T = None, *, ast: bool = True) -> T:
+def sls_func(fn: T = None, *, ast: bool = True) -> T:
     def wrap(fn):
         return _lazy_process(fn, ast)
 

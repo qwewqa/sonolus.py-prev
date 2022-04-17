@@ -11,7 +11,7 @@ from typing import (
     Type,
 )
 
-from sonolus.engine.functions.sono_function import sono_function
+from sonolus.engine.functions.sls_func import sls_func
 from sonolus.engine.statements.control_flow import Execute
 from sonolus.engine.statements.generic_struct import GenericStruct
 from sonolus.engine.statements.primitive import Boolean, Number
@@ -21,20 +21,20 @@ T = TypeVar("T")
 
 
 @runtime_checkable
-class SonoIterable(Protocol[T]):
-    def _iter_(self) -> SonoIterator[T]:
+class SlsIterable(Protocol[T]):
+    def _iter_(self) -> SlsIterator[T]:
         pass
 
 
 @runtime_checkable
-class SonoEnumerable(Protocol[T]):
-    def _enumerate_(self) -> SonoIterator[IndexedEntry[T]]:
+class SlsEnumerable(Protocol[T]):
+    def _enumerate_(self) -> SlsIterator[IndexedEntry[T]]:
         pass
 
 
 @runtime_checkable
-class SonoIterator(Protocol[T]):
-    def _iter_(self) -> SonoIterator[T]:
+class SlsIterator(Protocol[T]):
+    def _iter_(self) -> SlsIterator[T]:
         pass
 
     def _has_item_(self) -> Boolean:
@@ -48,7 +48,7 @@ class SonoIterator(Protocol[T]):
 
 
 @runtime_checkable
-class SonoSequence(Protocol[T]):
+class SlsSequence(Protocol[T]):
     def _len_(self) -> Number:
         pass
 
@@ -61,10 +61,10 @@ class SonoSequence(Protocol[T]):
     def __getitem__(self, item) -> T:
         pass
 
-    def _iter_(self) -> SonoIterator[T]:
+    def _iter_(self) -> SlsIterator[T]:
         pass
 
-    def _enumerate_(self) -> SonoIterator[IndexedEntry[T]]:
+    def _enumerate_(self) -> SlsIterator[IndexedEntry[T]]:
         pass
 
     @classmethod
@@ -97,7 +97,7 @@ class IndexedEntry(
         yield self.index
         yield self.value
 
-    @sono_function(ast=False)
+    @sls_func(ast=False)
     def __getitem__(self, item: Number):
         const_index = item.constant()
         if const_index is None:
@@ -116,22 +116,22 @@ class SequenceIterator(
 
     @classmethod
     def for_sequence(cls, seq, /):
-        if not (hasattr(seq, "__getitem__") and isinstance(seq, SonoSequence)):
+        if not (hasattr(seq, "__getitem__") and isinstance(seq, SlsSequence)):
             raise TypeError("Expected a sequence.")
         return cls[type(seq)](seq, Number.new(), Len(seq))
 
     def _iter_(self):
         return self
 
-    @sono_function
+    @sls_func
     def _has_item_(self):
         return self.index < self.stop
 
-    @sono_function
+    @sls_func
     def _item_(self):
         return self.sequence[self.index]
 
-    @sono_function
+    @sls_func
     def _advance_(self):
         self.index += 1
 
@@ -145,23 +145,23 @@ class IndexedSequenceIterator(
 
     @classmethod
     def for_sequence(cls, seq, /):
-        if not (hasattr(seq, "__getitem__") and isinstance(seq, SonoSequence)):
+        if not (hasattr(seq, "__getitem__") and isinstance(seq, SlsSequence)):
             raise TypeError("Expected a sequence.")
         return cls[type(seq)](seq, Number.new(), Len(seq))
 
     def _iter_(self):
         return self
 
-    @sono_function
+    @sls_func
     def _has_item_(self):
         return self.index < self.stop
 
-    @sono_function
+    @sls_func
     def _item_(self):
         value = self.sequence[self.index]
         return IndexedEntry[type(value)](self.index.copy(), value)
 
-    @sono_function
+    @sls_func
     def _advance_(self):
         self.index += 1
 
@@ -179,20 +179,20 @@ class IndexedIteratorWrapper(
     iterator: TIterator
     index: Number
 
-    @sono_function
+    @sls_func
     def _has_item_(self):
         return self.iterator._has_item_()
 
     def _iter_(self):
         return self
 
-    @sono_function
+    @sls_func
     def _item_(self):
         index = self.index.copy()
         value = self.iterator._item_()
         return IndexedEntry[type(value)](index, value)
 
-    @sono_function
+    @sls_func
     def _advance_(self):
         self.index += 1
 
@@ -201,25 +201,25 @@ class IndexedIteratorWrapper(
         return cls(i, Number.new())
 
 
-def Len(v: SonoSequence, /):
+def Len(v: SlsSequence, /):
     return v._len_()
 
 
-def Iter(seq: SonoIterable[T], /) -> Iterator[T] | SonoIterator[T]:
-    if isinstance(seq, SonoIterable):
+def Iter(seq: SlsIterable[T], /) -> Iterator[T] | SlsIterator[T]:
+    if isinstance(seq, SlsIterable):
         return seq._iter_()
     raise TypeError(f"Value {seq} is not an Iterable.")
 
 
-def Next(iterator: SonoIterator[T], /) -> T:
-    if isinstance(iterator, SonoIterator):
+def Next(iterator: SlsIterator[T], /) -> T:
+    if isinstance(iterator, SlsIterator):
         return Execute(result := iterator._item_(), iterator._advance_(), result)
     raise TypeError(f"Value {iterator} is not a SonoIterator.")
 
 
 def Enumerate(
-    seq: SonoIterable[T], /
-) -> Iterator[Tuple[Number, T]] | SonoIterator[IndexedEntry[T]]:
+    seq: SlsIterable[T], /
+) -> Iterator[Tuple[Number, T]] | SlsIterator[IndexedEntry[T]]:
     if hasattr(seq, "_enumerate_"):
         return seq._enumerate_()
     iterator = Iter(seq)

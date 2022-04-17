@@ -1,6 +1,6 @@
 from typing import TypeVar, NamedTuple, Callable, Generic
 
-from sonolus.engine.functions.sono_function import sono_function
+from sonolus.engine.functions.sls_func import sls_func
 from sonolus.engine.statements.generic_struct import GenericStruct
 from sonolus.engine.statements.primitive import Boolean
 
@@ -21,19 +21,19 @@ class MappingIterator(GenericStruct, Generic[TSrc], type_vars=MappingIteratorTyp
     def from_iterator(cls, iterator):
         return cls(iterator)
 
-    @sono_function
+    @sls_func
     def _iter_(self):
         return self
 
-    @sono_function
+    @sls_func
     def _has_item_(self) -> Boolean:
         return self.source._has_item_()
 
-    @sono_function
+    @sls_func
     def _item_(self):
         return self.type_vars.map(self.source._item_())
 
-    @sono_function
+    @sls_func
     def _advance_(self) -> TOut:
         return self.source._advance_()
 
@@ -49,30 +49,30 @@ class FilteringIterator(
     source: TSrc
 
     @classmethod
-    @sono_function
+    @sls_func
     def from_iterator(cls, iterator):
         result = cls(iterator)
         result._advance_until_valid()
         return result
 
-    @sono_function
+    @sls_func
     def _iter_(self):
         return self
 
-    @sono_function
+    @sls_func
     def _has_item_(self) -> Boolean:
         return self.source._has_item_()
 
-    @sono_function
+    @sls_func
     def _item_(self):
         return self.source._item_()
 
-    @sono_function
+    @sls_func
     def _advance_(self):
         self.source._advance_()
         self._advance_until_valid()
 
-    @sono_function
+    @sls_func
     def _advance_until_valid(self):
         while self.source._has_item_() and not self.type_vars.filter(
             self.source._item_()

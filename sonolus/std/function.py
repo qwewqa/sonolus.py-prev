@@ -1,6 +1,6 @@
-from sonolus.engine.functions.sono_function import *
+from sonolus.engine.functions.sls_func import *
 
 __all__ = (
-    "sono_function",
+    "sls_func",
     "New",
 )

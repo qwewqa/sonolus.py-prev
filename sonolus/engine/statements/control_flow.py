@@ -2,7 +2,7 @@ from types import FunctionType
 from typing import Callable, Sized, Iterable
 
 from sonolus.backend.compiler import Scope, DeadScope
-from sonolus.engine.functions.sono_function import convert_value
+from sonolus.engine.functions.sls_func import convert_value
 from sonolus.engine.statements.statement import Statement
 from sonolus.engine.statements.value import Value
 from sonolus.engine.statements.void import Void
@@ -146,7 +146,7 @@ def While(test, body, else_=None):
 
 
 def For(iterator, /, body: Callable, else_=None, unpack: bool = False):
-    from sonolus.engine.statements.iterator import Iter, SonoIterator
+    from sonolus.engine.statements.iterator import Iter, SlsIterator
 
     if else_ is None:
         else_ = Void()
@@ -154,7 +154,7 @@ def For(iterator, /, body: Callable, else_=None, unpack: bool = False):
         iterator = Iter(iterator)
     except TypeError:
         pass
-    if not isinstance(iterator, SonoIterator):
+    if not isinstance(iterator, SlsIterator):
         if isinstance(iterator, Sized) and isinstance(iterator, Iterable):
             statements = []
             if unpack:

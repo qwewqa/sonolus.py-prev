@@ -13,7 +13,7 @@ from sonolus.backend.ir import (
     Location,
     IRValueType,
 )
-from sonolus.engine.functions.sono_function import sono_function
+from sonolus.engine.functions.sls_func import sls_func
 from sonolus.backend.compiler import CompilationInfo
 from sonolus.engine.statements.control_flow import Execute, If
 from sonolus.engine.statements.value import Value
@@ -170,23 +170,23 @@ class Boolean(Primitive):
         else:
             return not Value
 
-    @sono_function(ast=False)
+    @sls_func(ast=False)
     def __and__(self, other):
         return invoke_builtin("And", [self, other], Boolean)
 
-    @sono_function(ast=False)
+    @sls_func(ast=False)
     def __rand__(self, other):
         return invoke_builtin("And", [other, self], Boolean)
 
-    @sono_function(ast=False)
+    @sls_func(ast=False)
     def __or__(self, other):
         return invoke_builtin("Or", [self, other], Boolean)
 
-    @sono_function(ast=False)
+    @sls_func(ast=False)
     def __ror__(self, other):
         return invoke_builtin("Or", [other, self], Boolean)
 
-    @sono_function(ast=False)
+    @sls_func(ast=False)
     def __invert__(self) -> Boolean:
         # Note: differs from typical Python behavior (which treats bools as numbers)
         result = invoke_builtin("Not", [self], Boolean)
@@ -199,6 +199,12 @@ class Boolean(Primitive):
 
 
 class Number(Primitive):
+    """
+    A floating-point number.
+    NaN and infinities may be represented, but behavior is undefined
+    for some operations.
+    """
+
     _is_concrete_ = True
 
     def __init__(self, value=0, override_float_value: Optional[float] = None):
@@ -231,111 +237,111 @@ class Number(Primitive):
             raise ValueError("Number has a non-integer value.")
         return int(value)
 
-    @sono_function(ast=False)
+    @sls_func(ast=False)
     def __add__(self: Number, other: Number):
         return invoke_builtin("Add", [self, other], Number)
 
-    @sono_function(ast=False)
+    @sls_func(ast=False)
     def __radd__(self: Number, other: Number):
         return invoke_builtin("Add", [other, self], Number)
 
-    @sono_function(ast=False)
+    @sls_func(ast=False)
     def __sub__(self: Number, other: Number):
         return invoke_builtin("Subtract", [self, other], Number)
 
-    @sono_function(ast=False)
+    @sls_func(ast=False)
     def __rsub__(self: Number, other: Number):
         return invoke_builtin("Subtract", [other, self], Number)
 
-    @sono_function(ast=False)
+    @sls_func(ast=False)
     def __mul__(self: Number, other: Number):
         return invoke_builtin("Multiply", [self, other], Number)
 
-    @sono_function(ast=False)
+    @sls_func(ast=False)
     def __rmul__(self: Number, other: Number):
         return invoke_builtin("Multiply", [other, self], Number)
 
-    @sono_function(ast=False)
+    @sls_func(ast=False)
     def __truediv__(self: Number, other: Number):
         return invoke_builtin("Divide", [self, other], Number)
 
-    @sono_function(ast=False)
+    @sls_func(ast=False)
     def __rtruediv__(self: Number, other: Number):
         return invoke_builtin("Divide", [other, self], Number)
 
-    @sono_function(ast=False)
+    @sls_func(ast=False)
     def __floordiv__(self: Number, other: Number):
         return invoke_builtin("Floor", [self / other], Number)
 
-    @sono_function(ast=False)
+    @sls_func(ast=False)
     def __rfloordiv__(self: Number, other: Number):
         return invoke_builtin("Floor", [other / self], Number)
 
-    @sono_function(ast=False)
+    @sls_func(ast=False)
     def __mod__(self: Number, other: Number):
         return invoke_builtin("Mod", [self, other], Number)
 
-    @sono_function(ast=False)
+    @sls_func(ast=False)
     def __rmod__(self: Number, other: Number):
         return invoke_builtin("Mod", [other, self], Number)
 
-    @sono_function(ast=False)
+    @sls_func(ast=False)
     def __pow__(self: Number, other: Number):
         return invoke_builtin("Power", [self, other], Number)
 
-    @sono_function(ast=False)
+    @sls_func(ast=False)
     def __rpow__(self: Number, other: Number):
         return invoke_builtin("Power", [other, self], Number)
 
-    @sono_function(ast=False)
+    @sls_func(ast=False)
     def __gt__(self: Number, other: Number) -> Boolean:
         return invoke_builtin("Greater", [self, other], Boolean)
 
-    @sono_function(ast=False)
+    @sls_func(ast=False)
     def __ge__(self: Number, other: Number) -> Boolean:
         return invoke_builtin("GreaterOr", [self, other], Boolean)
 
-    @sono_function(ast=False)
+    @sls_func(ast=False)
     def __lt__(self: Number, other: Number) -> Boolean:
         return invoke_builtin("Less", [self, other], Boolean)
 
-    @sono_function(ast=False)
+    @sls_func(ast=False)
     def __le__(self: Number, other: Number) -> Boolean:
         return invoke_builtin("LessOr", [self, other], Boolean)
 
-    @sono_function(ast=False)
+    @sls_func(ast=False)
     def __neg__(self):
         return 0 - self
 
-    @sono_function(ast=False)
+    @sls_func(ast=False)
     def __iadd__(self: Number, other: Number):
         return self << self + other
 
-    @sono_function(ast=False)
+    @sls_func(ast=False)
     def __isub__(self: Number, other: Number):
         return self << self - other
 
-    @sono_function(ast=False)
+    @sls_func(ast=False)
     def __imul__(self: Number, other: Number):
         return self << self * other
 
-    @sono_function(ast=False)
+    @sls_func(ast=False)
     def __itruediv__(self: Number, other: Number):
         return self << self / other
 
-    @sono_function(ast=False)
+    @sls_func(ast=False)
     def __ifloordiv__(self: Number, other: Number):
         return self << self // other
 
-    @sono_function(ast=False)
+    @sls_func(ast=False)
     def __imod__(self: Number, other: Number):
         return self << self % other
 
-    @sono_function(ast=False)
+    @sls_func(ast=False)
     def __ipow__(self: Number, other: Number):
         return self << self**other
 
-    @sono_function(ast=False)
+    @sls_func(ast=False)
     def to_boolean(self) -> Boolean:
         return self != 0
 

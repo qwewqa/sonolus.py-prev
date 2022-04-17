@@ -4,7 +4,7 @@ from dataclasses import dataclass
 from typing import Protocol
 
 from sonolus.backend.ir import Location, MemoryBlock, IRConst
-from sonolus.engine.functions.sono_function import sono_function
+from sonolus.engine.functions.sls_func import sls_func
 from sonolus.engine.statements.primitive import Number
 from sonolus.engine.statements.struct import Struct
 
@@ -33,7 +33,7 @@ class BucketStruct(Struct):
     max_good: Number
 
     @classmethod
-    @sono_function
+    @sls_func
     def simple(cls, perfect, great, good):
         return BucketStruct(perfect, perfect, great, great, good, good)
 

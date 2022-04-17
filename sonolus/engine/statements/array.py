@@ -3,14 +3,14 @@ from __future__ import annotations
 from typing import ClassVar, Type, TypeVar, Generic, Sequence, Iterator, Iterable
 
 from sonolus.backend.ir import IRConst, IRFunc, Location, TempRef
-from sonolus.engine.functions.sono_function import convert_value
+from sonolus.engine.functions.sls_func import convert_value
 from sonolus.engine.statements.control_flow import ExecuteVoid
 from sonolus.engine.statements.iterator import (
     SequenceIterator,
     IndexedSequenceIterator,
-    SonoIterator,
+    SlsIterator,
     IndexedEntry,
-    SonoSequence,
+    SlsSequence,
     Len,
 )
 from sonolus.engine.statements.primitive import Number
@@ -75,10 +75,10 @@ class Array(Value, Generic[T, U], Iterable[T]):
     def _max_size_(self) -> int:
         raise NotImplementedError
 
-    def _iter_(self) -> SonoIterator[T]:
+    def _iter_(self) -> SlsIterator[T]:
         raise NotImplementedError
 
-    def _enumerate_(self) -> SonoIterator[IndexedEntry[T]]:
+    def _enumerate_(self) -> SlsIterator[IndexedEntry[T]]:
         raise NotImplementedError
 
     def __len__(self):

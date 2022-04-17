@@ -23,7 +23,7 @@ from sonolus.engine.statements.statement import Statement
 from sonolus.engine.statements.struct import Empty, Struct
 from sonolus.engine.statements.value import Value
 from sonolus.engine.statements.void import Void
-from sonolus.std import sono_function
+from sonolus.std import sls_func
 
 SHARED_MEMORY_SIZE = 32
 ENTITY_INFO_SIZE = 3
@@ -88,7 +88,7 @@ class Script(Statement):
 
     @classmethod
     @property
-    @sono_function(ast=False)
+    @sls_func(ast=False)
     def life(cls) -> ScriptLifeStruct:
         return ScriptLifeStruct._create_(
             Location(MemoryBlock.ARCHETYPE_LIFE, cls._get_archetype_id(), 0, None)
@@ -158,7 +158,7 @@ class Script(Statement):
             return IRConst(compilation_info.script_ids[cls])
 
 
-def callback_function(fn=None, /, *, order: int = 0, preprocessor=sono_function):
+def callback_function(fn=None, /, *, order: int = 0, preprocessor=sls_func):
     def wrap(fn):
         if fn.__name__ not in CALLBACK_TYPES:
             raise ValueError(f"Invalid callback name: {fn.__name}.")
@@ -206,17 +206,17 @@ class EntityInfo(Struct):
     state: Number
 
     @property
-    @sono_function(ast=False)
+    @sls_func(ast=False)
     def is_waiting(self):
         return self.state == EntityState.WAITING
 
     @property
-    @sono_function(ast=False)
+    @sls_func(ast=False)
     def is_spawned(self):
         return self.state == EntityState.SPAWNED
 
     @property
-    @sono_function(ast=False)
+    @sls_func(ast=False)
     def is_despawned(self):
         return self.state == EntityState.DESPAWNED
 

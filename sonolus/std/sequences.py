@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import overload, Callable, Iterable, Sequence
 
-from sonolus.engine.functions.sono_function import New, convert_value
+from sonolus.engine.functions.sls_func import New, convert_value
 from sonolus.engine.statements.array import Array
 from sonolus.engine.statements.control_flow import If
 from sonolus.engine.statements.other_iterators import MappingIterator, FilteringIterator
@@ -39,20 +39,20 @@ T = TypeVar("T")
 R = TypeVar("R")
 
 
-@sono_function
+@sls_func
 def Map(
-    f: Callable[[T], R], iterable: SonoIterable[T], /
-) -> SonoIterable[R] | Iterable[T]:
+    f: Callable[[T], R], iterable: SlsIterable[T], /
+) -> SlsIterable[R] | Iterable[T]:
     iterator = Iter(iterable)
     return MappingIterator[type(iterator), type(f(Next(iterator))), f].from_iterator(
         Iter(iterable)
     )
 
 
-@sono_function
+@sls_func
 def SeqMap(
-    f: Callable[[T], R], sequence: SonoSequence[T], /
-) -> SonoSequence[R] | Sequence[T]:
+    f: Callable[[T], R], sequence: SlsSequence[T], /
+) -> SlsSequence[R] | Sequence[T]:
     result = SizeLimitedArray[type(f(sequence[0])), sequence._max_size_()].alloc()
     result.size @= Len(sequence)
     for i, v in Enumerate(sequence):
@@ -60,18 +60,18 @@ def SeqMap(
     return result
 
 
-@sono_function
+@sls_func
 def Filter(
-    f: Callable[[T], Boolean], iterable: SonoIterable[T], /
-) -> SonoIterable[T] | Iterable[T]:
+    f: Callable[[T], Boolean], iterable: SlsIterable[T], /
+) -> SlsIterable[T] | Iterable[T]:
     iterator = Iter(iterable)
     return FilteringIterator[type(iterator), f].from_iterator(iterator)
 
 
-@sono_function
+@sls_func
 def SeqFilter(
-    f: Callable[[T], Boolean], sequence: SonoSequence[T], /
-) -> SonoSequence[T] | Sequence[T]:
+    f: Callable[[T], Boolean], sequence: SlsSequence[T], /
+) -> SlsSequence[T] | Sequence[T]:
     result = SizeLimitedArray[
         sequence._contained_type_(), sequence._max_size_()
     ].alloc()
@@ -83,20 +83,20 @@ def SeqFilter(
 
 
 @overload
-def Count(iterator: SonoIterable, /) -> Number:
+def Count(iterator: SlsIterable, /) -> Number:
     pass
 
 
 @overload
-def Count(f: Callable[[T], Boolean], iterator: SonoIterable, /) -> Number:
+def Count(f: Callable[[T], Boolean], iterator: SlsIterable, /) -> Number:
     pass
 
 
-@sono_function(ast=False)
+@sls_func(ast=False)
 def Count(*args):
     match len(args):
         case 1:
-            if isinstance(args[0], SonoSequence):
+            if isinstance(args[0], SlsSequence):
                 return Len(args[0])
             return _count_simple(*args)
         case 2:
@@ -107,17 +107,17 @@ def Count(*args):
             )
 
 
-@sono_function
-def _count_simple(iterable: SonoIterable[T], /, _ret: Number = New) -> Number:
+@sls_func
+def _count_simple(iterable: SlsIterable[T], /, _ret: Number = New) -> Number:
     count = Number.new(0)
     for _ in Iter(iterable):
         count += 1
     return count
 
 
-@sono_function
+@sls_func
 def _count_cond(
-    f: Callable[[T], Boolean], iterable: SonoIterable[T], /, _ret: Number = New
+    f: Callable[[T], Boolean], iterable: SlsIterable[T], /, _ret: Number = New
 ) -> Number:
     count = Number.new(0)
     for v in Iter(iterable):
@@ -126,9 +126,9 @@ def _count_cond(
     return count
 
 
-@sono_function
+@sls_func
 def Any(
-    f: Callable[[T], Boolean], iterable: SonoIterable[T], /, _ret: Boolean = New
+    f: Callable[[T], Boolean], iterable: SlsIterable[T], /, _ret: Boolean = New
 ) -> Number:
     for v in Iter(iterable):
         if f(v):
@@ -136,9 +136,9 @@ def Any(
     return False
 
 
-@sono_function
+@sls_func
 def All(
-    f: Callable[[T], Boolean], iterable: SonoIterable[T], /, _ret: Boolean = New
+    f: Callable[[T], Boolean], iterable: SlsIterable[T], /, _ret: Boolean = New
 ) -> Number:
     for v in Iter(iterable):
         if not f(v):
@@ -148,7 +148,7 @@ def All(
 
 @overload
 def Max(
-    iterable: SonoIterable[T], /, *, key: Callable[[T], Any] = None, default: T = None
+    iterable: SlsIterable[T], /, *, key: Callable[[T], Any] = None, default: T = None
 ) -> T:
     pass
 
@@ -158,7 +158,7 @@ def Max(arg1: T, arg2: T, /, *args: T, key: Callable[[T], Any] = None) -> T:
     pass
 
 
-@sono_function(ast=False)
+@sls_func(ast=False)
 def Max(*args, **kwargs):
     """
     If given a single iterable, returns a copy of the maximum value in the iterable.
@@ -212,8 +212,8 @@ def Max(*args, **kwargs):
             )
 
 
-@sono_function
-def _max_iterable(iterable: SonoIterable[T], /, *, _ret):
+@sls_func
+def _max_iterable(iterable: SlsIterable[T], /, *, _ret):
     if Empty(iterable):
         return
     iterator = Iter(iterable)
@@ -224,8 +224,8 @@ def _max_iterable(iterable: SonoIterable[T], /, *, _ret):
     return max_value
 
 
-@sono_function
-def _max_iterable_key(iterable: SonoIterable[T], /, *, key: Callable, _ret):
+@sls_func
+def _max_iterable_key(iterable: SlsIterable[T], /, *, key: Callable, _ret):
     if Empty(iterable):
         return
     iterator = Iter(iterable)
@@ -241,7 +241,7 @@ def _max_iterable_key(iterable: SonoIterable[T], /, *, key: Callable, _ret):
 
 @overload
 def Min(
-    iterable: SonoIterable[T], /, *, key: Callable[[T], Any] = None, default: T = None
+    iterable: SlsIterable[T], /, *, key: Callable[[T], Any] = None, default: T = None
 ) -> T:
     pass
 
@@ -251,7 +251,7 @@ def Min(arg1: T, arg2: T, /, *args: T, key: Callable[[T], Any] = None) -> T:
     pass
 
 
-@sono_function(ast=False)
+@sls_func(ast=False)
 def Min(*args, **kwargs):
     """
     If given a single iterable, returns a copy of the minimum value in the iterable.
@@ -305,8 +305,8 @@ def Min(*args, **kwargs):
             )
 
 
-@sono_function
-def _min_iterable(iterable: SonoIterable[T], /, *, _ret):
+@sls_func
+def _min_iterable(iterable: SlsIterable[T], /, *, _ret):
     if Empty(iterable):
         return
     iterator = Iter(iterable)
@@ -317,8 +317,8 @@ def _min_iterable(iterable: SonoIterable[T], /, *, _ret):
     return min_value
 
 
-@sono_function
-def _min_iterable_key(iterable: SonoIterable[T], /, *, key: Callable, _ret):
+@sls_func
+def _min_iterable_key(iterable: SlsIterable[T], /, *, key: Callable, _ret):
     if Empty(iterable):
         return
     iterator = Iter(iterable)
@@ -332,9 +332,9 @@ def _min_iterable_key(iterable: SonoIterable[T], /, *, key: Callable, _ret):
     return min_value
 
 
-@sono_function(ast=False)
+@sls_func(ast=False)
 def Reduce(
-    func: Callable[[R, T], R], iterable: SonoIterable[T], /, initializer: R = None
+    func: Callable[[R, T], R], iterable: SlsIterable[T], /, initializer: R = None
 ):
     """
     Returns a copy of the result of the reduction of the iterable using the given function.
@@ -348,9 +348,9 @@ def Reduce(
         return _reduce_with_initializer(func, iterable, _ret=initializer.copy())
 
 
-@sono_function
+@sls_func
 def _reduce_no_initializer(
-    f: Callable[[T, T], T], iterable: SonoIterable[T], /, *, _ret: T
+    f: Callable[[T, T], T], iterable: SlsIterable[T], /, *, _ret: T
 ):
     if Empty(iterable):
         return
@@ -361,9 +361,9 @@ def _reduce_no_initializer(
     return result
 
 
-@sono_function
+@sls_func
 def _reduce_with_initializer(
-    f: Callable[[R, T], R], iterable: SonoIterable[T], /, *, _ret: R
+    f: Callable[[R, T], R], iterable: SlsIterable[T], /, *, _ret: R
 ):
     # _ret acts as the initializer
     if Empty(iterable):
@@ -373,13 +373,13 @@ def _reduce_with_initializer(
     return
 
 
-@sono_function
-def Empty(iterable: SonoIterable[T]) -> Boolean:
+@sls_func
+def Empty(iterable: SlsIterable[T]) -> Boolean:
     return not Iter(iterable)._has_item_()
 
 
-@sono_function
-def NotEmpty(iterable: SonoIterable[T]) -> Boolean:
+@sls_func
+def NotEmpty(iterable: SlsIterable[T]) -> Boolean:
     return Iter(iterable)._has_item_()
 
 
@@ -402,14 +402,14 @@ class Range(Struct):
             start = 0
         super().__init__(start, stop, step)
 
-    @sono_function
+    @sls_func
     def __len__(self, _ret: Number = New):
         if self.step > 0:
             return Max((self.stop - self.start - 1) // self.step + 1, 0)
         else:
             return Max((self.start - self.stop - 1) // -self.step + 1, 0)
 
-    @sono_function
+    @sls_func
     def __contains__(self, item: Number, _ret: Boolean = New) -> Boolean:
         if self.step > 0:
             return (
@@ -420,14 +420,14 @@ class Range(Struct):
                 self.start >= item > self.stop and (item - self.start) % self.step == 0
             )
 
-    @sono_function
+    @sls_func
     def __getitem__(self, item: Number):
         return self.start + item * self.step
 
-    def _iter_(self) -> SonoIterator[Number]:
+    def _iter_(self) -> SlsIterator[Number]:
         return SequenceIterator.for_sequence(self)
 
-    def _enumerate_(self) -> SonoIterator[IndexedEntry[T]]:
+    def _enumerate_(self) -> SlsIterator[IndexedEntry[T]]:
         return IndexedSequenceIterator.for_sequence(self)
 
     @classmethod
@@ -455,14 +455,14 @@ class SizeLimitedArray(GenericStruct, Generic[T], type_vars=SizeLimitedArrayType
     values: Array[T, max_size]
 
     @generic_function
-    @sono_function
+    @sls_func
     def append(self, value: T):
         if self.size >= self.type_vars.max_size:
             return
         self.append_unsafe(value)
 
     @generic_function
-    @sono_function
+    @sls_func
     def append_unsafe(self, value: T):
         """
         Appends a value to the array without checking the size.
@@ -474,14 +474,14 @@ class SizeLimitedArray(GenericStruct, Generic[T], type_vars=SizeLimitedArrayType
         self.size += 1
 
     @generic_function
-    @sono_function
+    @sls_func
     def pop(self, _ret: T = New):
         if self.size == 0:
             return
         return self.pop_unsafe()
 
     @generic_function
-    @sono_function
+    @sls_func
     def pop_unsafe(self, _ret: T = New):
         """
         Removes and returns the last element of the array without checking the size.
@@ -502,8 +502,8 @@ class SizeLimitedArray(GenericStruct, Generic[T], type_vars=SizeLimitedArrayType
     def __getitem__(self, item) -> T:
         return self.values[item]
 
-    def _iter_(self) -> SonoIterator[T]:
+    def _iter_(self) -> SlsIterator[T]:
         return SequenceIterator.for_sequence(self)
 
-    def _enumerate_(self) -> SonoIterator[IndexedEntry[T]]:
+    def _enumerate_(self) -> SlsIterator[IndexedEntry[T]]:
         return IndexedSequenceIterator.for_sequence(self)

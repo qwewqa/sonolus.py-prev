@@ -1,6 +1,6 @@
 from enum import Enum
 
-from .function import sono_function
+from .function import sls_func
 from .number import Number
 from .boolean import Boolean
 from .types import Void
@@ -14,17 +14,17 @@ __all__ = (
 )
 
 
-@sono_function(ast=False)
+@sls_func(ast=False)
 def Play(id: Number, dist: Number) -> Void:
     return invoke_builtin("Play", [id, dist])
 
 
-@sono_function(ast=False)
+@sls_func(ast=False)
 def PlayScheduled(id: Number, t: Number, dist: Number) -> Void:
     return invoke_builtin("PlayScheduled", [id, t, dist])
 
 
-@sono_function(ast=False)
+@sls_func(ast=False)
 def HasEffectClip(id: Number) -> Boolean:
     return invoke_builtin("HasEffectClip", [id], Boolean)
 

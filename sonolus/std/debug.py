@@ -6,7 +6,7 @@ from sonolus.backend.ir import IRComment
 from sonolus.engine.statements.primitive import Number, Boolean, invoke_builtin
 from sonolus.engine.statements.statement import Statement
 from sonolus.engine.statements.void import Void
-from sonolus.std.function import sono_function
+from sonolus.std.function import sls_func
 
 __all__ = (
     "IsDebug",
@@ -20,17 +20,17 @@ __all__ = (
 )
 
 
-@sono_function(ast=False)
+@sls_func(ast=False)
 def IsDebug() -> Boolean:
     return invoke_builtin("IsDebug", [], Boolean)
 
 
-@sono_function(ast=False)
+@sls_func(ast=False)
 def DebugPause() -> Void:
     return invoke_builtin("DebugPause", [])
 
 
-@sono_function(ast=False)
+@sls_func(ast=False)
 def DebugLog(n: Number | Boolean, /) -> Void:
     if isinstance(n, (int, float, bool)):
         n = Number(n)
