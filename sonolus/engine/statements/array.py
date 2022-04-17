@@ -9,11 +9,11 @@ from sonolus.engine.statements.iterator import (
     SequenceIterator,
     IndexedSequenceIterator,
     SlsIterator,
-    IndexedEntry,
     SlsSequence,
     Len,
 )
 from sonolus.engine.statements.primitive import Number
+from sonolus.engine.statements.tuple import SlsTuple
 from sonolus.engine.statements.value import Value
 from sonolus.engine.statements.void import Void
 
@@ -78,7 +78,7 @@ class Array(Value, Generic[T, U], Iterable[T]):
     def _iter_(self) -> SlsIterator[T]:
         raise NotImplementedError
 
-    def _enumerate_(self) -> SlsIterator[IndexedEntry[T]]:
+    def _enumerate_(self) -> SlsIterator[SlsTuple[Number, T]]:
         raise NotImplementedError
 
     def __len__(self):

@@ -37,6 +37,9 @@ class MappingIterator(GenericStruct, Generic[TSrc], type_vars=MappingIteratorTyp
     def _advance_(self) -> TOut:
         return self.source._advance_()
 
+    def __iter__(self):
+        raise TypeError("Cannot call __iter__ on an SlsIterator.")
+
 
 class FilteringIteratorTypeVars(NamedTuple):
     TSrc: type
@@ -78,3 +81,6 @@ class FilteringIterator(
             self.source._item_()
         ):
             self.source._advance_()
+
+    def __iter__(self):
+        raise TypeError("Cannot call __iter__ on an SlsIterator.")

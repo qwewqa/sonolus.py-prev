@@ -42,7 +42,7 @@ R = TypeVar("R")
 @sls_func
 def Map(
     f: Callable[[T], R], iterable: SlsIterable[T], /
-) -> SlsIterable[R] | Iterable[T]:
+) -> SlsIterable[R] | Iterable[R]:
     iterator = Iter(iterable)
     return MappingIterator[type(iterator), type(f(Next(iterator))), f].from_iterator(
         Iter(iterable)
@@ -52,7 +52,7 @@ def Map(
 @sls_func
 def SeqMap(
     f: Callable[[T], R], sequence: SlsSequence[T], /
-) -> SlsSequence[R] | Sequence[T]:
+) -> SlsSequence[R] | Sequence[R]:
     result = SizeLimitedArray[type(f(sequence[0])), sequence._max_size_()].alloc()
     result.size @= Len(sequence)
     for i, v in Enumerate(sequence):

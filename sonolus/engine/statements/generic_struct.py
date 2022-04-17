@@ -6,15 +6,15 @@ import sys
 import textwrap
 from inspect import get_annotations
 from types import FunctionType
-from typing import TypeVar, Any
+from typing import TypeVar, Any, ClassVar
 
 from sonolus.engine.statements.dataclass_transform import __dataclass_transform__
 from sonolus.engine.statements.struct import Struct
 
 
 @__dataclass_transform__(eq_default=True)
-class GenericStruct(Struct, _no_init_struct=True):
-    type_vars: Any = None
+class GenericStruct(Struct, _no_init_struct_=True):
+    type_vars: ClassVar[Any] = None
 
     def __init__(self, *args, **kwargs):
         if self.type_vars is None:
@@ -70,7 +70,7 @@ class GenericStruct(Struct, _no_init_struct=True):
                 else:
                     KeyError(f'No type arg with name "{hint.__name__}" found.')
 
-        class Typed(cls, _typed_subclass=True, _override_hints=hints):
+        class Typed(cls, _typed_subclass=True, _override_fields_=hints):
             pass
 
         Typed.type_vars = type_vars

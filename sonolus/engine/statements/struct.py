@@ -19,17 +19,17 @@ class Struct(Value):
 
     def __init_subclass__(
         cls,
-        _no_init_struct: bool = False,
-        _override_hints: dict | None = None,
+        _no_init_struct_: bool = False,
+        _override_fields_: dict | None = None,
         **kwargs,
     ):
         super().__init_subclass__(**kwargs)
-        if _no_init_struct:
+        if _no_init_struct_:
             return
         if hasattr(cls, "_struct_fields_"):
             raise TypeError("Subclassing of a Struct is not allowed.")
-        if _override_hints is not None:
-            hints = _override_hints
+        if _override_fields_ is not None:
+            hints = _override_fields_
         else:
             hints = inspect.get_annotations(cls, eval_str=True)
         fields = []
