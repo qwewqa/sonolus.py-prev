@@ -34,6 +34,8 @@ def DebugPause() -> Void:
 def DebugLog(n: Number | Boolean, /) -> Void:
     if isinstance(n, (int, float, bool)):
         n = Number(n)
+    if not isinstance(n, (Number, Boolean)):
+        raise TypeError(f"Expected number or boolean, got {type(n)}.")
     return invoke_builtin("DebugLog", [n])
 
 

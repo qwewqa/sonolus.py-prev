@@ -26,10 +26,20 @@ class SlsIterable(Protocol[T]):
     def _iter_(self) -> SlsIterator[T]:
         pass
 
+    def __iter__(self) -> Iterator[T]:
+        # Dummy to satisfy type checkers in for loops
+        pass
+
 
 @runtime_checkable
 class SlsEnumerable(Protocol[T]):
+    def _iter_(self) -> SlsIterator[T]:
+        pass
+
     def _enumerate_(self) -> SlsIterator[SlsTuple[Number, T]]:
+        pass
+
+    def __iter__(self) -> Iterator[T]:
         pass
 
 
@@ -48,7 +58,6 @@ class SlsIterator(Protocol[T]):
         pass
 
     def __iter__(self) -> Iterator[T]:
-        # Dummy to satisfy type checkers in for loops
         pass
 
 
@@ -121,7 +130,7 @@ class SequenceIterator(
         self.index += 1
 
     def __iter__(self):
-        raise TypeError("Cannot call __iter__ on an SlsIterator.")
+        raise TypeError("Cannot call __iter__ on an SlsIterable.")
 
 
 class IndexedSequenceIterator(
@@ -154,7 +163,7 @@ class IndexedSequenceIterator(
         self.index += 1
 
     def __iter__(self):
-        raise TypeError("Cannot call __iter__ on an SlsIterator.")
+        raise TypeError("Cannot call __iter__ on an SlsIterable.")
 
 
 TIterator = TypeVar("TIterator", bound=Iterator)
@@ -188,7 +197,7 @@ class IndexedIteratorWrapper(
         self.index += 1
 
     def __iter__(self):
-        raise TypeError("Cannot call __iter__ on an SlsIterator.")
+        raise TypeError("Cannot call __iter__ on an SlsIterable.")
 
     @classmethod
     def for_iterator(cls, i, /):

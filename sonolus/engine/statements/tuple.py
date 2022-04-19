@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import ClassVar, Generic
+from typing import ClassVar, Generic, TYPE_CHECKING, Tuple
 
 from typing_extensions import TypeVarTuple, Unpack
 
@@ -11,8 +11,21 @@ from sonolus.engine.statements.value import Value
 
 Types = TypeVarTuple("Types")
 
+if not TYPE_CHECKING:
+    class Dummy:
+        def __mro_entries__(self, bases):
+            return ()
 
-class SlsTuple(Struct, Generic[Unpack[Types]], _no_init_struct_=True):
+        def __getitem__(self, item):
+            return self
+
+
+    # This is to make type checkers recognize the correct types
+    # after unpacking.
+    Tuple = Dummy()
+
+
+class SlsTuple(Tuple[Unpack[Types]], Struct, Generic[Unpack[Types]], _no_init_struct_=True):
     _subclass_cache = {}
     _types_: ClassVar[tuple[type, ...]] = None
 
@@ -58,11 +71,9 @@ class SlsTuple(Struct, Generic[Unpack[Types]], _no_init_struct_=True):
         super().__init__(*args)
 
     def __iter__(self):
-        # Type checkers seem to have a bit of trouble with this.
         return iter(self._values_)
 
     def __getitem__(self, item):
-        # Type checkers seem to have a bit of trouble with this.
         if isinstance(item, Number):
             item = item.constant()
         if not isinstance(item, int):
