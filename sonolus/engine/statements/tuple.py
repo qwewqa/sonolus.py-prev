@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import ClassVar, Generic, TYPE_CHECKING, Tuple
+from typing import ClassVar, Generic, TYPE_CHECKING, Tuple, Sequence
 
 from typing_extensions import TypeVarTuple, Unpack
 
@@ -87,3 +87,9 @@ class SlsTuple(
     @property
     def _values_(self) -> tuple[Unpack[Types]]:
         return tuple(getattr(self, f"field{i}") for i in range(len(self._types_)))
+
+    @classmethod
+    def _convert_(cls, value):
+        if isinstance(value, Sequence):
+            value = cls.of(*value)
+        return super()._convert_(value)

@@ -220,9 +220,7 @@ def Next(iterator: SlsIterator[T], /) -> T:
     raise TypeError(f"Value {iterator} is not a SonoIterator.")
 
 
-def Enumerate(
-    seq: SlsIterable[T], /
-) -> SlsIterator[SlsTuple[Number, T]]:
+def Enumerate(seq: SlsIterable[T], /) -> SlsIterator[SlsTuple[Number, T]]:
     if hasattr(seq, "_enumerate_"):
         return seq._enumerate_()
     iterator = Iter(seq)

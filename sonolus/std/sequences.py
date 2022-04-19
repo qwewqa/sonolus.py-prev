@@ -40,9 +40,7 @@ R = TypeVar("R")
 
 
 @sls_func
-def Map(
-    f: Callable[[T], R], iterable: SlsIterable[T], /
-) -> SlsIterable[R]:
+def Map(f: Callable[[T], R], iterable: SlsIterable[T], /) -> SlsIterable[R]:
     iterator = Iter(iterable)
     return MappingIterator[type(iterator), type(f(Next(iterator))), f].from_iterator(
         Iter(iterable)
@@ -50,9 +48,7 @@ def Map(
 
 
 @sls_func
-def SeqMap(
-    f: Callable[[T], R], sequence: SlsSequence[T], /
-) -> SlsSequence[R]:
+def SeqMap(f: Callable[[T], R], sequence: SlsSequence[T], /) -> SlsSequence[R]:
     result = SizeLimitedArray[type(f(sequence[0])), sequence._max_size_()].alloc()
     result.size @= Len(sequence)
     for i, v in Enumerate(sequence):
@@ -61,17 +57,13 @@ def SeqMap(
 
 
 @sls_func
-def Filter(
-    f: Callable[[T], Boolean], iterable: SlsIterable[T], /
-) -> SlsIterable[T]:
+def Filter(f: Callable[[T], Boolean], iterable: SlsIterable[T], /) -> SlsIterable[T]:
     iterator = Iter(iterable)
     return FilteringIterator[type(iterator), f].from_iterator(iterator)
 
 
 @sls_func
-def SeqFilter(
-    f: Callable[[T], Boolean], sequence: SlsSequence[T], /
-) -> SlsSequence[T]:
+def SeqFilter(f: Callable[[T], Boolean], sequence: SlsSequence[T], /) -> SlsSequence[T]:
     result = SizeLimitedArray[
         sequence._contained_type_(), sequence._max_size_()
     ].alloc()
