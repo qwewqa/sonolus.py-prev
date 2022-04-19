@@ -12,6 +12,7 @@ from sonolus.engine.statements.value import Value
 Types = TypeVarTuple("Types")
 
 if not TYPE_CHECKING:
+
     class Dummy:
         def __mro_entries__(self, bases):
             return ()
@@ -19,13 +20,14 @@ if not TYPE_CHECKING:
         def __getitem__(self, item):
             return self
 
-
     # This is to make type checkers recognize the correct types
     # after unpacking.
     Tuple = Dummy()
 
 
-class SlsTuple(Tuple[Unpack[Types]], Struct, Generic[Unpack[Types]], _no_init_struct_=True):
+class SlsTuple(
+    Tuple[Unpack[Types]], Struct, Generic[Unpack[Types]], _no_init_struct_=True
+):
     _subclass_cache = {}
     _types_: ClassVar[tuple[type, ...]] = None
 
@@ -80,7 +82,7 @@ class SlsTuple(Tuple[Unpack[Types]], Struct, Generic[Unpack[Types]], _no_init_st
             raise TypeError("SlsTuple indices must be constant integers.")
         if not 0 <= item < len(self._types_):
             raise IndexError("SlsTuple index out of range.")
-        return self._values_[item]
+        return getattr(self, f"field{int(item)}")
 
     @property
     def _values_(self) -> tuple[Unpack[Types]]:
