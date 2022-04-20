@@ -7,7 +7,7 @@ from typing import (
     Generic,
     Sequence,
     Iterator,
-    Iterable,
+    Iterable, overload,
 )
 
 from sonolus.backend.ir import Location, TempRef
@@ -18,7 +18,7 @@ from sonolus.engine.statements.iterator import (
     IndexedSequenceIterator,
     SlsIterator,
 )
-from sonolus.engine.statements.primitive import Number
+from sonolus.engine.statements.primitive import Number, Boolean
 from sonolus.engine.statements.tuple import SlsTuple
 from sonolus.engine.statements.value import Value
 from sonolus.engine.statements.void import Void
@@ -54,7 +54,22 @@ class Array(Value, Generic[T, U], Iterable[T]):
                 return Array[(result[size], *others)]
 
     @classmethod
+    @overload
+    def of(cls, *args: float) -> Array[Number]:
+        pass
+
+    @classmethod
+    @overload
+    def of(cls, *args: bool) -> Array[Boolean]:
+        pass
+
+    @classmethod
+    @overload
     def of(cls, *args: T) -> Array[T]:
+        pass
+
+    @classmethod
+    def of(cls, *args):
         """
         Returns an allocated Array with automatically determined type and size.
         """

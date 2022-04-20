@@ -359,5 +359,5 @@ def invoke_builtin(
 
 
 if TYPE_CHECKING:
-    Number: TypeAlias = Number | float
-    Boolean: TypeAlias = Boolean | bool
+    Number = Number | float
+    Boolean = Boolean | bool

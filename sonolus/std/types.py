@@ -28,7 +28,7 @@ T = TypeVar("T", bound=Value)
 
 class _New:
     @overload
-    def __call__(self, value: int | float) -> Number:
+    def __call__(self, value: float) -> Number:
         pass
 
     @overload
@@ -51,7 +51,7 @@ class _New:
                 raise TypeError(f"Cannot create new value from {value}.")
 
     @overload
-    def __matmul__(self, value: int | float) -> Number:
+    def __matmul__(self, value: float) -> Number:
         pass
 
     @overload
