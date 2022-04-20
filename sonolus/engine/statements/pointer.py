@@ -20,7 +20,7 @@ class Pointer(Struct, Generic[T]):
         if cls.__module__ != Pointer.__module__:
             raise TypeError("Cannot subclass Pointer.")
 
-    def __class_getitem__(cls, item: Type[TTarget]) -> Pointer[Type[TTarget]]:
+    def __class_getitem__(cls, item):
         if item not in cls._typed_subclasses_:
             cls._typed_subclasses_[item] = _create_typed_pointer_class(item)
         return cls._typed_subclasses_[item]

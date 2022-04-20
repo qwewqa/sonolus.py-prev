@@ -16,6 +16,9 @@ class Value(Statement):
     _size_: ClassVar[int] = 0
     _value_: Location | Any = None
 
+    # If True, allocating is not allowed
+    _ref_only_: ClassVar[bool] = False
+
     def _assign_(self, value) -> Void:
         """
         Mutates this value in-place to the given value and returns itself.
@@ -60,6 +63,10 @@ class Value(Statement):
         """
         Returns a new allocated instance of this class that has been initialized to the given value.
         """
+        if cls._ref_only_:
+            raise TypeError(
+                f"Cannot allocate a value of type {cls} because it is reference only."
+            )
         result = cls._create_(_new_temp_loc(cls.__name__))
         if initial_value is not None:
             return result._dup_()._set_parent_(result._assign_(initial_value))

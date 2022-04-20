@@ -17,6 +17,8 @@ class MappingIteratorTypeVars(NamedTuple):
 class MappingIterator(GenericStruct, Generic[TSrc], type_vars=MappingIteratorTypeVars):
     source: TSrc
 
+    _ref_only_ = True
+
     @classmethod
     def from_iterator(cls, iterator):
         return cls(iterator)
@@ -50,6 +52,8 @@ class FilteringIterator(
     GenericStruct, Generic[TSrc], type_vars=FilteringIteratorTypeVars
 ):
     source: TSrc
+
+    _ref_only_ = True
 
     @classmethod
     @sls_func
