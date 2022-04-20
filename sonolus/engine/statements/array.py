@@ -1,6 +1,14 @@
 from __future__ import annotations
 
-from typing import ClassVar, Type, TypeVar, Generic, Sequence, Iterator, Iterable
+from typing import (
+    ClassVar,
+    Type,
+    TypeVar,
+    Generic,
+    Sequence,
+    Iterator,
+    Iterable,
+)
 
 from sonolus.backend.ir import Location, TempRef
 from sonolus.engine.functions.sls_func import convert_value
@@ -27,7 +35,7 @@ class Array(Value, Generic[T, U], Iterable[T]):
             "Array cannot be directly instantiated without a type and size."
         )
 
-    def __class_getitem__(cls, contained_type) -> Type[Array]:
+    def __class_getitem__(cls, contained_type):
         if isinstance(contained_type, tuple):
             contained_type, *sizes = contained_type
         else:

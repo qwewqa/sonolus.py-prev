@@ -178,7 +178,7 @@ def GetLevelTransform(type_: Type[T]) -> T:
     ...
 
 
-def GetLevelTransform(type_: Type[T] = Array[Number, 4, 4], /) -> T:
+def GetLevelTransform(type_: Type[T] = Array[Array[Number, 4], 4], /) -> T:
     if type_._size_ != 16:
         warnings.warn(f"Type {type_} may have an incorrect size for level transform.")
     return Pointer[type_](MemoryBlock.LEVEL_MEMORY, 0).deref()

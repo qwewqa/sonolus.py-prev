@@ -24,62 +24,47 @@ T = TypeVar("T")
 @runtime_checkable
 class SlsIterable(Protocol[T]):
     def _iter_(self) -> SlsIterator[T]:
-        pass
+        ...
 
     def __iter__(self) -> Iterator[T]:
         # Dummy to satisfy type checkers in for loops
-        pass
+        raise TypeError("Cannot call __iter__ on an SlsIterable.")
 
 
 @runtime_checkable
-class SlsEnumerable(Protocol[T]):
-    def _iter_(self) -> SlsIterator[T]:
-        pass
-
+class SlsEnumerable(SlsIterable[T], Protocol[T]):
     def _enumerate_(self) -> SlsIterator[SlsTuple[Number, T]]:
-        pass
-
-    def __iter__(self) -> Iterator[T]:
-        pass
+        ...
 
 
 @runtime_checkable
-class SlsIterator(Protocol[T]):
+class SlsIterator(SlsIterable[T], Protocol[T]):
     def _iter_(self) -> SlsIterator[T]:
-        pass
+        return self
 
     def _has_item_(self) -> Boolean:
-        pass
+        ...
 
     def _item_(self) -> T:
-        pass
+        ...
 
     def _advance_(self) -> Void:
-        pass
-
-    def __iter__(self) -> Iterator[T]:
-        pass
+        ...
 
 
 @runtime_checkable
-class SlsSequence(Protocol[T]):
+class SlsSequence(SlsEnumerable[T], Protocol[T]):
     def _len_(self) -> Number:
-        pass
+        ...
 
     def _contained_type_(self) -> Type[T]:
-        pass
+        ...
 
     def _max_size_(self) -> int:
-        pass
+        ...
 
     def __getitem__(self, item) -> T:
-        pass
-
-    def _iter_(self) -> SlsIterator[T]:
-        pass
-
-    def _enumerate_(self) -> SlsIterator[SlsTuple[Number, T]]:
-        pass
+        ...
 
     @classmethod
     def _convert_(cls, sequence):
@@ -102,7 +87,10 @@ class SequenceIteratorTypeVars(NamedTuple):
 
 
 class SequenceIterator(
-    GenericStruct, Generic[TSequence], type_vars=SequenceIteratorTypeVars
+    SlsIterator[TSequence],
+    GenericStruct,
+    Generic[TSequence],
+    type_vars=SequenceIteratorTypeVars,
 ):
     sequence: TSequence
     index: Number
@@ -136,7 +124,10 @@ class SequenceIterator(
 
 
 class IndexedSequenceIterator(
-    GenericStruct, Generic[TSequence], type_vars=SequenceIteratorTypeVars
+    SlsIterator[TSequence],
+    GenericStruct,
+    Generic[TSequence],
+    type_vars=SequenceIteratorTypeVars,
 ):
     sequence: TSequence
     index: Number
@@ -178,7 +169,10 @@ class IndexedIteratorWrapperTypeVars(NamedTuple):
 
 
 class IndexedIteratorWrapper(
-    GenericStruct, Generic[TIterator], type_vars=IndexedIteratorWrapperTypeVars
+    SlsIterator,
+    GenericStruct,
+    Generic[TIterator],
+    type_vars=IndexedIteratorWrapperTypeVars,
 ):
     iterator: TIterator
     index: Number
@@ -201,9 +195,6 @@ class IndexedIteratorWrapper(
     @sls_func
     def _advance_(self):
         self.index += 1
-
-    def __iter__(self):
-        raise TypeError("Cannot call __iter__ on an SlsIterable.")
 
     @classmethod
     def for_iterator(cls, i, /):
