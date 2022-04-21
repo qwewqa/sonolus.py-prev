@@ -21,63 +21,45 @@ __all__ = (
     "GenericStruct",
     "generic_function",
     "new",
+    "alloc",
 )
 
 T = TypeVar("T", bound=Value)
 
 
-class _New:
-    @overload
-    def __call__(self, value: float) -> Number:
-        pass
-
-    @overload
-    def __call__(self, value: bool) -> Boolean:
-        pass
-
-    @overload
-    def __call__(self, value: T) -> T:
-        pass
-
-    @overload
-    def __call__(self, value: Type[T]) -> T:
-        pass
-
-    def __call__(self, value):
-        match value:
-            case type() if Value.is_value_class(value):
-                return value.new()
-            case Value():
-                return value.copy()
-            case bool() as boolean:
-                return Boolean.new(boolean)
-            case int() | float() as number:
-                return Number.new(number)
-            case _:
-                raise TypeError(f"Cannot create new value from {value}.")
-
-    @overload
-    def __matmul__(self, value: float) -> Number:
-        pass
-
-    @overload
-    def __matmul__(self, value: bool) -> Boolean:
-        pass
-
-    @overload
-    def __matmul__(self, value: T) -> T:
-        pass
-
-    @overload
-    def __matmul__(self, value: Type[T]) -> T:
-        pass
-
-    def __matmul__(self, other):
-        return self(other)
+@overload
+def new(value: float) -> Number:
+    pass
 
 
-new = _New()
+@overload
+def new(value: bool) -> Boolean:
+    pass
 
+
+@overload
+def new(value: T) -> T:
+    pass
+
+
+@overload
+def new(value: Type[T]) -> T:
+    pass
+
+
+def new(value):
+    match value:
+        case type() if Value.is_value_class(value):
+            return value.new()
+        case Value():
+            return value.copy()
+        case bool() as boolean:
+            return Boolean.new(boolean)
+        case int() | float() as number:
+            return Number.new(number)
+        case _:
+            raise TypeError(f"Cannot create new value from {value}.")
+    
 
 def alloc(type_: Type[T]) -> T:
     return type_._allocate_()

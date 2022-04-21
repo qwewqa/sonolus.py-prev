@@ -1,17 +1,15 @@
 from __future__ import annotations
 
-from typing import overload, Callable, Iterable, Sequence
+from typing import overload, Callable
 
 from sonolus.engine.functions.sls_func import New, convert_value
 from sonolus.engine.statements.array import Array
 from sonolus.engine.statements.control_flow import If
-from sonolus.engine.statements.other_iterators import MappingIterator, FilteringIterator
 from sonolus.engine.statements.generic_struct import generic_function
 from sonolus.engine.statements.iterator import *
+from sonolus.engine.statements.other_iterators import MappingIterator, FilteringIterator
 from sonolus.engine.statements.primitive import Number, Boolean
-from sonolus.engine.statements.statement import Statement
 from sonolus.engine.statements.struct import Struct
-from sonolus.engine.statements.value import Value
 from sonolus.std.number import NumMax, NumMin
 
 __all__ = (

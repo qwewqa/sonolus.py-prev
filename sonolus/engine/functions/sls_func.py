@@ -48,15 +48,14 @@ def _lazy_process(fn, ast):
     return wrapped
 
 
-class New:
+class _New:
     """
     When used as a default function argument, causes a new value to be created by calling .new() on the
     parameter type whenever the default argument is used.
     """
 
 
-if TYPE_CHECKING:
-    New: New | Any
+New: Any = _New
 
 
 def _process_function(fn):
