@@ -7,7 +7,6 @@ from typing import (
     NamedTuple,
     Generic,
     Iterator,
-    Tuple,
     Type,
 )
 
@@ -66,6 +65,12 @@ class SlsSequence(SlsEnumerable[T], Protocol[T]):
     def __getitem__(self, item) -> T:
         ...
 
+    def _iter_(self):
+        return SequenceIterator.for_sequence(self)
+
+    def _enumerate_(self):
+        return IndexedSequenceIterator.for_sequence(self)
+
     @classmethod
     def _convert_(cls, sequence):
         match sequence:
@@ -119,9 +124,6 @@ class SequenceIterator(
     def _advance_(self):
         self.index += 1
 
-    def __iter__(self):
-        raise TypeError("Cannot call __iter__ on an SlsIterable.")
-
 
 class IndexedSequenceIterator(
     SlsIterator[TSequence],
@@ -156,9 +158,6 @@ class IndexedSequenceIterator(
     @sls_func
     def _advance_(self):
         self.index += 1
-
-    def __iter__(self):
-        raise TypeError("Cannot call __iter__ on an SlsIterable.")
 
 
 TIterator = TypeVar("TIterator", bound=Iterator)

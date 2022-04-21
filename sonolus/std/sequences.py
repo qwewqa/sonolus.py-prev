@@ -64,9 +64,7 @@ def Filter(f: Callable[[T], Boolean], iterable: SlsIterable[T], /) -> SlsIterabl
 
 @sls_func
 def SeqFilter(f: Callable[[T], Boolean], sequence: SlsSequence[T], /) -> SlsSequence[T]:
-    result = alloc(SizeLimitedArray[
-        sequence._contained_type_(), sequence._max_size_()
-    ])
+    result = alloc(SizeLimitedArray[sequence._contained_type_(), sequence._max_size_()])
     result.size @= 0
     for v in sequence:
         if f(v):
@@ -375,7 +373,7 @@ def NotEmpty(iterable: SlsIterable[T]) -> Boolean:
     return Iter(iterable)._has_item_()
 
 
-class Range(Struct):
+class Range(Struct, SlsSequence[Number]):
     start: Number
     stop: Number
     step: Number
@@ -415,12 +413,6 @@ class Range(Struct):
     @sls_func
     def __getitem__(self, item: Number):
         return self.start + item * self.step
-
-    def _iter_(self) -> SlsIterator[Number]:
-        return SequenceIterator.for_sequence(self)
-
-    def _enumerate_(self) -> SlsIterator[IndexedEntry[T]]:
-        return IndexedSequenceIterator.for_sequence(self)
 
     @classmethod
     def _default_(cls) -> Range:
@@ -493,9 +485,3 @@ class SizeLimitedArray(SlsSequence[T], GenericStruct, Generic[T], type_vars=Size
 
     def __getitem__(self, item) -> T:
         return self.values[item]
-
-    def _iter_(self) -> SlsIterator[T]:
-        return SequenceIterator.for_sequence(self)
-
-    def _enumerate_(self) -> SlsIterator[SlsTuple[Number, T]]:
-        return IndexedSequenceIterator.for_sequence(self)

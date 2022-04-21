@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TypeVar, Type, ClassVar, Any, ParamSpec, Callable, overload
+from typing import TypeVar, Type, ClassVar, Any, ParamSpec, Callable, overload, Protocol
 
 from sonolus.backend.compiler import CompilationInfo
 from sonolus.backend.ir import IRNode, Location, TempRef, IRConst
@@ -19,7 +19,9 @@ class Value(Statement):
     # If True, allocating is not allowed
     _ref_only_: ClassVar[bool] = False
 
-    def _assign_(self, value) -> Void:
+    # This should return Void in implementations,
+    # but pyright will give incorrect results if this isn't specified this way.
+    def _assign_(self: TValue, value) -> TValue:
         """
         Mutates this value in-place to the given value and returns itself.
         """
@@ -34,7 +36,7 @@ class Value(Statement):
     def _flatten_(self) -> list[IRNode]:
         """
         Returns this value as a list of IRNodes with the same length as _size_.
-        Used for populate Spawn() arguments.
+        Used to populate Spawn() arguments.
         """
         raise NotImplementedError
 
@@ -108,7 +110,7 @@ class Value(Statement):
     def is_value_class(cls: type):
         return isinstance(cls, type) and issubclass(cls, Value) and cls._is_concrete_
 
-    def __imatmul__(self: TValue, other) -> Void:
+    def __imatmul__(self: TValue, other):
         """
         See _assign_.
         """

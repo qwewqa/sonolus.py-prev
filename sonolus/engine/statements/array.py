@@ -7,7 +7,7 @@ from typing import (
     Generic,
     Sequence,
     Iterator,
-    Iterable, overload,
+    overload,
 )
 
 from sonolus.backend.ir import Location, TempRef
@@ -16,7 +16,7 @@ from sonolus.engine.statements.control_flow import ExecuteVoid
 from sonolus.engine.statements.iterator import (
     SequenceIterator,
     IndexedSequenceIterator,
-    SlsIterator, SlsSequence,
+    SlsIterator,
 )
 from sonolus.engine.statements.primitive import Number, Boolean
 from sonolus.engine.statements.tuple import SlsTuple
@@ -27,7 +27,7 @@ T = TypeVar("T")
 U = TypeVar("U")
 
 
-class Array(SlsSequence[T], Value, Generic[T, U], Iterable[T]):
+class Array(Value, Generic[T, U]):
     _typed_subclasses_: ClassVar[dict] = {}
 
     def __init__(self, *args, **kwargs):
@@ -36,6 +36,8 @@ class Array(SlsSequence[T], Value, Generic[T, U], Iterable[T]):
         )
 
     def __class_getitem__(cls, contained_type):
+        if isinstance(contained_type, TypeVar):
+            return cls
         if isinstance(contained_type, tuple):
             contained_type, *sizes = contained_type
         else:
@@ -156,8 +158,8 @@ def _create_typed_array_class(type_: Type[Value]):
                                 parent = ExecuteVoid(self, idx, new_offset)
                                 if self.size > 0 and loc.span is not None:
                                     new_span = (
-                                            loc.span
-                                            + (self.size - 1) * self.contained_type._size_
+                                        loc.span
+                                        + (self.size - 1) * self.contained_type._size_
                                     )
                                 else:
                                     if isinstance(loc.ref, TempRef):
@@ -198,6 +200,8 @@ def _create_typed_array_class(type_: Type[Value]):
                         return self.size
 
                     def _iter_(self):
+                        if isinstance(self._value_, tuple):
+                            raise ValueError("Cannot iterate over a reference array.")
                         return SequenceIterator.for_sequence(self)
 
                     def _contained_type_(self):
@@ -227,6 +231,8 @@ def _create_typed_array_class(type_: Type[Value]):
                         ]
 
                     def _enumerate_(self):
+                        if isinstance(self._value_, tuple):
+                            raise ValueError("Cannot iterate over a reference array.")
                         return IndexedSequenceIterator.for_sequence(self)
 
                     def as_tuple(self):
