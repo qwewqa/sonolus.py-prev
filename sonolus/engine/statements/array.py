@@ -16,7 +16,7 @@ from sonolus.engine.statements.control_flow import ExecuteVoid
 from sonolus.engine.statements.iterator import (
     SequenceIterator,
     IndexedSequenceIterator,
-    SlsIterator,
+    SlsIterator, SlsSequence,
 )
 from sonolus.engine.statements.primitive import Number, Boolean
 from sonolus.engine.statements.tuple import SlsTuple
@@ -27,7 +27,7 @@ T = TypeVar("T")
 U = TypeVar("U")
 
 
-class Array(Value, Generic[T, U], Iterable[T]):
+class Array(SlsSequence[T], Value, Generic[T, U], Iterable[T]):
     _typed_subclasses_: ClassVar[dict] = {}
 
     def __init__(self, *args, **kwargs):
@@ -156,8 +156,8 @@ def _create_typed_array_class(type_: Type[Value]):
                                 parent = ExecuteVoid(self, idx, new_offset)
                                 if self.size > 0 and loc.span is not None:
                                     new_span = (
-                                        loc.span
-                                        + (self.size - 1) * self.contained_type._size_
+                                            loc.span
+                                            + (self.size - 1) * self.contained_type._size_
                                     )
                                 else:
                                     if isinstance(loc.ref, TempRef):

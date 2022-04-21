@@ -77,3 +77,7 @@ class _New:
 
 
 new = _New()
+
+
+def alloc(type_: Type[T]) -> T:
+    return type_._allocate_()

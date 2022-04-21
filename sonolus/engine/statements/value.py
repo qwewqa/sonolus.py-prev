@@ -101,10 +101,6 @@ class Value(Statement):
     def new(cls, *args, **kwargs):
         return cls._allocate_(cls(*args, **kwargs))  # type: ignore
 
-    @classmethod
-    def alloc(cls):
-        return cls._allocate_()
-
     def copy(self: TValue) -> TValue:
         return self._allocate_(self)
 

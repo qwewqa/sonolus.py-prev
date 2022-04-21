@@ -35,6 +35,8 @@ __all__ = (
     "SizeLimitedArray",
 )
 
+from sonolus.std.types import alloc
+
 T = TypeVar("T")
 R = TypeVar("R")
 
@@ -64,9 +66,9 @@ def Filter(f: Callable[[T], Boolean], iterable: SlsIterable[T], /) -> SlsIterabl
 
 @sls_func
 def SeqFilter(f: Callable[[T], Boolean], sequence: SlsSequence[T], /) -> SlsSequence[T]:
-    result = SizeLimitedArray[
+    result = alloc(SizeLimitedArray[
         sequence._contained_type_(), sequence._max_size_()
-    ].alloc()
+    ])
     result.size @= 0
     for v in sequence:
         if f(v):
@@ -441,7 +443,7 @@ class SizeLimitedArrayTypeVars(NamedTuple):
     max_size: int
 
 
-class SizeLimitedArray(GenericStruct, Generic[T], type_vars=SizeLimitedArrayTypeVars):
+class SizeLimitedArray(SlsSequence[T], GenericStruct, Generic[T], type_vars=SizeLimitedArrayTypeVars):
     size: Number
     # noinspection PyUnresolvedReferences
     values: Array[T, max_size]
@@ -497,5 +499,5 @@ class SizeLimitedArray(GenericStruct, Generic[T], type_vars=SizeLimitedArrayType
     def _iter_(self) -> SlsIterator[T]:
         return SequenceIterator.for_sequence(self)
 
-    def _enumerate_(self) -> SlsIterator[IndexedEntry[T]]:
+    def _enumerate_(self) -> SlsIterator[SlsTuple[Number, T]]:
         return IndexedSequenceIterator.for_sequence(self)
