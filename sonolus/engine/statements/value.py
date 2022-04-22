@@ -1,11 +1,10 @@
 from __future__ import annotations
 
-from typing import TypeVar, Type, ClassVar, Any, ParamSpec, Callable, overload, Protocol
+from typing import TypeVar, Type, ClassVar, Any, ParamSpec, Callable, overload
 
 from sonolus.backend.compiler import CompilationInfo
 from sonolus.backend.ir import IRNode, Location, TempRef, IRConst
 from sonolus.engine.statements.statement import Statement
-from sonolus.engine.statements.void import Void
 
 TValue = TypeVar("TValue", bound="Value")
 P = ParamSpec("P")
@@ -23,7 +22,7 @@ class Value(Statement):
     # but pyright will give incorrect results if this isn't specified this way.
     def _assign_(self: TValue, value) -> TValue:
         """
-        Mutates this value in-place to the given value and returns itself.
+        Mutates this value in-place to the given value.
         """
         raise NotImplementedError
 
@@ -71,6 +70,8 @@ class Value(Statement):
             )
         result = cls._create_(_new_temp_loc(cls.__name__))
         if initial_value is not None:
+            # Mind the _dup_
+            # A value should not be its own parent.
             return result._dup_()._set_parent_(result._assign_(initial_value))
         else:
             return result
@@ -101,6 +102,10 @@ class Value(Statement):
 
     @classmethod
     def new(cls, *args, **kwargs):
+        """
+        Creates a new allocated instance of this class.
+        Should not be overridden.
+        """
         return cls._allocate_(cls(*args, **kwargs))  # type: ignore
 
     def copy(self: TValue) -> TValue:

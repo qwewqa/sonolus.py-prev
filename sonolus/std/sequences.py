@@ -386,7 +386,9 @@ class Range(Struct, SlsSequence[Number]):
     def __init__(self, start: Number, stop: Number, step: Number = None, /):
         pass
 
-    def __init__(self, start, stop=None, step=1):
+    def __init__(self, start=0, stop=None, step=1):
+        # Usually __init__ shouldn't be overwritten, but this enables
+        # behavior to mimic the builtin range() function.
         if stop is None:
             stop = start
             start = 0
@@ -413,10 +415,6 @@ class Range(Struct, SlsSequence[Number]):
     @sls_func
     def __getitem__(self, item: Number):
         return self.start + item * self.step
-
-    @classmethod
-    def _default_(cls) -> Range:
-        return cls(0, 0, 1)
 
     def __iter__(self) -> Iterator[Number]:
         start = self.start.constant()
