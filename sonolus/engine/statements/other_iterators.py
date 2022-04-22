@@ -3,7 +3,7 @@ from typing import TypeVar, NamedTuple, Callable, Generic
 from sonolus.engine.functions.sls_func import sls_func
 from sonolus.engine.statements.generic_struct import GenericStruct
 from sonolus.engine.statements.iterator import SlsIterator
-from sonolus.engine.statements.primitive import Boolean
+from sonolus.engine.statements.primitive import Bool
 
 TOut = TypeVar("TOut")
 TSrc = TypeVar("TSrc")
@@ -25,7 +25,7 @@ class MappingIterator(
         return cls(iterator)
 
     @sls_func
-    def _has_item_(self) -> Boolean:
+    def _has_item_(self) -> Bool:
         return self.source._has_item_()
 
     @sls_func
@@ -39,7 +39,7 @@ class MappingIterator(
 
 class FilteringIteratorTypeVars(NamedTuple):
     TSrc: type
-    filter: Callable[[...], Boolean]
+    filter: Callable[[...], Bool]
 
 
 class FilteringIterator(
@@ -55,7 +55,7 @@ class FilteringIterator(
         return result
 
     @sls_func
-    def _has_item_(self) -> Boolean:
+    def _has_item_(self) -> Bool:
         return self.source._has_item_()
 
     @sls_func

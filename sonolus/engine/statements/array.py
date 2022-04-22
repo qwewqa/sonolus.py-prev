@@ -18,7 +18,7 @@ from sonolus.engine.statements.iterator import (
     IndexedSequenceIterator,
     SlsIterator,
 )
-from sonolus.engine.statements.primitive import Number, Boolean
+from sonolus.engine.statements.primitive import Num, Bool
 from sonolus.engine.statements.tuple import SlsTuple
 from sonolus.engine.statements.value import Value, convert_value
 from sonolus.engine.statements.void import Void
@@ -57,12 +57,12 @@ class Array(Value, Generic[T, U]):
 
     @classmethod
     @overload
-    def of(cls, *args: float) -> Array[Number]:
+    def of(cls, *args: float) -> Array[Num]:
         pass
 
     @classmethod
     @overload
-    def of(cls, *args: bool) -> Array[Boolean]:
+    def of(cls, *args: bool) -> Array[Bool]:
         pass
 
     @classmethod
@@ -89,7 +89,7 @@ class Array(Value, Generic[T, U]):
     def __iter__(self) -> Iterator[T]:
         raise NotImplementedError
 
-    def _len_(self) -> Number:
+    def _len_(self) -> Num:
         raise NotImplementedError
 
     def _contained_type_(self) -> Type[T]:
@@ -101,7 +101,7 @@ class Array(Value, Generic[T, U]):
     def _iter_(self) -> SlsIterator[T]:
         raise NotImplementedError
 
-    def _enumerate_(self) -> SlsIterator[SlsTuple[Number, T]]:
+    def _enumerate_(self) -> SlsIterator[SlsTuple[Num, T]]:
         raise NotImplementedError
 
     def __len__(self):
@@ -149,12 +149,12 @@ def _create_typed_array_class(type_: Type[Value]):
                         # Subscripting a zero length allocated array is well-defined
                         # and may be used for purposes such as implementing variable-length arrays.
                         # Subscripting a zero length temporary array is undefined.
-                        idx = convert_value(idx, Number)
+                        idx = convert_value(idx, Num)
                         match self._value_:
                             case Location() as loc:
-                                new_offset = Number._create_(
+                                new_offset = Num._create_(
                                     loc.offset
-                                ) + idx * Number._create_(self.contained_type._size_)
+                                ) + idx * Num._create_(self.contained_type._size_)
                                 parent = ExecuteVoid(self, idx, new_offset)
                                 if self.size > 0 and loc.span is not None:
                                     new_span = (

@@ -121,9 +121,9 @@ def ExecuteVoid(*args: Statement, labels: list[str] | None = None):
 
 
 def If(test, then, else_=None):
-    from sonolus.engine.statements.primitive import Boolean
+    from sonolus.engine.statements.primitive import Bool
 
-    test = convert_value(test, Boolean)
+    test = convert_value(test, Bool)
     then = convert_literal(then)
     else_ = convert_literal(else_)
     if else_ is None:
@@ -137,9 +137,9 @@ def If(test, then, else_=None):
 
 
 def While(test, body, else_=None):
-    from sonolus.engine.statements.primitive import Boolean
+    from sonolus.engine.statements.primitive import Bool
 
-    test = convert_value(test, Boolean)
+    test = convert_value(test, Bool)
     if else_ is None:
         else_ = Void()
     return WhileStatement(test, body, else_)

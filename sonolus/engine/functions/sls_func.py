@@ -127,12 +127,12 @@ def convert_literal(value: Statement | float | bool):
     """
     match value:
         case bool() as boolean:
-            from sonolus.engine.statements.primitive import Boolean
+            from sonolus.engine.statements.primitive import Bool
 
-            return Boolean(boolean)
+            return Bool(boolean)
         case int() | float() as number:
-            from sonolus.engine.statements.primitive import Number
+            from sonolus.engine.statements.primitive import Num
 
-            return Number(number)
+            return Num(number)
         case _:
             return value

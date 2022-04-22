@@ -8,7 +8,7 @@ from sonolus.engine.statements.control_flow import If
 from sonolus.engine.statements.generic_struct import generic_function
 from sonolus.engine.statements.iterator import *
 from sonolus.engine.statements.other_iterators import MappingIterator, FilteringIterator
-from sonolus.engine.statements.primitive import Number, Boolean
+from sonolus.engine.statements.primitive import Num, Bool
 from sonolus.engine.statements.struct import Struct
 from sonolus.std.number import NumMax, NumMin
 
@@ -57,13 +57,13 @@ def SeqMap(f: Callable[[T], R], sequence: SlsSequence[T], /) -> SlsSequence[R]:
 
 
 @sls_func
-def Filter(f: Callable[[T], Boolean], iterable: SlsIterable[T], /) -> SlsIterable[T]:
+def Filter(f: Callable[[T], Bool], iterable: SlsIterable[T], /) -> SlsIterable[T]:
     iterator = Iter(iterable)
     return FilteringIterator[type(iterator), f].from_iterator(iterator)
 
 
 @sls_func
-def SeqFilter(f: Callable[[T], Boolean], sequence: SlsSequence[T], /) -> SlsSequence[T]:
+def SeqFilter(f: Callable[[T], Bool], sequence: SlsSequence[T], /) -> SlsSequence[T]:
     result = alloc(SizeLimitedArray[sequence._contained_type_(), sequence._max_size_()])
     result.size @= 0
     for v in sequence:
@@ -73,12 +73,12 @@ def SeqFilter(f: Callable[[T], Boolean], sequence: SlsSequence[T], /) -> SlsSequ
 
 
 @overload
-def Count(iterator: SlsIterable, /) -> Number:
+def Count(iterator: SlsIterable, /) -> Num:
     pass
 
 
 @overload
-def Count(f: Callable[[T], Boolean], iterator: SlsIterable, /) -> Number:
+def Count(f: Callable[[T], Bool], iterator: SlsIterable, /) -> Num:
     pass
 
 
@@ -98,8 +98,8 @@ def Count(*args):
 
 
 @sls_func
-def _count_simple(iterable: SlsIterable[T], /, _ret: Number = new()) -> Number:
-    count = Number.new(0)
+def _count_simple(iterable: SlsIterable[T], /, _ret: Num = new()) -> Num:
+    count = Num.new(0)
     for _ in Iter(iterable):
         count += 1
     return count
@@ -107,9 +107,9 @@ def _count_simple(iterable: SlsIterable[T], /, _ret: Number = new()) -> Number:
 
 @sls_func
 def _count_cond(
-    f: Callable[[T], Boolean], iterable: SlsIterable[T], /, _ret: Number = new()
-) -> Number:
-    count = Number.new(0)
+    f: Callable[[T], Bool], iterable: SlsIterable[T], /, _ret: Num = new()
+) -> Num:
+    count = Num.new(0)
     for v in Iter(iterable):
         if f(v):
             count += 1
@@ -118,8 +118,8 @@ def _count_cond(
 
 @sls_func
 def Any(
-    f: Callable[[T], Boolean], iterable: SlsIterable[T], /, _ret: Boolean = new()
-) -> Number:
+    f: Callable[[T], Bool], iterable: SlsIterable[T], /, _ret: Bool = new()
+) -> Num:
     for v in Iter(iterable):
         if f(v):
             return True
@@ -128,8 +128,8 @@ def Any(
 
 @sls_func
 def All(
-    f: Callable[[T], Boolean], iterable: SlsIterable[T], /, _ret: Boolean = new()
-) -> Number:
+    f: Callable[[T], Bool], iterable: SlsIterable[T], /, _ret: Bool = new()
+) -> Num:
     for v in Iter(iterable):
         if not f(v):
             return False
@@ -170,7 +170,7 @@ def Max(*args, **kwargs):
             return _max_iterable_key(iterable, key=key, _ret=default)
     elif (
         len(args) == 2
-        and all(isinstance(arg, (Number, int, float)) for arg in args)
+        and all(isinstance(arg, (Num, int, float)) for arg in args)
         and not kwargs
     ):
         return NumMax(*args)
@@ -263,7 +263,7 @@ def Min(*args, **kwargs):
             return _min_iterable_key(iterable, key=key, _ret=default)
     elif (
         len(args) == 2
-        and all(isinstance(arg, (Number, int, float)) for arg in args)
+        and all(isinstance(arg, (Num, int, float)) for arg in args)
         and not kwargs
     ):
         return NumMin(*args)
@@ -364,26 +364,26 @@ def _reduce_with_initializer(
 
 
 @sls_func
-def Empty(iterable: SlsIterable[T]) -> Boolean:
+def Empty(iterable: SlsIterable[T]) -> Bool:
     return not Iter(iterable)._has_item_()
 
 
 @sls_func
-def NotEmpty(iterable: SlsIterable[T]) -> Boolean:
+def NotEmpty(iterable: SlsIterable[T]) -> Bool:
     return Iter(iterable)._has_item_()
 
 
-class Range(Struct, SlsSequence[Number]):
-    start: Number
-    stop: Number
-    step: Number
+class Range(Struct, SlsSequence[Num]):
+    start: Num
+    stop: Num
+    step: Num
 
     @overload
-    def __init__(self, stop: Number, /):
+    def __init__(self, stop: Num, /):
         pass
 
     @overload
-    def __init__(self, start: Number, stop: Number, step: Number = None, /):
+    def __init__(self, start: Num, stop: Num, step: Num = None, /):
         pass
 
     def __init__(self, start=0, stop=None, step=1):
@@ -395,14 +395,14 @@ class Range(Struct, SlsSequence[Number]):
         super().__init__(start, stop, step)
 
     @sls_func
-    def __len__(self, _ret: Number = new()):
+    def __len__(self, _ret: Num = new()):
         if self.step > 0:
             return Max((self.stop - self.start - 1) // self.step + 1, 0)
         else:
             return Max((self.start - self.stop - 1) // -self.step + 1, 0)
 
     @sls_func
-    def __contains__(self, item: Number, _ret: Boolean = new()) -> Boolean:
+    def __contains__(self, item: Num, _ret: Bool = new()) -> Bool:
         if self.step > 0:
             return (
                 self.start <= item < self.stop and (item - self.start) % self.step == 0
@@ -413,10 +413,10 @@ class Range(Struct, SlsSequence[Number]):
             )
 
     @sls_func
-    def __getitem__(self, item: Number):
+    def __getitem__(self, item: Num):
         return self.start + item * self.step
 
-    def __iter__(self) -> Iterator[Number]:
+    def __iter__(self) -> Iterator[Num]:
         start = self.start.constant()
         stop = self.stop.constant()
         step = self.step.constant()
@@ -434,7 +434,7 @@ class SizeLimitedArrayTypeVars(NamedTuple):
 class SizeLimitedArray(
     SlsSequence[T], GenericStruct, Generic[T], type_vars=SizeLimitedArrayTypeVars
 ):
-    size: Number
+    size: Num
     # noinspection PyUnresolvedReferences
     values: Array[T, max_size]
 
@@ -474,7 +474,7 @@ class SizeLimitedArray(
         self.size -= 1
         return self.values[self.size]
 
-    def _len_(self) -> Number:
+    def _len_(self) -> Num:
         return self.size
 
     def _contained_type_(self) -> Type[T]:

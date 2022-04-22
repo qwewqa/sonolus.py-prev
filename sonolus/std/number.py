@@ -1,10 +1,10 @@
 import math
 
 from sonolus.engine.functions.sls_func import sls_func
-from sonolus.engine.statements.primitive import Number, invoke_builtin
+from sonolus.engine.statements.primitive import Num, invoke_builtin
 
 __all__ = (
-    "Number",
+    "Num",
     "Log",
     "Abs",
     "Sign",
@@ -42,183 +42,183 @@ __all__ = (
 
 
 @sls_func(ast=False)
-def Log(n: Number, /) -> Number:
-    return invoke_builtin("Log", [n], Number)
+def Log(n: Num, /) -> Num:
+    return invoke_builtin("Log", [n], Num)
 
 
 @sls_func(ast=False)
-def NumMin(a: Number = 0, b: Number = 1, /) -> Number:
-    return invoke_builtin("Min", [a, b], Number)
+def NumMin(a: Num = 0, b: Num = 1, /) -> Num:
+    return invoke_builtin("Min", [a, b], Num)
 
 
 @sls_func(ast=False)
-def NumMax(a: Number = 0, b: Number = 1, /) -> Number:
-    return invoke_builtin("Max", [a, b], Number)
+def NumMax(a: Num = 0, b: Num = 1, /) -> Num:
+    return invoke_builtin("Max", [a, b], Num)
 
 
 @sls_func(ast=False)
-def Abs(n: Number, /) -> Number:
-    return invoke_builtin("Abs", [n], Number)
+def Abs(n: Num, /) -> Num:
+    return invoke_builtin("Abs", [n], Num)
 
 
 @sls_func(ast=False)
-def Sign(n: Number, /) -> Number:
-    return invoke_builtin("Sign", [n], Number)
+def Sign(n: Num, /) -> Num:
+    return invoke_builtin("Sign", [n], Num)
 
 
 @sls_func(ast=False)
-def Ceil(n: Number, /) -> Number:
-    return invoke_builtin("Ceil", [n], Number)
+def Ceil(n: Num, /) -> Num:
+    return invoke_builtin("Ceil", [n], Num)
 
 
 @sls_func(ast=False)
-def Floor(n: Number, /) -> Number:
-    return invoke_builtin("Floor", [n], Number)
+def Floor(n: Num, /) -> Num:
+    return invoke_builtin("Floor", [n], Num)
 
 
 @sls_func(ast=False)
-def Round(n: Number, /) -> Number:
-    return invoke_builtin("Round", [n], Number)
+def Round(n: Num, /) -> Num:
+    return invoke_builtin("Round", [n], Num)
 
 
 @sls_func(ast=False)
-def Frac(n: Number, /) -> Number:
-    return invoke_builtin("Frac", [n], Number)
+def Frac(n: Num, /) -> Num:
+    return invoke_builtin("Frac", [n], Num)
 
 
 @sls_func(ast=False)
-def Trunc(n: Number, /) -> Number:
-    return invoke_builtin("Trunc", [n], Number)
+def Trunc(n: Num, /) -> Num:
+    return invoke_builtin("Trunc", [n], Num)
 
 
 @sls_func(ast=False)
-def Degree(n: Number, /) -> Number:
-    return invoke_builtin("Degree", [n], Number)
+def Degree(n: Num, /) -> Num:
+    return invoke_builtin("Degree", [n], Num)
 
 
 @sls_func(ast=False)
-def Radian(n: Number, /) -> Number:
-    return invoke_builtin("Radian", [n], Number)
+def Radian(n: Num, /) -> Num:
+    return invoke_builtin("Radian", [n], Num)
 
 
 @sls_func(ast=False)
-def Sin(n: Number, /) -> Number:
-    return invoke_builtin("Sin", [n], Number)
+def Sin(n: Num, /) -> Num:
+    return invoke_builtin("Sin", [n], Num)
 
 
 @sls_func(ast=False)
-def Cos(n: Number, /) -> Number:
-    return invoke_builtin("Cos", [n], Number)
+def Cos(n: Num, /) -> Num:
+    return invoke_builtin("Cos", [n], Num)
 
 
 @sls_func(ast=False)
-def Tan(n: Number, /) -> Number:
-    return invoke_builtin("Tan", [n], Number)
+def Tan(n: Num, /) -> Num:
+    return invoke_builtin("Tan", [n], Num)
 
 
 @sls_func(ast=False)
-def Sinh(n: Number, /) -> Number:
-    return invoke_builtin("Sinh", [n], Number)
+def Sinh(n: Num, /) -> Num:
+    return invoke_builtin("Sinh", [n], Num)
 
 
 @sls_func(ast=False)
-def Cosh(n: Number, /) -> Number:
-    return invoke_builtin("Cosh", [n], Number)
+def Cosh(n: Num, /) -> Num:
+    return invoke_builtin("Cosh", [n], Num)
 
 
 @sls_func(ast=False)
-def Tanh(n: Number, /) -> Number:
-    return invoke_builtin("Tanh", [n], Number)
+def Tanh(n: Num, /) -> Num:
+    return invoke_builtin("Tanh", [n], Num)
 
 
 @sls_func(ast=False)
-def Arcsin(n: Number, /) -> Number:
-    return invoke_builtin("Arcsin", [n], Number)
+def Arcsin(n: Num, /) -> Num:
+    return invoke_builtin("Arcsin", [n], Num)
 
 
 @sls_func(ast=False)
-def Arccos(n: Number, /) -> Number:
-    return invoke_builtin("Arccos", [n], Number)
+def Arccos(n: Num, /) -> Num:
+    return invoke_builtin("Arccos", [n], Num)
 
 
 @sls_func(ast=False)
-def Arctan(n: Number, /) -> Number:
-    return invoke_builtin("Arctan", [n], Number)
+def Arctan(n: Num, /) -> Num:
+    return invoke_builtin("Arctan", [n], Num)
 
 
 @sls_func(ast=False)
-def Arctan2(y: Number, x: Number) -> Number:
-    return invoke_builtin("Arctan2", [y, x], Number)
+def Arctan2(y: Num, x: Num) -> Num:
+    return invoke_builtin("Arctan2", [y, x], Num)
 
 
 @sls_func(ast=False)
-def Clamp(x: Number, a: Number, b: Number, /) -> Number:
-    return invoke_builtin("Clamp", [x, a, b], Number)
+def Clamp(x: Num, a: Num, b: Num, /) -> Num:
+    return invoke_builtin("Clamp", [x, a, b], Num)
 
 
 @sls_func(ast=False)
-def Lerp(a: Number, b: Number, x: Number, /) -> Number:
-    return invoke_builtin("Lerp", [a, b, x], Number)
+def Lerp(a: Num, b: Num, x: Num, /) -> Num:
+    return invoke_builtin("Lerp", [a, b, x], Num)
 
 
 @sls_func(ast=False)
-def LerpClamped(a: Number, b: Number, x: Number, /) -> Number:
-    return invoke_builtin("LerpClamped", [a, b, x], Number)
+def LerpClamped(a: Num, b: Num, x: Num, /) -> Num:
+    return invoke_builtin("LerpClamped", [a, b, x], Num)
 
 
 @sls_func(ast=False)
-def Unlerp(a: Number, b: Number, x: Number, /) -> Number:
-    return invoke_builtin("Unlerp", [a, b, x], Number)
+def Unlerp(a: Num, b: Num, x: Num, /) -> Num:
+    return invoke_builtin("Unlerp", [a, b, x], Num)
 
 
 @sls_func(ast=False)
-def UnlerpClamped(a: Number, b: Number, x: Number, /) -> Number:
-    return invoke_builtin("UnlerpClamped", [a, b, x], Number)
+def UnlerpClamped(a: Num, b: Num, x: Num, /) -> Num:
+    return invoke_builtin("UnlerpClamped", [a, b, x], Num)
 
 
 @sls_func(ast=False)
-def Remap(a: Number, b: Number, c: Number, d: Number, x: Number, /) -> Number:
-    return invoke_builtin("Remap", [a, b, c, d, x], Number)
+def Remap(a: Num, b: Num, c: Num, d: Num, x: Num, /) -> Num:
+    return invoke_builtin("Remap", [a, b, c, d, x], Num)
 
 
 @sls_func(ast=False)
-def RemapClamped(a: Number, b: Number, c: Number, d: Number, x: Number, /) -> Number:
-    return invoke_builtin("RemapClamped", [a, b, c, d, x], Number)
+def RemapClamped(a: Num, b: Num, c: Num, d: Num, x: Num, /) -> Num:
+    return invoke_builtin("RemapClamped", [a, b, c, d, x], Num)
 
 
 @sls_func(ast=False)
-def Smoothstep(a: Number, b: Number, x: Number, /) -> Number:
-    return invoke_builtin("Smoothstep", [a, b, x], Number)
+def Smoothstep(a: Num, b: Num, x: Num, /) -> Num:
+    return invoke_builtin("Smoothstep", [a, b, x], Num)
 
 
 @sls_func(ast=False)
-def Random(a: Number = 0, b: Number = 1, /) -> Number:
-    return invoke_builtin("Random", [a, b], Number)
+def Random(a: Num = 0, b: Num = 1, /) -> Num:
+    return invoke_builtin("Random", [a, b], Num)
 
 
 @sls_func(ast=False)
-def RandomInteger(a: Number, b: Number, /) -> Number:
-    return invoke_builtin("RandomInteger", [a, b], Number)
+def RandomInteger(a: Num, b: Num, /) -> Num:
+    return invoke_builtin("RandomInteger", [a, b], Num)
 
 
 @sls_func(ast=False)
 def Judge(
-    src: Number,
-    dst: Number,
-    min1: Number,
-    max1: Number,
-    min2: Number,
-    max2: Number,
-    min3: Number,
-    max3: Number,
-) -> Number:
+    src: Num,
+    dst: Num,
+    min1: Num,
+    max1: Num,
+    min2: Num,
+    max2: Num,
+    min3: Num,
+    max3: Num,
+) -> Num:
     return invoke_builtin(
-        "Judge", [src, dst, min1, max1, min2, max2, min3, max3], Number
+        "Judge", [src, dst, min1, max1, min2, max2, min3, max3], Num
     )
 
 
 @sls_func(ast=False)
-def JudgeSimple(src: Number, dst: Number, max1: Number, max2: Number, max3: Number):
+def JudgeSimple(src: Num, dst: Num, max1: Num, max2: Num, max3: Num):
     return invoke_builtin("Judget", [src, dst, max1, max2, max3])
 
 

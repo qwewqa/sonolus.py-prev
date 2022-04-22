@@ -48,13 +48,13 @@ T = TypeVar("T", bound=Value)
 
 
 class LevelDataStruct(Struct):
-    time: Number
-    delta_time: Number
-    aspect_ratio: Number
-    audio_offset: Number
-    input_offset: Number
-    render_scale: Number
-    anit_aliasing: Number
+    time: Num
+    delta_time: Num
+    aspect_ratio: Num
+    audio_offset: Num
+    input_offset: Num
+    render_scale: Num
+    anit_aliasing: Num
 
 
 class UIHorizontalAlign(int, Enum):
@@ -66,12 +66,12 @@ class UIHorizontalAlign(int, Enum):
 class LevelUIElement(Struct):
     anchor: Point
     pivot: Point
-    width: Number
-    height: Number
-    rotation: Number = 0
-    alpha: Number = 1
-    horizontal_align: Number = UIHorizontalAlign.Center
-    background: Boolean = False
+    width: Num
+    height: Num
+    rotation: Num = 0
+    alpha: Num = 1
+    horizontal_align: Num = UIHorizontalAlign.Center
+    background: Bool = False
 
 
 class LevelUIStruct(Struct):
@@ -86,8 +86,8 @@ class LevelUIStruct(Struct):
 
 
 class LevelUIConfigurationEntry(Struct):
-    scale: Number
-    alpha: Number
+    scale: Num
+    alpha: Num
 
 
 class LevelUIConfigurationStruct(Struct):
@@ -99,41 +99,41 @@ class LevelUIConfigurationStruct(Struct):
 
 
 class LevelScoreStruct(Struct):
-    perfect_multiplier: Number
-    great_multiplier: Number
-    good_multiplier: Number
-    consecutive_perfect_multiplier: Number
-    consecutive_perfect_step: Number
-    consecutive_perfect_cap: Number
-    consecutive_great_multiplier: Number
-    consecutive_great_step: Number
-    consecutive_great_cap: Number
-    consecutive_good_multiplier: Number
-    consecutive_good_step: Number
-    consecutive_good_cap: Number
+    perfect_multiplier: Num
+    great_multiplier: Num
+    good_multiplier: Num
+    consecutive_perfect_multiplier: Num
+    consecutive_perfect_step: Num
+    consecutive_perfect_cap: Num
+    consecutive_great_multiplier: Num
+    consecutive_great_step: Num
+    consecutive_great_cap: Num
+    consecutive_good_multiplier: Num
+    consecutive_good_step: Num
+    consecutive_good_cap: Num
 
 
 class LevelLifeStruct(Struct):
-    consecutive_perfect_increment: Number
-    consecutive_perfect_step: Number
-    consecutive_great_increment: Number
-    consecutive_great_step: Number
-    consecutive_good_increment: Number
-    consecutive_good_step: Number
+    consecutive_perfect_increment: Num
+    consecutive_perfect_step: Num
+    consecutive_great_increment: Num
+    consecutive_great_step: Num
+    consecutive_good_increment: Num
+    consecutive_good_step: Num
 
 
 class TouchDataStruct(Struct):
-    id: Number
-    started: Boolean
-    ended: Boolean
-    time: Number
-    start_time: Number
+    id: Num
+    started: Bool
+    ended: Bool
+    time: Num
+    start_time: Num
     position: Point
     start_position: Point
     delta_position: Point
     velocity_vector: Point
-    velocity_magnitude: Number
-    velocity_angle: Number
+    velocity_magnitude: Num
+    velocity_angle: Num
 
 
 def GetLevelMemory(type_: Type[T], /) -> T:
@@ -169,7 +169,7 @@ def GetLevelOptions(type_: Type[T], /) -> T:
 
 
 @overload
-def GetLevelTransform() -> Array[Number, 4, 4]:
+def GetLevelTransform() -> Array[Num, 4, 4]:
     ...
 
 
@@ -178,7 +178,7 @@ def GetLevelTransform(type_: Type[T]) -> T:
     ...
 
 
-def GetLevelTransform(type_: Type[T] = Array[Array[Number, 4], 4], /) -> T:
+def GetLevelTransform(type_: Type[T] = Array[Array[Num, 4], 4], /) -> T:
     if type_._size_ != 16:
         warnings.warn(f"Type {type_} may have an incorrect size for level transform.")
     return Pointer[type_](MemoryBlock.LEVEL_MEMORY, 0).deref()
@@ -287,7 +287,7 @@ def GetTemporaryData(type_: Type[T] = TouchDataStruct, /) -> T:
 
 
 LevelData = GetLevelData(LevelDataStruct)
-LevelTransform = GetLevelTransform(Array[Number, 4, 4])
+LevelTransform = GetLevelTransform(Array[Num, 4, 4])
 LevelBackground = GetLevelBackground(Quad)
 LevelUI = GetLevelUI(LevelUIStruct)
 LevelUIConfiguration = GetLevelUIConfiguration(LevelUIConfigurationStruct)

@@ -2,7 +2,7 @@ from __future__ import annotations
 from typing import Type, ClassVar, TypeVar, Generic
 
 from sonolus.backend.ir import MemoryBlock, Location, IRNode, IRConst
-from sonolus.engine.statements.primitive import Number
+from sonolus.engine.statements.primitive import Num
 from sonolus.engine.statements.struct import Struct
 from sonolus.engine.statements.value import Value
 
@@ -11,8 +11,8 @@ TTarget = TypeVar("TTarget")
 
 
 class Pointer(Struct, Generic[T]):
-    block: Number
-    index: Number
+    block: Num
+    index: Num
 
     _typed_subclasses_: ClassVar[dict[Type[Value], type]] = {}
 
@@ -49,9 +49,9 @@ class Pointer(Struct, Generic[T]):
             raise TypeError("Pointers to unallocated values are not supported.")
         match location.ref:
             case int() as block:
-                block = Number(block)
+                block = Num(block)
             case IRNode() as block:
-                block = Number(block)
+                block = Num(block)
             case _:
                 raise TypeError("Pointers to temporary variables are not supported.")
         return Pointer[value_type](block, location.offset)

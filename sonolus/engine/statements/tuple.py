@@ -5,7 +5,7 @@ from typing import ClassVar, Generic, TYPE_CHECKING, Tuple, Sequence
 from typing_extensions import TypeVarTuple, Unpack
 
 from sonolus.engine.functions.sls_func import convert_literal
-from sonolus.engine.statements.primitive import Number
+from sonolus.engine.statements.primitive import Num
 from sonolus.engine.statements.struct import Struct
 from sonolus.engine.statements.value import Value
 
@@ -76,7 +76,7 @@ class SlsTuple(
         return iter(self._values_)
 
     def __getitem__(self, item):
-        if isinstance(item, Number):
+        if isinstance(item, Num):
             item = item.constant()
         if not isinstance(item, int):
             raise TypeError("SlsTuple indices must be constant integers.")

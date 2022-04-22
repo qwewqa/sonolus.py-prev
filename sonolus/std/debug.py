@@ -3,7 +3,7 @@ from sonolus.backend.cfg import Cfg
 from sonolus.backend.compiler import compile_statement, CompilationInfo
 from sonolus.backend.graph import get_flat_cfg
 from sonolus.backend.ir import IRComment
-from sonolus.engine.statements.primitive import Number, Boolean, invoke_builtin
+from sonolus.engine.statements.primitive import Num, Bool, invoke_builtin
 from sonolus.engine.statements.statement import Statement
 from sonolus.engine.statements.void import Void
 from sonolus.std.function import sls_func
@@ -21,8 +21,8 @@ __all__ = (
 
 
 @sls_func(ast=False)
-def IsDebug() -> Boolean:
-    return invoke_builtin("IsDebug", [], Boolean)
+def IsDebug() -> Bool:
+    return invoke_builtin("IsDebug", [], Bool)
 
 
 @sls_func(ast=False)
@@ -31,10 +31,10 @@ def DebugPause() -> Void:
 
 
 @sls_func(ast=False)
-def DebugLog(n: Number | Boolean, /) -> Void:
+def DebugLog(n: Num | Bool, /) -> Void:
     if isinstance(n, (int, float, bool)):
-        n = Number(n)
-    if not isinstance(n, (Number, Boolean)):
+        n = Num(n)
+    if not isinstance(n, (Num, Bool)):
         raise TypeError(f"Expected number or boolean, got {type(n)}.")
     return invoke_builtin("DebugLog", [n])
 

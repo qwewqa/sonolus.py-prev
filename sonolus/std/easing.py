@@ -1,4 +1,4 @@
-from sonolus.engine.statements.primitive import invoke_builtin, Number
+from sonolus.engine.statements.primitive import invoke_builtin, Num
 from sonolus.std.function import sls_func
 
 __all__ = (
@@ -42,180 +42,180 @@ __all__ = (
 
 
 @sls_func(ast=False)
-def EaseInSine(n: Number, /) -> Number:
-    return invoke_builtin("EaseInSine", [n], Number)
+def EaseInSine(n: Num, /) -> Num:
+    return invoke_builtin("EaseInSine", [n], Num)
 
 
 @sls_func(ast=False)
-def EaseInQuad(n: Number, /) -> Number:
-    return invoke_builtin("EaseInQuad", [n], Number)
+def EaseInQuad(n: Num, /) -> Num:
+    return invoke_builtin("EaseInQuad", [n], Num)
 
 
 @sls_func(ast=False)
-def EaseInCubic(n: Number, /) -> Number:
-    return invoke_builtin("EaseInCubic", [n], Number)
+def EaseInCubic(n: Num, /) -> Num:
+    return invoke_builtin("EaseInCubic", [n], Num)
 
 
 @sls_func(ast=False)
-def EaseInQuart(n: Number, /) -> Number:
-    return invoke_builtin("EaseInQuart", [n], Number)
+def EaseInQuart(n: Num, /) -> Num:
+    return invoke_builtin("EaseInQuart", [n], Num)
 
 
 @sls_func(ast=False)
-def EaseInQuint(n: Number, /) -> Number:
-    return invoke_builtin("EaseInQuint", [n], Number)
+def EaseInQuint(n: Num, /) -> Num:
+    return invoke_builtin("EaseInQuint", [n], Num)
 
 
 @sls_func(ast=False)
-def EaseInExpo(n: Number, /) -> Number:
-    return invoke_builtin("EaseInExpo", [n], Number)
+def EaseInExpo(n: Num, /) -> Num:
+    return invoke_builtin("EaseInExpo", [n], Num)
 
 
 @sls_func(ast=False)
-def EaseInCirc(n: Number, /) -> Number:
-    return invoke_builtin("EaseInCirc", [n], Number)
+def EaseInCirc(n: Num, /) -> Num:
+    return invoke_builtin("EaseInCirc", [n], Num)
 
 
 @sls_func(ast=False)
-def EaseInBack(n: Number, /) -> Number:
-    return invoke_builtin("EaseInBack", [n], Number)
+def EaseInBack(n: Num, /) -> Num:
+    return invoke_builtin("EaseInBack", [n], Num)
 
 
 @sls_func(ast=False)
-def EaseInElastic(n: Number, /) -> Number:
-    return invoke_builtin("EaseInElastic", [n], Number)
+def EaseInElastic(n: Num, /) -> Num:
+    return invoke_builtin("EaseInElastic", [n], Num)
 
 
 @sls_func(ast=False)
-def EaseOutSine(n: Number, /) -> Number:
-    return invoke_builtin("EaseOutSine", [n], Number)
+def EaseOutSine(n: Num, /) -> Num:
+    return invoke_builtin("EaseOutSine", [n], Num)
 
 
 @sls_func(ast=False)
-def EaseOutQuad(n: Number, /) -> Number:
-    return invoke_builtin("EaseOutQuad", [n], Number)
+def EaseOutQuad(n: Num, /) -> Num:
+    return invoke_builtin("EaseOutQuad", [n], Num)
 
 
 @sls_func(ast=False)
-def EaseOutCubic(n: Number, /) -> Number:
-    return invoke_builtin("EaseOutCubic", [n], Number)
+def EaseOutCubic(n: Num, /) -> Num:
+    return invoke_builtin("EaseOutCubic", [n], Num)
 
 
 @sls_func(ast=False)
-def EaseOutQuart(n: Number, /) -> Number:
-    return invoke_builtin("EaseOutQuart", [n], Number)
+def EaseOutQuart(n: Num, /) -> Num:
+    return invoke_builtin("EaseOutQuart", [n], Num)
 
 
 @sls_func(ast=False)
-def EaseOutQuint(n: Number, /) -> Number:
-    return invoke_builtin("EaseOutQuint", [n], Number)
+def EaseOutQuint(n: Num, /) -> Num:
+    return invoke_builtin("EaseOutQuint", [n], Num)
 
 
 @sls_func(ast=False)
-def EaseOutExpo(n: Number, /) -> Number:
-    return invoke_builtin("EaseOutExpo", [n], Number)
+def EaseOutExpo(n: Num, /) -> Num:
+    return invoke_builtin("EaseOutExpo", [n], Num)
 
 
 @sls_func(ast=False)
-def EaseOutCirc(n: Number, /) -> Number:
-    return invoke_builtin("EaseOutCirc", [n], Number)
+def EaseOutCirc(n: Num, /) -> Num:
+    return invoke_builtin("EaseOutCirc", [n], Num)
 
 
 @sls_func(ast=False)
-def EaseOutBack(n: Number, /) -> Number:
-    return invoke_builtin("EaseOutBack", [n], Number)
+def EaseOutBack(n: Num, /) -> Num:
+    return invoke_builtin("EaseOutBack", [n], Num)
 
 
 @sls_func(ast=False)
-def EaseOutElastic(n: Number, /) -> Number:
-    return invoke_builtin("EaseOutElastic", [n], Number)
+def EaseOutElastic(n: Num, /) -> Num:
+    return invoke_builtin("EaseOutElastic", [n], Num)
 
 
 @sls_func(ast=False)
-def EaseInOutSine(n: Number, /) -> Number:
-    return invoke_builtin("EaseInOutSine", [n], Number)
+def EaseInOutSine(n: Num, /) -> Num:
+    return invoke_builtin("EaseInOutSine", [n], Num)
 
 
 @sls_func(ast=False)
-def EaseInOutQuad(n: Number, /) -> Number:
-    return invoke_builtin("EaseInOutQuad", [n], Number)
+def EaseInOutQuad(n: Num, /) -> Num:
+    return invoke_builtin("EaseInOutQuad", [n], Num)
 
 
 @sls_func(ast=False)
-def EaseInOutCubic(n: Number, /) -> Number:
-    return invoke_builtin("EaseInOutCubic", [n], Number)
+def EaseInOutCubic(n: Num, /) -> Num:
+    return invoke_builtin("EaseInOutCubic", [n], Num)
 
 
 @sls_func(ast=False)
-def EaseInOutQuart(n: Number, /) -> Number:
-    return invoke_builtin("EaseInOutQuart", [n], Number)
+def EaseInOutQuart(n: Num, /) -> Num:
+    return invoke_builtin("EaseInOutQuart", [n], Num)
 
 
 @sls_func(ast=False)
-def EaseInOutQuint(n: Number, /) -> Number:
-    return invoke_builtin("EaseInOutQuint", [n], Number)
+def EaseInOutQuint(n: Num, /) -> Num:
+    return invoke_builtin("EaseInOutQuint", [n], Num)
 
 
 @sls_func(ast=False)
-def EaseInOutExpo(n: Number, /) -> Number:
-    return invoke_builtin("EaseInOutExpo", [n], Number)
+def EaseInOutExpo(n: Num, /) -> Num:
+    return invoke_builtin("EaseInOutExpo", [n], Num)
 
 
 @sls_func(ast=False)
-def EaseInOutCirc(n: Number, /) -> Number:
-    return invoke_builtin("EaseInOutCirc", [n], Number)
+def EaseInOutCirc(n: Num, /) -> Num:
+    return invoke_builtin("EaseInOutCirc", [n], Num)
 
 
 @sls_func(ast=False)
-def EaseInOutBack(n: Number, /) -> Number:
-    return invoke_builtin("EaseInOutBack", [n], Number)
+def EaseInOutBack(n: Num, /) -> Num:
+    return invoke_builtin("EaseInOutBack", [n], Num)
 
 
 @sls_func(ast=False)
-def EaseInOutElastic(n: Number, /) -> Number:
-    return invoke_builtin("EaseInOutElastic", [n], Number)
+def EaseInOutElastic(n: Num, /) -> Num:
+    return invoke_builtin("EaseInOutElastic", [n], Num)
 
 
 @sls_func(ast=False)
-def EaseOutInSine(n: Number, /) -> Number:
-    return invoke_builtin("EaseOutInSine", [n], Number)
+def EaseOutInSine(n: Num, /) -> Num:
+    return invoke_builtin("EaseOutInSine", [n], Num)
 
 
 @sls_func(ast=False)
-def EaseOutInQuad(n: Number, /) -> Number:
-    return invoke_builtin("EaseOutInQuad", [n], Number)
+def EaseOutInQuad(n: Num, /) -> Num:
+    return invoke_builtin("EaseOutInQuad", [n], Num)
 
 
 @sls_func(ast=False)
-def EaseOutInCubic(n: Number, /) -> Number:
-    return invoke_builtin("EaseOutInCubic", [n], Number)
+def EaseOutInCubic(n: Num, /) -> Num:
+    return invoke_builtin("EaseOutInCubic", [n], Num)
 
 
 @sls_func(ast=False)
-def EaseOutInQuart(n: Number, /) -> Number:
-    return invoke_builtin("EaseOutInQuart", [n], Number)
+def EaseOutInQuart(n: Num, /) -> Num:
+    return invoke_builtin("EaseOutInQuart", [n], Num)
 
 
 @sls_func(ast=False)
-def EaseOutInQuint(n: Number, /) -> Number:
-    return invoke_builtin("EaseOutInQuint", [n], Number)
+def EaseOutInQuint(n: Num, /) -> Num:
+    return invoke_builtin("EaseOutInQuint", [n], Num)
 
 
 @sls_func(ast=False)
-def EaseOutInExpo(n: Number, /) -> Number:
-    return invoke_builtin("EaseOutInExpo", [n], Number)
+def EaseOutInExpo(n: Num, /) -> Num:
+    return invoke_builtin("EaseOutInExpo", [n], Num)
 
 
 @sls_func(ast=False)
-def EaseOutInCirc(n: Number, /) -> Number:
-    return invoke_builtin("EaseOutInCirc", [n], Number)
+def EaseOutInCirc(n: Num, /) -> Num:
+    return invoke_builtin("EaseOutInCirc", [n], Num)
 
 
 @sls_func(ast=False)
-def EaseOutInBack(n: Number, /) -> Number:
-    return invoke_builtin("EaseOutInBack", [n], Number)
+def EaseOutInBack(n: Num, /) -> Num:
+    return invoke_builtin("EaseOutInBack", [n], Num)
 
 
 @sls_func(ast=False)
-def EaseOutInElastic(n: Number, /) -> Number:
-    return invoke_builtin("EaseOutInElastic", [n], Number)
+def EaseOutInElastic(n: Num, /) -> Num:
+    return invoke_builtin("EaseOutInElastic", [n], Num)

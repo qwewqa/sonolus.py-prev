@@ -7,7 +7,6 @@ from typing import Type, ClassVar
 from sonolus.backend.ir import Location, IRNode
 from sonolus.engine.statements.control_flow import ExecuteVoid
 from sonolus.engine.statements.dataclass_transform import __dataclass_transform__
-from sonolus.engine.statements.primitive import Number
 from sonolus.engine.statements.value import Value, convert_value
 from sonolus.engine.statements.void import Void
 

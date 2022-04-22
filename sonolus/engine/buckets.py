@@ -5,7 +5,7 @@ from typing import Protocol
 
 from sonolus.backend.ir import Location, MemoryBlock, IRConst
 from sonolus.engine.functions.sls_func import sls_func
-from sonolus.engine.statements.primitive import Number
+from sonolus.engine.statements.primitive import Num
 from sonolus.engine.statements.struct import Struct
 
 
@@ -25,12 +25,12 @@ class BucketSprite:
 
 
 class BucketStruct(Struct):
-    min_perfect: Number
-    max_perfect: Number
-    min_great: Number
-    max_great: Number
-    min_good: Number
-    max_good: Number
+    min_perfect: Num
+    max_perfect: Num
+    min_great: Num
+    max_great: Num
+    min_good: Num
+    max_good: Num
 
     @classmethod
     @sls_func

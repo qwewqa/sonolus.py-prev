@@ -12,7 +12,7 @@ T = TypeVar("T", bound=Callable)
 def process_ast_function(fn):
     import sonolus.engine.statements.control_flow as cf
     from sonolus.engine.statements.control_flow import Execute, ExecuteVoid
-    from sonolus.engine.statements.primitive import Boolean, Number
+    from sonolus.engine.statements.primitive import Bool, Num
     from sonolus.engine.statements.void import Void
     from sonolus.engine.statements.iterator import Iter
 
@@ -23,7 +23,7 @@ def process_ast_function(fn):
     try:
         signature = inspect.signature(fn)
         ret_param_name = "_ret" if "_ret" in signature.parameters else None
-        transformed = _SimpleTransformer(ret_param_name).visit(tree)
+        transformed = _AstFunctionTransformer(ret_param_name).visit(tree)
     except ValueError as e:
         # Shorten the traceback.
         raise ValueError(*e.args)
@@ -42,8 +42,8 @@ def process_ast_function(fn):
 
     gbl.update(
         {
-            "_Boolean_": Boolean,
-            "_Number_": Number,
+            "_Boolean_": Bool,
+            "_Number_": Num,
             "_Execute_": Execute,
             "_ExecuteVoid_": ExecuteVoid,
             "_Void_": Void,
@@ -54,9 +54,9 @@ def process_ast_function(fn):
             "_While_": cf.While,
             "_For_": cf.For,
             "_Iter_": Iter,
-            "_And_": Boolean.and_,
-            "_Or_": Boolean.or_,
-            "_Not_": Boolean.not_,
+            "_And_": Bool.and_,
+            "_Or_": Bool.or_,
+            "_Not_": Bool.not_,
             "_In_": lambda a, b: Execute(a, b, b.__contains__(a)),
         }
     )
@@ -68,7 +68,7 @@ def process_ast_function(fn):
     return generated_fn
 
 
-class _SimpleTransformer(NodeTransformer):
+class _AstFunctionTransformer(NodeTransformer):
     def __init__(self, ret_param_name):
         self.inside_function = False
         self.final_return = False

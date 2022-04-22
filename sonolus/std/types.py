@@ -1,11 +1,11 @@
 from __future__ import annotations
 
-from typing import TypeVar, overload, Type, Any, Callable
+from typing import TypeVar, overload, Type, Any, Callable, ParamSpec
 
 from sonolus.engine.statements.array import Array
 from sonolus.engine.statements.generic_struct import GenericStruct, generic_function
 from sonolus.engine.statements.pointer import Pointer
-from sonolus.engine.statements.primitive import Boolean, Number
+from sonolus.engine.statements.primitive import Bool, Num
 from sonolus.engine.statements.struct import Struct, Empty
 from sonolus.engine.statements.tuple import SlsTuple
 from sonolus.engine.statements.value import Value, convert_value
@@ -27,20 +27,26 @@ __all__ = (
 )
 
 T = TypeVar("T", bound=Value)
+P = ParamSpec("P")
 
 
 @overload
-def new() -> Any | _NewValue:
+def new() -> Any:
     pass
 
 
 @overload
-def new(value: float, /) -> Number:
+def new(type_: Callable[P, T], /, *args: P.args, **kwargs: P.kwargs) -> T:
     pass
 
 
 @overload
-def new(value: bool, /) -> Boolean:
+def new(value: float, /) -> Num:
+    pass
+
+
+@overload
+def new(value: bool, /) -> Bool:
     pass
 
 
@@ -55,12 +61,12 @@ def new(value: Type[T], /) -> T:
 
 
 @overload
-def new(value: list[float], /) -> Array[Number]:
+def new(value: list[float], /) -> Array[Num]:
     pass
 
 
 @overload
-def new(value: list[bool], /) -> Array[Boolean]:
+def new(value: list[bool], /) -> Array[Bool]:
     pass
 
 
@@ -80,9 +86,9 @@ def new(value=None, /):
         case Value():
             return value.copy()
         case bool() as boolean:
-            return Boolean.new(boolean)
+            return Bool.new(boolean)
         case int() | float() as number:
-            return Number.new(number)
+            return Num.new(number)
         case _:
             raise TypeError(f"Cannot create new value from {value}.")
 
@@ -99,9 +105,6 @@ class _NewValue:
     def __init__(self, *args, **kwargs):
         self.args = args
         self.kwargs = kwargs
-
-    def __call__(self, *args, **kwargs):
-        return type(self)(*(self.args + args), **(self.kwargs | kwargs))
 
     def _convert_to_(self, type_):
         return type_.new(*self.args, **self.kwargs)

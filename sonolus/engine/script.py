@@ -18,7 +18,7 @@ from sonolus.backend.ir import (
     IRValueType,
 )
 from sonolus.engine.statements.control_flow import ExecuteVoid
-from sonolus.engine.statements.primitive import Number
+from sonolus.engine.statements.primitive import Num
 from sonolus.engine.statements.statement import Statement
 from sonolus.engine.statements.struct import Empty, Struct
 from sonolus.engine.statements.value import Value, convert_value
@@ -123,9 +123,9 @@ class Script(Statement):
         return Void(node)._set_parent_(data)
 
     @classmethod
-    def at(cls: Type[TScript], index: Number) -> TScript:
+    def at(cls: Type[TScript], index: Num) -> TScript:
         meta = cls._metadata_
-        index: Number = convert_value(index, Number)
+        index: Num = convert_value(index, Num)
         offset = index * SHARED_MEMORY_SIZE
         ir_offset = offset.ir()
         info_offset = index * ENTITY_INFO_SIZE
@@ -201,9 +201,9 @@ class ScriptMetadata:
 
 
 class EntityInfo(Struct):
-    index: Number
-    archetype: Number
-    state: Number
+    index: Num
+    archetype: Num
+    state: Num
 
     @property
     @sls_func(ast=False)
@@ -228,14 +228,14 @@ class EntityState(int, Enum):
 
 
 class EntityInput(Struct):
-    judgement: Number
-    accuracy: Number
-    bucket: Number
-    bucket_value: Number
+    judgement: Num
+    accuracy: Num
+    bucket: Num
+    bucket_value: Num
 
 
 class ScriptLifeStruct(Struct):
-    perfect_life_increment: Number
-    great_life_increment: Number
-    good_life_increment: Number
-    miss_life_increment: Number
+    perfect_life_increment: Num
+    great_life_increment: Num
+    good_life_increment: Num
+    miss_life_increment: Num

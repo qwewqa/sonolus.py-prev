@@ -4,7 +4,7 @@ from enum import Enum
 from typing import Literal, TYPE_CHECKING, TypeVar, ClassVar
 
 from sonolus.backend.ir import MemoryBlock, Location, IRConst
-from sonolus.engine.statements.primitive import Number, Boolean
+from sonolus.engine.statements.primitive import Num, Bool
 
 
 class OptionName(str, Enum):
@@ -90,7 +90,7 @@ class OptionType:
         max: float,
         step: float,
         display: Literal["number", "percentage"],
-    ) -> Number:
+    ) -> Num:
         return SliderOption(
             name=name,  # type: ignore
             standard=standard,
@@ -109,7 +109,7 @@ class OptionType:
         standard: bool,
         scope: str | None = None,
         default: float,
-    ) -> Boolean:
+    ) -> Bool:
         return ToggleOption(
             name=name, standard=standard, scope=scope, default=default  # type: ignore
         )
@@ -130,14 +130,14 @@ class SliderOption(Option):
     step: float
     display: Literal["number", "percentage"]
 
-    _data_type_ = Number
+    _data_type_ = Num
 
 
 @dataclass(kw_only=True)
 class ToggleOption(Option):
     default: bool
 
-    _data_type_ = Boolean
+    _data_type_ = Bool
 
 
 TOptionConfig = TypeVar("TOptionConfig", bound="OptionConfig")

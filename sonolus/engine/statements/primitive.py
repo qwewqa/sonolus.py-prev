@@ -63,7 +63,7 @@ class Primitive(Value):
         other = convert_value(other, type(self))
         truthiness = self is other
         result = (
-            Boolean._create_(IRFunc("Equal", [self.ir(), other.ir()]))
+            Bool._create_(IRFunc("Equal", [self.ir(), other.ir()]))
             ._set_parent_(Execute(self, other))
             .copy()
         )
@@ -74,7 +74,7 @@ class Primitive(Value):
         other = convert_value(other, type(self))
         truthiness = self is not other
         result = (
-            Boolean._create_(IRFunc("NotEqual", [self.ir(), other.ir()]))
+            Bool._create_(IRFunc("NotEqual", [self.ir(), other.ir()]))
             ._set_parent_(Execute(self, other))
             .copy()
         )
@@ -119,7 +119,7 @@ class Primitive(Value):
             )
 
 
-class Boolean(Primitive):
+class Bool(Primitive):
     _is_concrete_ = True
 
     def __init__(self, value=False, /, *, override_truthiness: Optional[bool] = None):
@@ -148,19 +148,19 @@ class Boolean(Primitive):
         return True if self.override_truthiness is None else self.override_truthiness
 
     def and_(self, other):
-        lhs = convert_value(self, Boolean)
-        rhs = convert_value(other, Boolean)
+        lhs = convert_value(self, Bool)
+        rhs = convert_value(other, Bool)
         result = Execute(
-            result := Boolean.new(), If(lhs, result << rhs, result << False), result
+            result := Bool.new(), If(lhs, result << rhs, result << False), result
         )
         result.override_float_value = bool(lhs.constant() and rhs.constant())
         return result
 
     def or_(self, other):
-        lhs = convert_value(self, Boolean)
-        rhs = convert_value(other, Boolean)
+        lhs = convert_value(self, Bool)
+        rhs = convert_value(other, Bool)
         result = Execute(
-            result := Boolean.new(), If(lhs, result << True, result << rhs), result
+            result := Bool.new(), If(lhs, result << True, result << rhs), result
         )
         result.override_float_value = bool(lhs.constant() or rhs.constant())
         return result
@@ -174,24 +174,24 @@ class Boolean(Primitive):
 
     @sls_func(ast=False)
     def __and__(self, other):
-        return invoke_builtin("And", [self, other], Boolean)
+        return invoke_builtin("And", [self, other], Bool)
 
     @sls_func(ast=False)
     def __rand__(self, other):
-        return invoke_builtin("And", [other, self], Boolean)
+        return invoke_builtin("And", [other, self], Bool)
 
     @sls_func(ast=False)
     def __or__(self, other):
-        return invoke_builtin("Or", [self, other], Boolean)
+        return invoke_builtin("Or", [self, other], Bool)
 
     @sls_func(ast=False)
     def __ror__(self, other):
-        return invoke_builtin("Or", [other, self], Boolean)
+        return invoke_builtin("Or", [other, self], Bool)
 
     @sls_func(ast=False)
-    def __invert__(self) -> Boolean:
+    def __invert__(self) -> Bool:
         # Note: differs from typical Python behavior (which treats bools as numbers)
-        result = invoke_builtin("Not", [self], Boolean)
+        result = invoke_builtin("Not", [self], Bool)
         result.override_float_value = (
             not self.override_truthiness
             if self.override_truthiness is not None
@@ -200,7 +200,7 @@ class Boolean(Primitive):
         return result
 
 
-class Number(Primitive):
+class Num(Primitive):
     """
     A floating-point number.
     NaN and infinities may be represented, but behavior is undefined
@@ -250,111 +250,111 @@ class Number(Primitive):
         return int(value)
 
     @sls_func(ast=False)
-    def __add__(self: Number, other: Number):
-        return invoke_builtin("Add", [self, other], Number)
+    def __add__(self: Num, other: Num):
+        return invoke_builtin("Add", [self, other], Num)
 
     @sls_func(ast=False)
-    def __radd__(self: Number, other: Number):
-        return invoke_builtin("Add", [other, self], Number)
+    def __radd__(self: Num, other: Num):
+        return invoke_builtin("Add", [other, self], Num)
 
     @sls_func(ast=False)
-    def __sub__(self: Number, other: Number):
-        return invoke_builtin("Subtract", [self, other], Number)
+    def __sub__(self: Num, other: Num):
+        return invoke_builtin("Subtract", [self, other], Num)
 
     @sls_func(ast=False)
-    def __rsub__(self: Number, other: Number):
-        return invoke_builtin("Subtract", [other, self], Number)
+    def __rsub__(self: Num, other: Num):
+        return invoke_builtin("Subtract", [other, self], Num)
 
     @sls_func(ast=False)
-    def __mul__(self: Number, other: Number):
-        return invoke_builtin("Multiply", [self, other], Number)
+    def __mul__(self: Num, other: Num):
+        return invoke_builtin("Multiply", [self, other], Num)
 
     @sls_func(ast=False)
-    def __rmul__(self: Number, other: Number):
-        return invoke_builtin("Multiply", [other, self], Number)
+    def __rmul__(self: Num, other: Num):
+        return invoke_builtin("Multiply", [other, self], Num)
 
     @sls_func(ast=False)
-    def __truediv__(self: Number, other: Number):
-        return invoke_builtin("Divide", [self, other], Number)
+    def __truediv__(self: Num, other: Num):
+        return invoke_builtin("Divide", [self, other], Num)
 
     @sls_func(ast=False)
-    def __rtruediv__(self: Number, other: Number):
-        return invoke_builtin("Divide", [other, self], Number)
+    def __rtruediv__(self: Num, other: Num):
+        return invoke_builtin("Divide", [other, self], Num)
 
     @sls_func(ast=False)
-    def __floordiv__(self: Number, other: Number):
-        return invoke_builtin("Floor", [self / other], Number)
+    def __floordiv__(self: Num, other: Num):
+        return invoke_builtin("Floor", [self / other], Num)
 
     @sls_func(ast=False)
-    def __rfloordiv__(self: Number, other: Number):
-        return invoke_builtin("Floor", [other / self], Number)
+    def __rfloordiv__(self: Num, other: Num):
+        return invoke_builtin("Floor", [other / self], Num)
 
     @sls_func(ast=False)
-    def __mod__(self: Number, other: Number):
-        return invoke_builtin("Mod", [self, other], Number)
+    def __mod__(self: Num, other: Num):
+        return invoke_builtin("Mod", [self, other], Num)
 
     @sls_func(ast=False)
-    def __rmod__(self: Number, other: Number):
-        return invoke_builtin("Mod", [other, self], Number)
+    def __rmod__(self: Num, other: Num):
+        return invoke_builtin("Mod", [other, self], Num)
 
     @sls_func(ast=False)
-    def __pow__(self: Number, other: Number):
-        return invoke_builtin("Power", [self, other], Number)
+    def __pow__(self: Num, other: Num):
+        return invoke_builtin("Power", [self, other], Num)
 
     @sls_func(ast=False)
-    def __rpow__(self: Number, other: Number):
-        return invoke_builtin("Power", [other, self], Number)
+    def __rpow__(self: Num, other: Num):
+        return invoke_builtin("Power", [other, self], Num)
 
     @sls_func(ast=False)
-    def __gt__(self: Number, other: Number) -> Boolean:
-        return invoke_builtin("Greater", [self, other], Boolean)
+    def __gt__(self: Num, other: Num) -> Bool:
+        return invoke_builtin("Greater", [self, other], Bool)
 
     @sls_func(ast=False)
-    def __ge__(self: Number, other: Number) -> Boolean:
-        return invoke_builtin("GreaterOr", [self, other], Boolean)
+    def __ge__(self: Num, other: Num) -> Bool:
+        return invoke_builtin("GreaterOr", [self, other], Bool)
 
     @sls_func(ast=False)
-    def __lt__(self: Number, other: Number) -> Boolean:
-        return invoke_builtin("Less", [self, other], Boolean)
+    def __lt__(self: Num, other: Num) -> Bool:
+        return invoke_builtin("Less", [self, other], Bool)
 
     @sls_func(ast=False)
-    def __le__(self: Number, other: Number) -> Boolean:
-        return invoke_builtin("LessOr", [self, other], Boolean)
+    def __le__(self: Num, other: Num) -> Bool:
+        return invoke_builtin("LessOr", [self, other], Bool)
 
     @sls_func(ast=False)
     def __neg__(self):
         return 0 - self
 
     @sls_func(ast=False)
-    def __iadd__(self: Number, other: Number):
+    def __iadd__(self: Num, other: Num):
         return self << self + other
 
     @sls_func(ast=False)
-    def __isub__(self: Number, other: Number):
+    def __isub__(self: Num, other: Num):
         return self << self - other
 
     @sls_func(ast=False)
-    def __imul__(self: Number, other: Number):
+    def __imul__(self: Num, other: Num):
         return self << self * other
 
     @sls_func(ast=False)
-    def __itruediv__(self: Number, other: Number):
+    def __itruediv__(self: Num, other: Num):
         return self << self / other
 
     @sls_func(ast=False)
-    def __ifloordiv__(self: Number, other: Number):
+    def __ifloordiv__(self: Num, other: Num):
         return self << self // other
 
     @sls_func(ast=False)
-    def __imod__(self: Number, other: Number):
+    def __imod__(self: Num, other: Num):
         return self << self % other
 
     @sls_func(ast=False)
-    def __ipow__(self: Number, other: Number):
+    def __ipow__(self: Num, other: Num):
         return self << self**other
 
     @sls_func(ast=False)
-    def to_boolean(self) -> Boolean:
+    def to_boolean(self) -> Bool:
         return self != 0
 
 
@@ -371,5 +371,5 @@ def invoke_builtin(
 
 
 if TYPE_CHECKING:
-    Number = Number | float
-    Boolean = Boolean | bool
+    Num = Num | float
+    Bool = Bool | bool

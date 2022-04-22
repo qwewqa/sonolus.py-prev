@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from enum import Enum
 
-from sonolus.engine.statements.primitive import invoke_builtin, Number, Boolean
+from sonolus.engine.statements.primitive import invoke_builtin, Num, Bool
 from .function import sls_func
 from .point import Point
 from .types import Struct, Array, Void
@@ -35,7 +35,7 @@ class Quad(Struct):
     @property
     @sls_func(ast=False)
     def coords(self):
-        return Array[Number, 8](
+        return Array[Num, 8](
             self.bl.x,
             self.bl.y,
             self.tl.x,
@@ -49,7 +49,7 @@ class Quad(Struct):
     @classmethod
     @sls_func
     def centered_rectangle(
-        cls, center: Point, half_width: Number, half_height: Number
+        cls, center: Point, half_width: Num, half_height: Num
     ) -> Quad:
         return cls.rectangle(
             center.x - half_width,
@@ -60,7 +60,7 @@ class Quad(Struct):
 
     @classmethod
     @sls_func
-    def rectangle(cls, left: Number, right: Number, top: Number, bottom: Number):
+    def rectangle(cls, left: Num, right: Num, top: Num, bottom: Num):
         return cls.new(
             bl=Point(left, bottom),
             tl=Point(left, top),
@@ -70,27 +70,27 @@ class Quad(Struct):
 
 
 @sls_func(ast=False)
-def Draw(id: Number, quad: Quad, z: Number, a: Number) -> Void:
+def Draw(id: Num, quad: Quad, z: Num, a: Num) -> Void:
     return invoke_builtin("Draw", [id, *quad.coords, z, a])
 
 
 @sls_func(ast=False)
 def DrawCurvedL(
-    id: Number, quad: Quad, z: Number, a: Number, n: Number, l: Point
+    id: Num, quad: Quad, z: Num, a: Num, n: Num, l: Point
 ) -> Void:
     return invoke_builtin("DrawCurvedL", [id, *quad.coords, z, a, n, l.x, l.y])
 
 
 @sls_func(ast=False)
 def DrawCurvedR(
-    id: Number, quad: Quad, z: Number, a: Number, n: Number, r: Point
+    id: Num, quad: Quad, z: Num, a: Num, n: Num, r: Point
 ) -> Void:
     return invoke_builtin("DrawCurvedR", [id, *quad.coords, z, a, n, r.x, r.y])
 
 
 @sls_func(ast=False)
 def DrawCurvedLR(
-    id: Number, quad: Quad, z: Number, a: Number, n: Number, l: Point, r: Point
+    id: Num, quad: Quad, z: Num, a: Num, n: Num, l: Point, r: Point
 ) -> Void:
     return invoke_builtin(
         "DrawCurvedLR", [id, *quad.coords, z, a, n, l.x, l.y, r.x, r.y]
@@ -99,21 +99,21 @@ def DrawCurvedLR(
 
 @sls_func(ast=False)
 def DrawCurvedB(
-    id: Number, quad: Quad, z: Number, a: Number, n: Number, b: Point
+    id: Num, quad: Quad, z: Num, a: Num, n: Num, b: Point
 ) -> Void:
     return invoke_builtin("DrawCurvedB", [id, *quad.coords, z, a, n, b.x, b.y])
 
 
 @sls_func(ast=False)
 def DrawCurvedT(
-    id: Number, quad: Quad, z: Number, a: Number, n: Number, t: Point
+    id: Num, quad: Quad, z: Num, a: Num, n: Num, t: Point
 ) -> Void:
     return invoke_builtin("DrawCurvedT", [id, *quad.coords, z, a, n, t.x, t.y])
 
 
 @sls_func(ast=False)
 def DrawCurvedBT(
-    id: Number, quad: Quad, z: Number, a: Number, n: Number, b: Point, t: Point
+    id: Num, quad: Quad, z: Num, a: Num, n: Num, b: Point, t: Point
 ) -> Void:
     return invoke_builtin(
         "DrawCurvedBT", [id, *quad.coords, z, a, n, b.x, b.y, t.x, t.y]
@@ -122,29 +122,29 @@ def DrawCurvedBT(
 
 @sls_func(ast=False)
 def SpawnParticleEffect(
-    id: Number, quad: Quad, t: Number, loop: Boolean = False
-) -> Number:
-    return invoke_builtin("SpawnParticleEffect", [id, *quad.coords, t, loop], Number)
+    id: Num, quad: Quad, t: Num, loop: Bool = False
+) -> Num:
+    return invoke_builtin("SpawnParticleEffect", [id, *quad.coords, t, loop], Num)
 
 
 @sls_func(ast=False)
-def MoveParticleEffect(id: Number, quad: Quad) -> Void:
+def MoveParticleEffect(id: Num, quad: Quad) -> Void:
     return invoke_builtin("MoveParticleEffect", [id, *quad.coords])
 
 
 @sls_func(ast=False)
-def DestroyParticleEffect(id: Number) -> Void:
+def DestroyParticleEffect(id: Num) -> Void:
     return invoke_builtin("DestroyParticleEffect", [id])
 
 
 @sls_func(ast=False)
-def HasSkinSprite(id: Number) -> Boolean:
-    return invoke_builtin("HasSkinSprite", [id], Boolean)
+def HasSkinSprite(id: Num) -> Bool:
+    return invoke_builtin("HasSkinSprite", [id], Bool)
 
 
 @sls_func(ast=False)
-def HasParticleEffect(id: Number) -> Boolean:
-    return invoke_builtin("HasParticleEffect", [id], Boolean)
+def HasParticleEffect(id: Num) -> Bool:
+    return invoke_builtin("HasParticleEffect", [id], Bool)
 
 
 class SpriteId(int, Enum):
