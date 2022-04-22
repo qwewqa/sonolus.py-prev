@@ -5,7 +5,7 @@ from typing import Callable, TypeVar, get_type_hints, TYPE_CHECKING, Any
 
 from sonolus.engine.functions.ast_function import process_ast_function
 from sonolus.engine.statements.statement import Statement
-from sonolus.engine.statements.value import Value
+from sonolus.engine.statements.value import Value, convert_value
 
 T = TypeVar("T", bound=Callable)
 
@@ -47,17 +47,6 @@ def _lazy_process(fn, ast):
 
     return wrapped
 
-
-class _New:
-    """
-    When used as a default function argument, causes a new value to be created by calling .new() on the
-    parameter type whenever the default argument is used.
-    """
-
-
-New: Any = _New
-
-
 def _process_function(fn):
     from sonolus.engine.statements.control_flow import Execute
 
@@ -66,7 +55,7 @@ def _process_function(fn):
 
     def get_converter(hint):
         if hasattr(hint, "_convert_"):
-            return hint._convert_
+            return lambda x: convert_value(x, hint)
         return lambda x: x
 
     ret_param = False
@@ -74,13 +63,11 @@ def _process_function(fn):
 
     for param_name, parameter in signature.parameters.items():
         hint = hints.get(param_name)
+        if param_name == "_ret" and hint is None:
+            hint = hints.get("return")
         converters[param_name] = get_converter(hint)
         if param_name == "_ret":
             ret_param = True
-        if parameter.default is New and not Value.is_value_class(hint):
-            raise ValueError(
-                "Parameters with defaults must be annotated with a Value type."
-            )
 
     return_converter = get_converter(hints.get("return"))
 
@@ -88,11 +75,6 @@ def _process_function(fn):
     def wrapped(*args, **kwargs):
         bound = signature.bind_partial(*args, **kwargs)
         bound.apply_defaults()
-        for k, v in bound.arguments.items():
-            if k not in hints:
-                pass
-            if v is New:
-                bound.arguments[k] = hints[k].new()
         bound = signature.bind(*bound.args, **bound.kwargs)
         evaluated_arguments = []
 

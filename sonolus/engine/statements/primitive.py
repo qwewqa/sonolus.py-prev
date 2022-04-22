@@ -122,7 +122,7 @@ class Primitive(Value):
 class Boolean(Primitive):
     _is_concrete_ = True
 
-    def __init__(self, value=False, override_truthiness: Optional[bool] = None):
+    def __init__(self, value=False, /, *, override_truthiness: Optional[bool] = None):
         if not isinstance(value, bool) and value not in (0, 1):
             raise TypeError("Expected a bool.")
         super().__init__(value)
@@ -209,7 +209,7 @@ class Number(Primitive):
 
     _is_concrete_ = True
 
-    def __init__(self, value=0, override_float_value: Optional[float] = None):
+    def __init__(self, value=0, /, *, override_float_value: Optional[float] = None):
         if not isinstance(value, (int, float)):
             raise TypeError("Expected an int or float.")
         super().__init__(value)

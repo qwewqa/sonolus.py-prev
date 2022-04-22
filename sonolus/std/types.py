@@ -1,4 +1,6 @@
-from typing import TypeVar, overload, Type
+from __future__ import annotations
+
+from typing import TypeVar, overload, Type, Any
 
 from sonolus.engine.statements.array import Array
 from sonolus.engine.statements.generic_struct import GenericStruct, generic_function
@@ -24,6 +26,11 @@ __all__ = (
 )
 
 T = TypeVar("T", bound=Value)
+
+
+@overload
+def new() -> Any | _NewValue:
+    pass
 
 
 @overload
@@ -61,8 +68,10 @@ def new(value: list[T], /) -> Array[T]:
     pass
 
 
-def new(value, /):
+def new(value=None, /):
     match value:
+        case None:
+            return _NewValue()
         case list():
             return Array.of(*value)
         case type() if Value.is_value_class(value):
@@ -79,3 +88,15 @@ def new(value, /):
 
 def alloc(type_: Type[T], /) -> T:
     return type_._allocate_()
+
+
+class _NewValue:
+    def __init__(self, *args, **kwargs):
+        self.args = args
+        self.kwargs = kwargs
+
+    def __call__(self, *args, **kwargs):
+        return type(self)(*(self.args + args), **(self.kwargs | kwargs))
+
+    def _convert_to_(self, type_):
+        return type_.new(*self.args, **self.kwargs)

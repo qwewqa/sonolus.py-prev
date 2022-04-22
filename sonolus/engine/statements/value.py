@@ -133,6 +133,8 @@ T = TypeVar("T", bound=Value)
 
 
 def convert_value(value, target_type: Type[T]) -> T:
+    if not Value.is_value_class(target_type):
+        raise TypeError(f"Cannot convert to {target_type}, expected a Value class.")
     result = NotImplemented
     if hasattr(value, "_convert_to_"):
         result = value._convert_to_(target_type)

@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import overload, Callable
 
-from sonolus.engine.functions.sls_func import New, convert_literal
+from sonolus.engine.functions.sls_func import convert_literal
 from sonolus.engine.statements.array import Array
 from sonolus.engine.statements.control_flow import If
 from sonolus.engine.statements.generic_struct import generic_function
@@ -33,7 +33,7 @@ __all__ = (
     "SizeLimitedArray",
 )
 
-from sonolus.std.types import alloc
+from sonolus.std.types import alloc, new
 
 T = TypeVar("T")
 R = TypeVar("R")
@@ -98,7 +98,7 @@ def Count(*args):
 
 
 @sls_func
-def _count_simple(iterable: SlsIterable[T], /, _ret: Number = New) -> Number:
+def _count_simple(iterable: SlsIterable[T], /, _ret: Number = new()) -> Number:
     count = Number.new(0)
     for _ in Iter(iterable):
         count += 1
@@ -107,7 +107,7 @@ def _count_simple(iterable: SlsIterable[T], /, _ret: Number = New) -> Number:
 
 @sls_func
 def _count_cond(
-    f: Callable[[T], Boolean], iterable: SlsIterable[T], /, _ret: Number = New
+    f: Callable[[T], Boolean], iterable: SlsIterable[T], /, _ret: Number = new()
 ) -> Number:
     count = Number.new(0)
     for v in Iter(iterable):
@@ -118,7 +118,7 @@ def _count_cond(
 
 @sls_func
 def Any(
-    f: Callable[[T], Boolean], iterable: SlsIterable[T], /, _ret: Boolean = New
+    f: Callable[[T], Boolean], iterable: SlsIterable[T], /, _ret: Boolean = new()
 ) -> Number:
     for v in Iter(iterable):
         if f(v):
@@ -128,7 +128,7 @@ def Any(
 
 @sls_func
 def All(
-    f: Callable[[T], Boolean], iterable: SlsIterable[T], /, _ret: Boolean = New
+    f: Callable[[T], Boolean], iterable: SlsIterable[T], /, _ret: Boolean = new()
 ) -> Number:
     for v in Iter(iterable):
         if not f(v):
@@ -395,14 +395,14 @@ class Range(Struct, SlsSequence[Number]):
         super().__init__(start, stop, step)
 
     @sls_func
-    def __len__(self, _ret: Number = New):
+    def __len__(self, _ret: Number = new()):
         if self.step > 0:
             return Max((self.stop - self.start - 1) // self.step + 1, 0)
         else:
             return Max((self.start - self.stop - 1) // -self.step + 1, 0)
 
     @sls_func
-    def __contains__(self, item: Number, _ret: Boolean = New) -> Boolean:
+    def __contains__(self, item: Number, _ret: Boolean = new()) -> Boolean:
         if self.step > 0:
             return (
                 self.start <= item < self.stop and (item - self.start) % self.step == 0
@@ -457,14 +457,14 @@ class SizeLimitedArray(SlsSequence[T], GenericStruct, Generic[T], type_vars=Size
 
     @generic_function
     @sls_func
-    def pop(self, _ret: T = New):
+    def pop(self, _ret: T = new()):
         if self.size == 0:
             return
         return self.pop_unsafe()
 
     @generic_function
     @sls_func
-    def pop_unsafe(self, _ret: T = New):
+    def pop_unsafe(self, _ret: T = new()):
         """
         Removes and returns the last element of the array without checking the size.
         May lead to undefined behavior if the current size is 0.
