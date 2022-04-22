@@ -75,8 +75,6 @@ class Struct(Value):
             return tuple(field.__get__(self) for field in self._struct_fields_)
 
     def _assign_(self, value) -> Void:
-        if self._ref_only_:
-            raise TypeError("Cannot assign to a reference only type.")
         value = convert_value(value, type(self))
         return Void.from_statement(
             ExecuteVoid(

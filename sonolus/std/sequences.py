@@ -485,3 +485,7 @@ class SizeLimitedArray(
 
     def __getitem__(self, item) -> T:
         return self.values[item]
+
+
+sequence_iterator = SequenceIterator.for_sequence
+indexed_sequence_iterator = IndexedSequenceIterator.for_sequence

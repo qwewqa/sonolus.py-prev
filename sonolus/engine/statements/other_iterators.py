@@ -20,8 +20,6 @@ class MappingIterator(
 ):
     source: TSrc
 
-    _ref_only_ = True
-
     @classmethod
     def from_iterator(cls, iterator):
         return cls(iterator)
@@ -48,8 +46,6 @@ class FilteringIterator(
     SlsIterator[TSrc], GenericStruct, Generic[TSrc], type_vars=FilteringIteratorTypeVars
 ):
     source: TSrc
-
-    _ref_only_ = True
 
     @classmethod
     @sls_func

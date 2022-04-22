@@ -101,8 +101,6 @@ class SequenceIterator(
     index: Number
     stop: Number
 
-    _ref_only_ = True
-
     @classmethod
     def for_sequence(cls, seq, /):
         if not (hasattr(seq, "__getitem__") and isinstance(seq, SlsSequence)):
@@ -134,8 +132,6 @@ class IndexedSequenceIterator(
     sequence: TSequence
     index: Number
     stop: Number
-
-    _ref_only_ = True
 
     @classmethod
     def for_sequence(cls, seq, /):
@@ -175,8 +171,6 @@ class IndexedIteratorWrapper(
 ):
     iterator: TIterator
     index: Number
-
-    _ref_only_ = True
 
     @sls_func
     def _has_item_(self):
