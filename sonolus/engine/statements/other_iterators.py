@@ -16,7 +16,7 @@ class MappingIteratorTypeVars(NamedTuple):
 
 
 class MappingIterator(
-    SlsIterator[TSrc], GenericStruct, Generic[TSrc], type_vars=MappingIteratorTypeVars
+    SlsIterator[TOut], GenericStruct, Generic[TSrc, TOut], type_vars=MappingIteratorTypeVars
 ):
     source: TSrc
 
