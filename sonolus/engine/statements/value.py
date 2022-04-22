@@ -6,6 +6,8 @@ from sonolus.backend.compiler import CompilationInfo
 from sonolus.backend.ir import IRNode, Location, TempRef, IRConst
 from sonolus.engine.statements.statement import Statement
 
+
+T = TypeVar("T", bound="Value")
 TValue = TypeVar("TValue", bound="Value")
 P = ParamSpec("P")
 
@@ -85,10 +87,23 @@ class Value(Statement):
 
     @classmethod
     def _convert_(cls: Type[TValue], value) -> TValue:
+        """
+        Converts the given value to this type.
+        Returns NotImplemented if the conversion is not supported.
+        """
         if isinstance(value, cls):
             return value
         else:
             return NotImplemented
+
+    def _convert_to_(self, type_: Type[T]) -> T:
+        """
+        Converts this value to the given type.
+        Returns NotImplemented if the conversion is not supported.
+
+        This method may still be recognized for non Value subtypes.
+        """
+        return NotImplemented
 
     @classmethod
     @overload
@@ -127,9 +142,6 @@ class Value(Statement):
         This is an alternative to @= in places where an expression is required.
         """
         return self._assign_(other)
-
-
-T = TypeVar("T", bound=Value)
 
 
 def convert_value(value, target_type: Type[T]) -> T:

@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TypeVar, overload, Type, Any
+from typing import TypeVar, overload, Type, Any, Callable
 
 from sonolus.engine.statements.array import Array
 from sonolus.engine.statements.generic_struct import GenericStruct, generic_function
@@ -8,7 +8,7 @@ from sonolus.engine.statements.pointer import Pointer
 from sonolus.engine.statements.primitive import Boolean, Number
 from sonolus.engine.statements.struct import Struct, Empty
 from sonolus.engine.statements.tuple import SlsTuple
-from sonolus.engine.statements.value import Value
+from sonolus.engine.statements.value import Value, convert_value
 from sonolus.engine.statements.void import Void
 
 __all__ = (
@@ -23,6 +23,7 @@ __all__ = (
     "generic_function",
     "new",
     "alloc",
+    "default_factory",
 )
 
 T = TypeVar("T", bound=Value)
@@ -90,6 +91,10 @@ def alloc(type_: Type[T], /) -> T:
     return type_._allocate_()
 
 
+def default_factory(factory: Callable[[], Any]) -> Any:
+    return _DefaultFactory(factory)
+
+
 class _NewValue:
     def __init__(self, *args, **kwargs):
         self.args = args
@@ -100,3 +105,11 @@ class _NewValue:
 
     def _convert_to_(self, type_):
         return type_.new(*self.args, **self.kwargs)
+
+
+class _DefaultFactory:
+    def __init__(self, factory):
+        self.factory = factory
+
+    def _convert_to_(self, type_):
+        return convert_value(self.factory(), type_)

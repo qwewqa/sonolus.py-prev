@@ -431,7 +431,9 @@ class SizeLimitedArrayTypeVars(NamedTuple):
     max_size: int
 
 
-class SizeLimitedArray(SlsSequence[T], GenericStruct, Generic[T], type_vars=SizeLimitedArrayTypeVars):
+class SizeLimitedArray(
+    SlsSequence[T], GenericStruct, Generic[T], type_vars=SizeLimitedArrayTypeVars
+):
     size: Number
     # noinspection PyUnresolvedReferences
     values: Array[T, max_size]

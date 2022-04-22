@@ -83,6 +83,7 @@ class SlsSequence(SlsEnumerable[T], Protocol[T]):
             case _:
                 return NotImplemented
 
+
 TSequence = TypeVar("TSequence")
 
 

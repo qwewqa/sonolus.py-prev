@@ -47,6 +47,7 @@ def _lazy_process(fn, ast):
 
     return wrapped
 
+
 def _process_function(fn):
     from sonolus.engine.statements.control_flow import Execute
 
