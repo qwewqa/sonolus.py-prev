@@ -11,7 +11,7 @@ from typing import (
 )
 
 from sonolus.backend.ir import Location, TempRef
-from sonolus.engine.functions.sls_func import convert_value
+from sonolus.engine.functions.sls_func import convert_literal
 from sonolus.engine.statements.control_flow import ExecuteVoid
 from sonolus.engine.statements.iterator import (
     SequenceIterator,
@@ -20,7 +20,7 @@ from sonolus.engine.statements.iterator import (
 )
 from sonolus.engine.statements.primitive import Number, Boolean
 from sonolus.engine.statements.tuple import SlsTuple
-from sonolus.engine.statements.value import Value
+from sonolus.engine.statements.value import Value, convert_value
 from sonolus.engine.statements.void import Void
 
 T = TypeVar("T")
@@ -75,7 +75,7 @@ class Array(Value, Generic[T, U]):
         """
         Returns an allocated Array with automatically determined type and size.
         """
-        elements = [convert_value(arg) for arg in args]
+        elements = [convert_literal(arg) for arg in args]
         types = {type(element) for element in elements}
         if len(types) != 1:
             raise TypeError("Array elements must be of the same type.")
@@ -139,7 +139,7 @@ def _create_typed_array_class(type_: Type[Value]):
                                 f"Expected {self.size} values, instead got {len(values)}."
                             )
                         self._value_ = tuple(
-                            self.contained_type._convert_(v) for v in values
+                            convert_value(v, self.contained_type) for v in values
                         )
                         self._parent_statement_ = ExecuteVoid(*self._value_)
 
@@ -149,7 +149,7 @@ def _create_typed_array_class(type_: Type[Value]):
                         # Subscripting a zero length allocated array is well-defined
                         # and may be used for purposes such as implementing variable-length arrays.
                         # Subscripting a zero length temporary array is undefined.
-                        idx = Number._convert_(idx)
+                        idx = convert_value(idx, Number)
                         match self._value_:
                             case Location() as loc:
                                 new_offset = Number._create_(
@@ -211,7 +211,7 @@ def _create_typed_array_class(type_: Type[Value]):
                         return self.size
 
                     def _assign_(self, value) -> Void:
-                        value = self._convert_(value)
+                        value = convert_value(value, type(self))
                         return Void()._set_parent_(
                             ExecuteVoid(
                                 self,
@@ -249,9 +249,7 @@ def _create_typed_array_class(type_: Type[Value]):
                             case s if isinstance(s, Sequence):
                                 return cls(*s)
                             case _:
-                                raise TypeError(
-                                    f"Conversion from {type(value)} to {cls} not supported."
-                                )
+                                return NotImplemented
 
                 SizedArray.__name__ = f"Array_{type_.__name__}_{size}"
                 SizedArray.__qualname__ = SizedArray.__name__

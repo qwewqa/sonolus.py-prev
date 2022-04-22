@@ -16,7 +16,7 @@ from sonolus.backend.ir import (
 from sonolus.engine.functions.sls_func import sls_func
 from sonolus.backend.compiler import CompilationInfo
 from sonolus.engine.statements.control_flow import Execute, If
-from sonolus.engine.statements.value import Value
+from sonolus.engine.statements.value import Value, convert_value
 from sonolus.engine.statements.void import Void
 
 
@@ -28,7 +28,7 @@ class Primitive(Value):
         self._check_readable()
 
     def _assign_(self, value: Primitive) -> Void:
-        value = self._convert_(value)
+        value = convert_value(value, type(self))
         match self._value_:
             case Location() as loc:
                 self._check_writable()
@@ -60,7 +60,7 @@ class Primitive(Value):
                 raise TypeError("Unexpected value.")
 
     def __eq__(self, other):
-        other = self._convert_(other)
+        other = convert_value(other, type(self))
         truthiness = self is other
         result = (
             Boolean._create_(IRFunc("Equal", [self.ir(), other.ir()]))
@@ -71,7 +71,7 @@ class Primitive(Value):
         return result
 
     def __ne__(self, other):
-        other = self._convert_(other)
+        other = convert_value(other, type(self))
         truthiness = self is not other
         result = (
             Boolean._create_(IRFunc("NotEqual", [self.ir(), other.ir()]))
@@ -118,14 +118,6 @@ class Primitive(Value):
                 f"Potential invalid write to block {self._value_.ref} in callback {callback_type.name}."
             )
 
-    @classmethod
-    def _convert_(cls, value):
-        match value:
-            case cls():
-                return value
-            case _:
-                return cls(value)
-
 
 class Boolean(Primitive):
     _is_concrete_ = True
@@ -142,12 +134,22 @@ class Boolean(Primitive):
         result.override_truthiness = None
         return result
 
+    @classmethod
+    def _convert_(cls, value):
+        match value:
+            case cls():
+                return value
+            case bool():
+                return cls(value)
+            case _:
+                return NotImplemented
+
     def __bool__(self):
         return True if self.override_truthiness is None else self.override_truthiness
 
     def and_(self, other):
-        lhs = Boolean._convert_(self)
-        rhs = Boolean._convert_(other)
+        lhs = convert_value(self, Boolean)
+        rhs = convert_value(other, Boolean)
         result = Execute(
             result := Boolean.new(), If(lhs, result << rhs, result << False), result
         )
@@ -155,8 +157,8 @@ class Boolean(Primitive):
         return result
 
     def or_(self, other):
-        lhs = Boolean._convert_(self)
-        rhs = Boolean._convert_(other)
+        lhs = convert_value(self, Boolean)
+        rhs = convert_value(other, Boolean)
         result = Execute(
             result := Boolean.new(), If(lhs, result << True, result << rhs), result
         )
@@ -218,6 +220,16 @@ class Number(Primitive):
         result = super()._create_(value)
         result.override_float_value = None
         return result
+
+    @classmethod
+    def _convert_(cls, value):
+        match value:
+            case cls():
+                return value
+            case float() | int():
+                return cls(value)
+            case _:
+                return NotImplemented
 
     def __int__(self):
         return int(float(self))

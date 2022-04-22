@@ -8,7 +8,7 @@ from sonolus.backend.ir import Location, IRNode
 from sonolus.engine.statements.control_flow import ExecuteVoid
 from sonolus.engine.statements.dataclass_transform import __dataclass_transform__
 from sonolus.engine.statements.primitive import Number
-from sonolus.engine.statements.value import Value
+from sonolus.engine.statements.value import Value, convert_value
 from sonolus.engine.statements.void import Void
 
 
@@ -63,7 +63,7 @@ class Struct(Value):
         )
         bound.apply_defaults()
         self._value_ = tuple(
-            field.type._convert_(bound.arguments[field.name])
+            convert_value(bound.arguments[field.name], field.type)
             for field in self._struct_fields_
         )
         self._parent_statement_ = ExecuteVoid(*self._value_)
@@ -75,7 +75,7 @@ class Struct(Value):
             return tuple(field.__get__(self) for field in self._struct_fields_)
 
     def _assign_(self, value) -> Void:
-        value = self._convert_(value)
+        value = convert_value(value, type(self))
         return Void.from_statement(
             ExecuteVoid(
                 self,

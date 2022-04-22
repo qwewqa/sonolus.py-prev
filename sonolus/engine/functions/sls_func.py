@@ -137,10 +137,12 @@ def _process_function(fn):
     return wrapped
 
 
-def convert_value(value: Statement | float | bool):
+def convert_literal(value: Statement | float | bool):
+    """
+    Converts python literal floats and booleans to their respective Value types.
+    Otherwise, returns the value as-is.
+    """
     match value:
-        case Statement() as expr:
-            return expr
         case bool() as boolean:
             from sonolus.engine.statements.primitive import Boolean
 

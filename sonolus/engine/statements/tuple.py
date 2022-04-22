@@ -4,7 +4,7 @@ from typing import ClassVar, Generic, TYPE_CHECKING, Tuple, Sequence
 
 from typing_extensions import TypeVarTuple, Unpack
 
-from sonolus.engine.functions.sls_func import convert_value
+from sonolus.engine.functions.sls_func import convert_literal
 from sonolus.engine.statements.primitive import Number
 from sonolus.engine.statements.struct import Struct
 from sonolus.engine.statements.value import Value
@@ -59,7 +59,7 @@ class SlsTuple(
         """
         Returns an unallocated SlsTuple with automatically determined types.
         """
-        values = [convert_value(arg) for arg in args]
+        values = [convert_literal(arg) for arg in args]
         types = tuple(type(value) for value in values)
         result = SlsTuple[types](*values)
         if not isinstance(result, cls):

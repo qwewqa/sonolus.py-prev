@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import overload, Callable
 
-from sonolus.engine.functions.sls_func import New, convert_value
+from sonolus.engine.functions.sls_func import New, convert_literal
 from sonolus.engine.statements.array import Array
 from sonolus.engine.statements.control_flow import If
 from sonolus.engine.statements.generic_struct import generic_function
@@ -175,7 +175,7 @@ def Max(*args, **kwargs):
     ):
         return NumMax(*args)
     else:
-        args = [convert_value(arg) for arg in args]
+        args = [convert_literal(arg) for arg in args]
         key = kwargs.pop("key", None)
         if kwargs:
             raise TypeError(
@@ -268,7 +268,7 @@ def Min(*args, **kwargs):
     ):
         return NumMin(*args)
     else:
-        args = [convert_value(arg) for arg in args]
+        args = [convert_literal(arg) for arg in args]
         key = kwargs.pop("key", None)
         if kwargs:
             raise TypeError(
@@ -334,7 +334,7 @@ def Reduce(
             func, iterable, _ret=type(Iter(iterable)._item_()).new()
         )
     else:
-        initializer = convert_value(initializer)
+        initializer = convert_literal(initializer)
         return _reduce_with_initializer(func, iterable, _ret=initializer.copy())
 
 

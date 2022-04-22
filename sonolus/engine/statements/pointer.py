@@ -77,9 +77,7 @@ def _create_typed_pointer_class(type_: Type[Value]):
                 case Pointer() as p:
                     return cls._create_(p._value_)._set_parent_(p)
                 case _:
-                    raise TypeError(
-                        f"Conversion from {type(value)} to {cls} not supported."
-                    )
+                    return NotImplemented
 
     TypedPointer.__name__ = f"Pointer_{type_.__name__}"
     TypedPointer.__qualname__ = TypedPointer.__name__

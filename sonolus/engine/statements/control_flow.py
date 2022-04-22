@@ -2,9 +2,9 @@ from types import FunctionType
 from typing import Callable, Sized, Iterable
 
 from sonolus.backend.compiler import Scope, DeadScope
-from sonolus.engine.functions.sls_func import convert_value
+from sonolus.engine.functions.sls_func import convert_literal
 from sonolus.engine.statements.statement import Statement
-from sonolus.engine.statements.value import Value
+from sonolus.engine.statements.value import Value, convert_value
 from sonolus.engine.statements.void import Void
 
 
@@ -123,9 +123,9 @@ def ExecuteVoid(*args: Statement, labels: list[str] | None = None):
 def If(test, then, else_=None):
     from sonolus.engine.statements.primitive import Boolean
 
-    test = Boolean._convert_(test)
-    then = convert_value(then)
-    else_ = convert_value(else_)
+    test = convert_value(test, Boolean)
+    then = convert_literal(then)
+    else_ = convert_literal(else_)
     if else_ is None:
         else_ = Void()
     if type(then) == type(else_) and Value.is_value_class(type(then)):
@@ -139,7 +139,7 @@ def If(test, then, else_=None):
 def While(test, body, else_=None):
     from sonolus.engine.statements.primitive import Boolean
 
-    test = Boolean._convert_(test)
+    test = convert_value(test, Boolean)
     if else_ is None:
         else_ = Void()
     return WhileStatement(test, body, else_)
@@ -203,7 +203,7 @@ def ensure_statement(value):
         return Void()
     if isinstance(value, (tuple, list)):
         return ExecuteVoid(*value)
-    result = convert_value(value)
+    result = convert_literal(value)
     if not isinstance(result, Statement):
         raise TypeError(f"Expected a statement, instead got {value}.")
     return result

@@ -21,7 +21,7 @@ from sonolus.engine.statements.control_flow import ExecuteVoid
 from sonolus.engine.statements.primitive import Number
 from sonolus.engine.statements.statement import Statement
 from sonolus.engine.statements.struct import Empty, Struct
-from sonolus.engine.statements.value import Value
+from sonolus.engine.statements.value import Value, convert_value
 from sonolus.engine.statements.void import Void
 from sonolus.std import sls_func
 
@@ -118,14 +118,14 @@ class Script(Statement):
 
     @classmethod
     def spawn(cls, data) -> Void:
-        data = cls._metadata_.memory_type._convert_(data)
+        data = convert_value(data, cls._metadata_.memory_type)
         node = IRFunc("Spawn", [cls._get_archetype_id(), *data._flatten_()])
         return Void(node)._set_parent_(data)
 
     @classmethod
     def at(cls: Type[TScript], index: Number) -> TScript:
         meta = cls._metadata_
-        index: Number = Number._convert_(index)
+        index: Number = convert_value(index, Number)
         offset = index * SHARED_MEMORY_SIZE
         ir_offset = offset.ir()
         info_offset = index * ENTITY_INFO_SIZE

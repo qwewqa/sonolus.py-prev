@@ -88,7 +88,7 @@ class Value(Statement):
         if isinstance(value, cls):
             return value
         else:
-            raise TypeError(f"Conversion from {type(value)} to {cls} not supported.")
+            return NotImplemented
 
     @classmethod
     @overload
@@ -127,6 +127,20 @@ class Value(Statement):
         This is an alternative to @= in places where an expression is required.
         """
         return self._assign_(other)
+
+
+T = TypeVar("T", bound=Value)
+
+
+def convert_value(value, target_type: Type[T]) -> T:
+    result = NotImplemented
+    if hasattr(value, "_convert_to_"):
+        result = value._convert_to_(target_type)
+    if result is NotImplemented:
+        result = target_type._convert_(value)
+    if result is NotImplemented:
+        raise TypeError(f"Cannot convert {value} to {target_type}.")
+    return result
 
 
 def Transmute(value: Value, type_: Type[TValue], /) -> TValue:

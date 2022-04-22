@@ -81,8 +81,7 @@ class SlsSequence(SlsEnumerable[T], Protocol[T]):
 
                 return Array.of(*values)
             case _:
-                raise TypeError(f"{sequence} is not a {cls.__name__}.")
-
+                return NotImplemented
 
 TSequence = TypeVar("TSequence")
 
