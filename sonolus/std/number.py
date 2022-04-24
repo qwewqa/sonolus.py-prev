@@ -212,9 +212,7 @@ def Judge(
     min3: Num,
     max3: Num,
 ) -> Num:
-    return invoke_builtin(
-        "Judge", [src, dst, min1, max1, min2, max2, min3, max3], Num
-    )
+    return invoke_builtin("Judge", [src, dst, min1, max1, min2, max2, min3, max3], Num)
 
 
 @sls_func(ast=False)

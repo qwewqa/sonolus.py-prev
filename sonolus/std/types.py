@@ -36,11 +36,6 @@ def new() -> Any:
 
 
 @overload
-def new(type_: Callable[P, T], /, *args: P.args, **kwargs: P.kwargs) -> T:
-    pass
-
-
-@overload
 def new(value: float, /) -> Num:
     pass
 

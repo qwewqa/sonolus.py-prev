@@ -75,16 +75,12 @@ def Draw(id: Num, quad: Quad, z: Num, a: Num) -> Void:
 
 
 @sls_func(ast=False)
-def DrawCurvedL(
-    id: Num, quad: Quad, z: Num, a: Num, n: Num, l: Point
-) -> Void:
+def DrawCurvedL(id: Num, quad: Quad, z: Num, a: Num, n: Num, l: Point) -> Void:
     return invoke_builtin("DrawCurvedL", [id, *quad.coords, z, a, n, l.x, l.y])
 
 
 @sls_func(ast=False)
-def DrawCurvedR(
-    id: Num, quad: Quad, z: Num, a: Num, n: Num, r: Point
-) -> Void:
+def DrawCurvedR(id: Num, quad: Quad, z: Num, a: Num, n: Num, r: Point) -> Void:
     return invoke_builtin("DrawCurvedR", [id, *quad.coords, z, a, n, r.x, r.y])
 
 
@@ -98,16 +94,12 @@ def DrawCurvedLR(
 
 
 @sls_func(ast=False)
-def DrawCurvedB(
-    id: Num, quad: Quad, z: Num, a: Num, n: Num, b: Point
-) -> Void:
+def DrawCurvedB(id: Num, quad: Quad, z: Num, a: Num, n: Num, b: Point) -> Void:
     return invoke_builtin("DrawCurvedB", [id, *quad.coords, z, a, n, b.x, b.y])
 
 
 @sls_func(ast=False)
-def DrawCurvedT(
-    id: Num, quad: Quad, z: Num, a: Num, n: Num, t: Point
-) -> Void:
+def DrawCurvedT(id: Num, quad: Quad, z: Num, a: Num, n: Num, t: Point) -> Void:
     return invoke_builtin("DrawCurvedT", [id, *quad.coords, z, a, n, t.x, t.y])
 
 
@@ -121,9 +113,7 @@ def DrawCurvedBT(
 
 
 @sls_func(ast=False)
-def SpawnParticleEffect(
-    id: Num, quad: Quad, t: Num, loop: Bool = False
-) -> Num:
+def SpawnParticleEffect(id: Num, quad: Quad, t: Num, loop: Bool = False) -> Num:
     return invoke_builtin("SpawnParticleEffect", [id, *quad.coords, t, loop], Num)
 
 

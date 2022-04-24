@@ -7,7 +7,6 @@ from sonolus.engine.statements.array import Array
 from sonolus.engine.statements.control_flow import If
 from sonolus.engine.statements.generic_struct import generic_function
 from sonolus.engine.statements.iterator import *
-from sonolus.engine.statements.other_iterators import MappingIterator, FilteringIterator
 from sonolus.engine.statements.primitive import Num, Bool
 from sonolus.engine.statements.struct import Struct
 from sonolus.std.number import NumMax, NumMin
@@ -117,9 +116,7 @@ def _count_cond(
 
 
 @sls_func
-def Any(
-    f: Callable[[T], Bool], iterable: SlsIterable[T], /, _ret: Bool = new()
-) -> Num:
+def Any(f: Callable[[T], Bool], iterable: SlsIterable[T], /, _ret: Bool = new()) -> Bool:
     for v in Iter(iterable):
         if f(v):
             return True
@@ -127,9 +124,7 @@ def Any(
 
 
 @sls_func
-def All(
-    f: Callable[[T], Bool], iterable: SlsIterable[T], /, _ret: Bool = new()
-) -> Num:
+def All(f: Callable[[T], Bool], iterable: SlsIterable[T], /, _ret: Bool = new()) -> Bool:
     for v in Iter(iterable):
         if not f(v):
             return False
@@ -485,6 +480,79 @@ class SizeLimitedArray(
 
     def __getitem__(self, item) -> T:
         return self.values[item]
+
+
+TOut = TypeVar("TOut")
+TSrc = TypeVar("TSrc")
+
+
+class MappingIteratorTypeVars(NamedTuple):
+    TSrc: type
+    TOut: type
+    map: Callable[[...], TOut]
+
+
+class MappingIterator(
+    SlsIterator[TOut],
+    GenericStruct,
+    Generic[TSrc, TOut],
+    type_vars=MappingIteratorTypeVars,
+):
+    source: TSrc
+
+    @classmethod
+    def from_iterator(cls, iterator):
+        return cls(iterator)
+
+    @sls_func
+    def _has_item_(self) -> Bool:
+        return self.source._has_item_()
+
+    @sls_func
+    def _item_(self):
+        return self.type_vars.map(self.source._item_())
+
+    @sls_func
+    def _advance_(self) -> TOut:
+        return self.source._advance_()
+
+
+class FilteringIteratorTypeVars(NamedTuple):
+    TSrc: type
+    filter: Callable[[...], Bool]
+
+
+class FilteringIterator(
+    SlsIterator[TSrc], GenericStruct, Generic[TSrc], type_vars=FilteringIteratorTypeVars
+):
+    source: TSrc
+
+    @classmethod
+    @sls_func
+    def from_iterator(cls, iterator):
+        result = cls(iterator)
+        result._advance_until_valid()
+        return result
+
+    @sls_func
+    def _has_item_(self) -> Bool:
+        return self.source._has_item_()
+
+    @sls_func
+    def _item_(self):
+        return self.source._item_()
+
+    @sls_func
+    def _advance_(self):
+        self.source._advance_()
+        self._advance_until_valid()
+
+    @sls_func
+    def _advance_until_valid(self):
+        while self.source._has_item_() and not self.type_vars.filter(
+            self.source._item_()
+        ):
+            self.source._advance_()
 
 
 sequence_iterator = SequenceIterator.for_sequence

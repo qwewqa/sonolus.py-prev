@@ -10,5 +10,5 @@ from .function import *
 from .number import *
 from .point import *
 from .script import *
-from .sequences import *
+from .iterables import *
 from .types import *
