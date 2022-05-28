@@ -4,7 +4,7 @@ from typing import TypeVar, Type, ClassVar, Any, ParamSpec, Callable, overload
 
 from sonolus.backend.compiler import CompilationInfo
 from sonolus.backend.ir import IRNode, Location, TempRef, IRConst
-from sonolus.engine.statements.statement import Statement
+from sonolus.engine.statement import Statement
 
 
 T = TypeVar("T", bound="Value")
@@ -151,6 +151,8 @@ def convert_value(value, target_type: Type[T]) -> T:
 
 
 def Transmute(value: Value, type_: Type[TValue], /) -> TValue:
+    if not isinstance(value._value_, Location):
+        raise TypeError(f"Cannot transmute unallocated value {value}.")
     return type_._create_(value._value_)._set_parent_(value)
 
 

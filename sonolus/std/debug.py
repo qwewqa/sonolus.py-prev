@@ -3,9 +3,9 @@ from sonolus.backend.cfg import Cfg
 from sonolus.backend.compiler import compile_statement, CompilationInfo
 from sonolus.backend.graph import get_flat_cfg
 from sonolus.backend.ir import IRComment
-from sonolus.engine.statements.primitive import Num, Bool, invoke_builtin
-from sonolus.engine.statements.statement import Statement
-from sonolus.engine.statements.void import Void
+from sonolus.engine.primitive import Num, Bool, invoke_builtin
+from sonolus.engine.statement import Statement
+from sonolus.engine.void import Void
 from sonolus.std.function import sls_func
 
 __all__ = (

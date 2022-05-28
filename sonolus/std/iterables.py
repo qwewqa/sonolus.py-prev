@@ -2,13 +2,13 @@ from __future__ import annotations
 
 from typing import overload, Callable
 
-from sonolus.engine.functions.sls_func import convert_literal
-from sonolus.engine.statements.array import Array
-from sonolus.engine.statements.control_flow import If
-from sonolus.engine.statements.generic_struct import generic_function
-from sonolus.engine.statements.iterator import *
-from sonolus.engine.statements.primitive import Num, Bool
-from sonolus.engine.statements.struct import Struct
+from sonolus.engine.sls_func import convert_literal
+from sonolus.engine.array import Array
+from sonolus.engine.control_flow import If
+from sonolus.engine.generic_struct import generic_function
+from sonolus.engine.iterator import *
+from sonolus.engine.primitive import Num, Bool
+from sonolus.engine.struct import Struct
 from sonolus.std.number import NumMax, NumMin
 
 __all__ = (
@@ -116,7 +116,9 @@ def _count_cond(
 
 
 @sls_func
-def Any(f: Callable[[T], Bool], iterable: SlsIterable[T], /, _ret: Bool = new()) -> Bool:
+def Any(
+    f: Callable[[T], Bool], iterable: SlsIterable[T], /, _ret: Bool = new()
+) -> Bool:
     for v in Iter(iterable):
         if f(v):
             return True
@@ -124,7 +126,9 @@ def Any(f: Callable[[T], Bool], iterable: SlsIterable[T], /, _ret: Bool = new())
 
 
 @sls_func
-def All(f: Callable[[T], Bool], iterable: SlsIterable[T], /, _ret: Bool = new()) -> Bool:
+def All(
+    f: Callable[[T], Bool], iterable: SlsIterable[T], /, _ret: Bool = new()
+) -> Bool:
     for v in Iter(iterable):
         if not f(v):
             return False

@@ -1,10 +1,10 @@
 from __future__ import annotations
 from typing import Type, ClassVar, TypeVar, Generic
 
-from sonolus.backend.ir import MemoryBlock, Location, IRNode, IRConst
-from sonolus.engine.statements.primitive import Num
-from sonolus.engine.statements.struct import Struct
-from sonolus.engine.statements.value import Value
+from sonolus.backend.ir import Location, IRNode, IRConst
+from sonolus.engine.primitive import Num
+from sonolus.engine.struct import Struct
+from sonolus.engine.value import Value
 
 T = TypeVar("T")
 TTarget = TypeVar("TTarget")

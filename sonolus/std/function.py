@@ -1,3 +1,3 @@
-from sonolus.engine.functions.sls_func import *
+from sonolus.engine.sls_func import *
 
 __all__ = ("sls_func",)

@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from enum import Enum
 
-from sonolus.engine.statements.primitive import invoke_builtin, Num, Bool
+from sonolus.engine.primitive import invoke_builtin, Num, Bool
 from .function import sls_func
 from .point import Point
 from .types import Struct, Array, Void

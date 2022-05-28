@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import warnings
-from typing import Optional, Any, TYPE_CHECKING, Sequence, Type, TypeAlias
+from typing import Optional, Any, Sequence, Type
 
 from sonolus.backend.evaluator import evaluate_ir
 from sonolus.backend.ir import (
@@ -13,11 +13,11 @@ from sonolus.backend.ir import (
     Location,
     IRValueType,
 )
-from sonolus.engine.functions.sls_func import sls_func
+from sonolus.engine.sls_func import sls_func
 from sonolus.backend.compiler import CompilationInfo
-from sonolus.engine.statements.control_flow import Execute, If
-from sonolus.engine.statements.value import Value, convert_value
-from sonolus.engine.statements.void import Void
+from sonolus.engine.control_flow import Execute, If
+from sonolus.engine.value import Value, convert_value
+from sonolus.engine.void import Void
 
 
 class Primitive(Value):
@@ -368,8 +368,3 @@ def invoke_builtin(
         return type_._allocate_(
             type_._create_(value=node)._set_parent_(Execute(*arguments))
         )
-
-
-if TYPE_CHECKING:
-    Num = Num | float
-    Bool = Bool | bool

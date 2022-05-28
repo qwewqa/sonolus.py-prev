@@ -2,10 +2,10 @@ from types import FunctionType
 from typing import Callable, Sized, Iterable
 
 from sonolus.backend.compiler import Scope, DeadScope
-from sonolus.engine.functions.sls_func import convert_literal
-from sonolus.engine.statements.statement import Statement
-from sonolus.engine.statements.value import Value, convert_value
-from sonolus.engine.statements.void import Void
+from sonolus.engine.sls_func import convert_literal
+from sonolus.engine.statement import Statement
+from sonolus.engine.value import Value, convert_value
+from sonolus.engine.void import Void
 
 
 class ExecuteStatement(Statement):
@@ -121,7 +121,7 @@ def ExecuteVoid(*args: Statement, labels: list[str] | None = None):
 
 
 def If(test, then, else_=None):
-    from sonolus.engine.statements.primitive import Bool
+    from sonolus.engine.primitive import Bool
 
     test = convert_value(test, Bool)
     then = convert_literal(then)
@@ -137,7 +137,7 @@ def If(test, then, else_=None):
 
 
 def While(test, body, else_=None):
-    from sonolus.engine.statements.primitive import Bool
+    from sonolus.engine.primitive import Bool
 
     test = convert_value(test, Bool)
     if else_ is None:
@@ -146,7 +146,7 @@ def While(test, body, else_=None):
 
 
 def For(iterator, /, body: Callable, else_=None, unpack: bool = False):
-    from sonolus.engine.statements.iterator import Iter, SlsIterator
+    from sonolus.engine.iterator import Iter, SlsIterator
 
     if else_ is None:
         else_ = Void()

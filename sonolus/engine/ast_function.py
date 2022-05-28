@@ -10,11 +10,11 @@ T = TypeVar("T", bound=Callable)
 
 
 def process_ast_function(fn):
-    import sonolus.engine.statements.control_flow as cf
-    from sonolus.engine.statements.control_flow import Execute, ExecuteVoid
-    from sonolus.engine.statements.primitive import Bool, Num
-    from sonolus.engine.statements.void import Void
-    from sonolus.engine.statements.iterator import Iter
+    import sonolus.engine.control_flow as cf
+    from sonolus.engine.control_flow import Execute, ExecuteVoid
+    from sonolus.engine.primitive import Bool, Num
+    from sonolus.engine.void import Void
+    from sonolus.engine.iterator import Iter
 
     source_file = inspect.getsourcefile(fn)
     lines, lnum = inspect.getsourcelines(fn)

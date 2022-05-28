@@ -11,17 +11,17 @@ from typing import (
 )
 
 from sonolus.backend.ir import Location, TempRef
-from sonolus.engine.functions.sls_func import convert_literal
-from sonolus.engine.statements.control_flow import ExecuteVoid
-from sonolus.engine.statements.iterator import (
+from sonolus.engine.sls_func import convert_literal
+from sonolus.engine.control_flow import ExecuteVoid
+from sonolus.engine.iterator import (
     SequenceIterator,
     IndexedSequenceIterator,
     SlsIterator,
 )
-from sonolus.engine.statements.primitive import Num, Bool
-from sonolus.engine.statements.tuple import SlsTuple
-from sonolus.engine.statements.value import Value, convert_value
-from sonolus.engine.statements.void import Void
+from sonolus.engine.primitive import Num, Bool
+from sonolus.engine.tuple import SlsTuple
+from sonolus.engine.value import Value, convert_value
+from sonolus.engine.void import Void
 
 T = TypeVar("T")
 U = TypeVar("U")

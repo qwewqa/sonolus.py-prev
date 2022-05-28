@@ -8,8 +8,8 @@ from inspect import get_annotations
 from types import FunctionType
 from typing import TypeVar, Any, ClassVar
 
-from sonolus.engine.statements.dataclass_transform import __dataclass_transform__
-from sonolus.engine.statements.struct import Struct
+from sonolus.engine.dataclass_transform import __dataclass_transform__
+from sonolus.engine.struct import Struct
 
 
 @__dataclass_transform__(eq_default=True)
@@ -166,7 +166,7 @@ class GenericFunction:
 
 
 class GenericFunctionTransformer(ast.NodeTransformer):
-    # Remove all decorators
+    # Remove first decorator
     def visit_FunctionDef(self, node: ast.FunctionDef) -> Any:
         result = ast.FunctionDef(
             node.name,

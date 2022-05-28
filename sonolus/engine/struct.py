@@ -5,10 +5,10 @@ from dataclasses import dataclass
 from typing import Type, ClassVar
 
 from sonolus.backend.ir import Location, IRNode
-from sonolus.engine.statements.control_flow import ExecuteVoid
-from sonolus.engine.statements.dataclass_transform import __dataclass_transform__
-from sonolus.engine.statements.value import Value, convert_value
-from sonolus.engine.statements.void import Void
+from sonolus.engine.control_flow import ExecuteVoid
+from sonolus.engine.dataclass_transform import __dataclass_transform__
+from sonolus.engine.value import Value, convert_value
+from sonolus.engine.void import Void
 
 
 @__dataclass_transform__(eq_default=True)

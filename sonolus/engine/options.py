@@ -4,7 +4,7 @@ from enum import Enum
 from typing import Literal, TYPE_CHECKING, TypeVar, ClassVar
 
 from sonolus.backend.ir import MemoryBlock, Location, IRConst
-from sonolus.engine.statements.primitive import Num, Bool
+from sonolus.engine.primitive import Num, Bool
 
 
 class OptionName(str, Enum):
@@ -165,7 +165,7 @@ class OptionConfig:
                 cls,
                 k,
                 option_type._create_(
-                    Location(MemoryBlock.LEVEL_OPTION, IRConst(offset))
+                    Location(MemoryBlock.LEVEL_OPTION, IRConst(0), offset, None)
                 )._standalone_(),
             )
             offset += option_type._size_

@@ -135,8 +135,12 @@ class FlatCfgNode:
                 return []
 
     def __str__(self):
+        phi = [
+            f"phi %{k.name} <- {', '.join(f'{n}: {r}' for n, r in v.items())}"
+            for k, v in self.phi.items()
+        ]
         body = (
-            "{\n" + ",\n".join(f"    {entry}" for entry in self.body) + "\n}"
+            "{\n" + ",\n".join(f"    {entry}" for entry in phi + self.body) + "\n}"
             if self.body
             else "{}"
         )

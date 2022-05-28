@@ -1,4 +1,4 @@
-from sonolus.engine.statements.control_flow import *
+from sonolus.engine.control_flow import *
 
 __all__ = (
     "Execute",

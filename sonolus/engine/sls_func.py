@@ -1,11 +1,11 @@
 import functools
 import inspect
 from types import FunctionType
-from typing import Callable, TypeVar, get_type_hints, TYPE_CHECKING, Any
+from typing import Callable, TypeVar, get_type_hints
 
-from sonolus.engine.functions.ast_function import process_ast_function
-from sonolus.engine.statements.statement import Statement
-from sonolus.engine.statements.value import Value, convert_value
+from sonolus.engine.ast_function import process_ast_function
+from sonolus.engine.statement import Statement
+from sonolus.engine.value import convert_value
 
 T = TypeVar("T", bound=Callable)
 
@@ -49,7 +49,7 @@ def _lazy_process(fn, ast):
 
 
 def _process_function(fn):
-    from sonolus.engine.statements.control_flow import Execute
+    from sonolus.engine.control_flow import Execute
 
     hints = get_type_hints(fn)
     signature = inspect.signature(fn)
@@ -127,11 +127,11 @@ def convert_literal(value: Statement | float | bool):
     """
     match value:
         case bool() as boolean:
-            from sonolus.engine.statements.primitive import Bool
+            from sonolus.engine.primitive import Bool
 
             return Bool(boolean)
         case int() | float() as number:
-            from sonolus.engine.statements.primitive import Num
+            from sonolus.engine.primitive import Num
 
             return Num(number)
         case _:

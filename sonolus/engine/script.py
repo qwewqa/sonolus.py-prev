@@ -17,12 +17,12 @@ from sonolus.backend.ir import (
     IRConst,
     IRValueType,
 )
-from sonolus.engine.statements.control_flow import ExecuteVoid
-from sonolus.engine.statements.primitive import Num
-from sonolus.engine.statements.statement import Statement
-from sonolus.engine.statements.struct import Empty, Struct
-from sonolus.engine.statements.value import Value, convert_value
-from sonolus.engine.statements.void import Void
+from sonolus.engine.control_flow import ExecuteVoid
+from sonolus.engine.primitive import Num
+from sonolus.engine.statement import Statement
+from sonolus.engine.struct import Empty, Struct
+from sonolus.engine.value import Value, convert_value
+from sonolus.engine.void import Void
 from sonolus.std import sls_func
 
 SHARED_MEMORY_SIZE = 32

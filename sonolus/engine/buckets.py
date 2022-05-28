@@ -4,9 +4,9 @@ from dataclasses import dataclass
 from typing import Protocol
 
 from sonolus.backend.ir import Location, MemoryBlock, IRConst
-from sonolus.engine.functions.sls_func import sls_func
-from sonolus.engine.statements.primitive import Num
-from sonolus.engine.statements.struct import Struct
+from sonolus.engine.sls_func import sls_func
+from sonolus.engine.primitive import Num
+from sonolus.engine.struct import Struct
 
 
 @dataclass
@@ -67,7 +67,7 @@ class BucketConfig:
                 raise TypeError("Expected all class members to be buckets.")
             bucket_entries[k] = v
             accessor = BucketStruct._create_(
-                Location(MemoryBlock.LEVEL_BUCKET, IRConst(offset))
+                Location(MemoryBlock.LEVEL_BUCKET, IRConst(0), offset, None),
             )._standalone_()
             accessor.index = index
             setattr(cls, k, accessor)

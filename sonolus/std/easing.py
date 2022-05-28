@@ -1,4 +1,4 @@
-from sonolus.engine.statements.primitive import invoke_builtin, Num
+from sonolus.engine.primitive import invoke_builtin, Num
 from sonolus.std.function import sls_func
 
 __all__ = (
