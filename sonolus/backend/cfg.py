@@ -98,7 +98,7 @@ class Phi:
 class CfgEdge:
     from_node: CfgNode
     to_node: CfgNode
-    condition: IRNode | None = None
+    condition: float | None = None
 
     def __lt__(self, other: CfgEdge) -> bool:
         if self.condition is None:
