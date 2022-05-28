@@ -97,9 +97,10 @@ class TempRef:
 @dataclass(frozen=True)
 class SSARef:
     name: str
+    number: int = 0
 
     def __str__(self):
-        return f"{self.name}"
+        return f"{self.name}_{self.number}"
 
 
 class MemoryBlock(IntEnum):

@@ -18,7 +18,7 @@ class _TempRefVisitor(IRVisitor):
             )
 
 
-def get_temp_ref_sizes(ir, /):
+def get_temp_ref_sizes(ir, /) -> dict[TempRef, int]:
     visitor = _TempRefVisitor()
     visitor.visit(ir)
     return visitor.sizes

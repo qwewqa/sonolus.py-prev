@@ -1,4 +1,5 @@
 from sonolus.backend.optimization.aggregate_to_scalar import AggregateToScalar
+from sonolus.backend.optimization.allocate import Allocate
 from sonolus.backend.optimization.arithmetic_simplification import (
     ArithmeticSimplification,
 )
@@ -20,4 +21,5 @@ DEFAULT_OPTIMIZATION_PRESET = [
     AggregateToScalar(),
     BasicDeadCodeElimination(),
     BasicDeadStoreElimination(),
+    Allocate(),
 ]
