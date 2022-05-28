@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import warnings
-from typing import Optional, Any, Sequence, Type
+from typing import Optional, Any, Sequence, Type, TYPE_CHECKING
 
 from sonolus.backend.evaluator import evaluate_ir
 from sonolus.backend.ir import (
@@ -119,7 +119,7 @@ class Primitive(Value):
             )
 
 
-class Bool(Primitive):
+class Boolean(Primitive):
     _is_concrete_ = True
 
     def __init__(self, value=False, /, *, override_truthiness: Optional[bool] = None):
@@ -200,7 +200,7 @@ class Bool(Primitive):
         return result
 
 
-class Num(Primitive):
+class Number(Primitive):
     """
     A floating-point number.
     NaN and infinities may be represented, but behavior is undefined
@@ -368,3 +368,11 @@ def invoke_builtin(
         return type_._allocate_(
             type_._create_(value=node)._set_parent_(Execute(*arguments))
         )
+
+
+if TYPE_CHECKING:
+    Bool = Boolean | bool
+    Num = Number | int | float
+else:
+    Bool = Boolean
+    Num = Number

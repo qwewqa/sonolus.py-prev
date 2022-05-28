@@ -287,7 +287,7 @@ def GetTemporaryData(type_: Type[T] = TouchDataStruct, /) -> T:
 
 
 LevelData = GetLevelData(LevelDataStruct)
-LevelTransform = GetLevelTransform(Array[Num, 4, 4])
+LevelTransform = GetLevelTransform(Array[Array[Num, 4], 4])
 LevelBackground = GetLevelBackground(Quad)
 LevelUI = GetLevelUI(LevelUIStruct)
 LevelUIConfiguration = GetLevelUIConfiguration(LevelUIConfigurationStruct)

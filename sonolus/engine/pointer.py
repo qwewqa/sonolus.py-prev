@@ -31,7 +31,7 @@ class Pointer(Struct, Generic[T]):
         if (block := self.block.constant()) is not None and (
             index := self.index.constant()
         ) is not None:
-            return type_._create_(Location(block, IRConst(index), 0, 1))._standalone_()
+            return type_._create_(Location(block, IRConst(0), index, 1))._standalone_()
         return type_._create_(
             Location(self.block.ir(), self.index.ir(), 0, None)
         )._set_parent_(self)

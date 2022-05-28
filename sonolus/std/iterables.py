@@ -27,8 +27,8 @@ __all__ = (
     "Max",
     "Min",
     "Reduce",
-    "Empty",
-    "NotEmpty",
+    "IsEmpty",
+    "IsNotEmpty",
     "SizeLimitedArray",
 )
 
@@ -203,7 +203,7 @@ def Max(*args, **kwargs):
 
 @sls_func
 def _max_iterable(iterable: SlsIterable[T], /, *, _ret):
-    if Empty(iterable):
+    if IsEmpty(iterable):
         return
     iterator = Iter(iterable)
     max_value = Next(iterator).copy()
@@ -215,7 +215,7 @@ def _max_iterable(iterable: SlsIterable[T], /, *, _ret):
 
 @sls_func
 def _max_iterable_key(iterable: SlsIterable[T], /, *, key: Callable, _ret):
-    if Empty(iterable):
+    if IsEmpty(iterable):
         return
     iterator = Iter(iterable)
     max_value = Next(iterator).copy()
@@ -296,7 +296,7 @@ def Min(*args, **kwargs):
 
 @sls_func
 def _min_iterable(iterable: SlsIterable[T], /, *, _ret):
-    if Empty(iterable):
+    if IsEmpty(iterable):
         return
     iterator = Iter(iterable)
     min_value = Next(iterator).copy()
@@ -308,7 +308,7 @@ def _min_iterable(iterable: SlsIterable[T], /, *, _ret):
 
 @sls_func
 def _min_iterable_key(iterable: SlsIterable[T], /, *, key: Callable, _ret):
-    if Empty(iterable):
+    if IsEmpty(iterable):
         return
     iterator = Iter(iterable)
     min_value = Next(iterator).copy()
@@ -341,7 +341,7 @@ def Reduce(
 def _reduce_no_initializer(
     f: Callable[[T, T], T], iterable: SlsIterable[T], /, *, _ret: T
 ):
-    if Empty(iterable):
+    if IsEmpty(iterable):
         return
     iterator = Iter(iterable)
     result = Next(iterator)
@@ -355,7 +355,7 @@ def _reduce_with_initializer(
     f: Callable[[R, T], R], iterable: SlsIterable[T], /, *, _ret: R
 ):
     # _ret acts as the initializer
-    if Empty(iterable):
+    if IsEmpty(iterable):
         return
     for v in Iter(iterable):
         _ret @= f(_ret, v)
@@ -363,12 +363,12 @@ def _reduce_with_initializer(
 
 
 @sls_func
-def Empty(iterable: SlsIterable[T]) -> Bool:
+def IsEmpty(iterable: SlsIterable[T]) -> Bool:
     return not Iter(iterable)._has_item_()
 
 
 @sls_func
-def NotEmpty(iterable: SlsIterable[T]) -> Bool:
+def IsNotEmpty(iterable: SlsIterable[T]) -> Bool:
     return Iter(iterable)._has_item_()
 
 
