@@ -19,7 +19,7 @@ from sonolus.engine.iterator import (
     SlsIterator,
 )
 from sonolus.engine.primitive import Num, Bool
-from sonolus.engine.tuple import SlsTuple
+from sonolus.engine.tuple import TupleStruct
 from sonolus.engine.value import Value, convert_value
 from sonolus.engine.void import Void
 
@@ -101,7 +101,7 @@ class Array(Value, Generic[T, U]):
     def _iter_(self) -> SlsIterator[T]:
         raise NotImplementedError
 
-    def _enumerate_(self) -> SlsIterator[SlsTuple[Num, T]]:
+    def _enumerate_(self) -> SlsIterator[TupleStruct[Num, T]]:
         raise NotImplementedError
 
     def __len__(self):

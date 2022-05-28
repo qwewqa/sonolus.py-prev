@@ -14,7 +14,7 @@ from sonolus.engine.sls_func import sls_func
 from sonolus.engine.control_flow import Execute
 from sonolus.engine.generic_struct import GenericStruct
 from sonolus.engine.primitive import Bool, Num
-from sonolus.engine.tuple import SlsTuple
+from sonolus.engine.tuple import TupleStruct
 from sonolus.engine.void import Void
 
 T = TypeVar("T")
@@ -32,7 +32,7 @@ class SlsIterable(Protocol[T]):
 
 @runtime_checkable
 class SlsEnumerable(SlsIterable[T], Protocol[T]):
-    def _enumerate_(self) -> SlsIterator[SlsTuple[Num, T]]:
+    def _enumerate_(self) -> SlsIterator[TupleStruct[Num, T]]:
         ...
 
 
@@ -149,7 +149,7 @@ class IndexedSequenceIterator(
     @sls_func
     def _item_(self):
         value = self.sequence[self.index]
-        return SlsTuple[Num, type(value)](self.index.copy(), value)
+        return TupleStruct[Num, type(value)](self.index.copy(), value)
 
     @sls_func
     def _advance_(self):
@@ -183,7 +183,7 @@ class IndexedIteratorWrapper(
     def _item_(self):
         index = self.index.copy()
         value = self.iterator._item_()
-        return SlsTuple[Num, type(value)](index, value)
+        return TupleStruct[Num, type(value)](index, value)
 
     @sls_func
     def _advance_(self):
@@ -210,7 +210,7 @@ def Next(iterator: SlsIterator[T], /) -> T:
     raise TypeError(f"Value {iterator} is not a SonoIterator.")
 
 
-def Enumerate(seq: SlsIterable[T], /) -> SlsIterator[SlsTuple[Num, T]]:
+def Enumerate(seq: SlsIterable[T], /) -> SlsIterator[TupleStruct[Num, T]]:
     if hasattr(seq, "_enumerate_"):
         return seq._enumerate_()
     iterator = Iter(seq)

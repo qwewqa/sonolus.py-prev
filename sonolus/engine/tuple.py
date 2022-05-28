@@ -25,7 +25,7 @@ if not TYPE_CHECKING:
     Tuple = Dummy()
 
 
-class SlsTuple(
+class TupleStruct(
     Tuple[Unpack[Types]], Struct, Generic[Unpack[Types]], _no_init_struct_=True
 ):
     _subclass_cache = {}
@@ -55,13 +55,13 @@ class SlsTuple(
         return cls._subclass_cache[item]
 
     @classmethod
-    def of(cls, *args: Unpack[Types]) -> SlsTuple[Unpack[Types]]:
+    def of(cls, *args: Unpack[Types]) -> TupleStruct[Unpack[Types]]:
         """
         Returns an unallocated SlsTuple with automatically determined types.
         """
         values = [convert_literal(arg) for arg in args]
         types = tuple(type(value) for value in values)
-        result = SlsTuple[types](*values)
+        result = TupleStruct[types](*values)
         if not isinstance(result, cls):
             # This may be false for typed subclasses.
             raise TypeError("Types of elements differ from given types.")

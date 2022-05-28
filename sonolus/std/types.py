@@ -7,14 +7,14 @@ from sonolus.engine.generic_struct import GenericStruct, generic_function
 from sonolus.engine.pointer import Pointer
 from sonolus.engine.primitive import Bool, Num
 from sonolus.engine.struct import Struct, Empty
-from sonolus.engine.tuple import SlsTuple
+from sonolus.engine.tuple import TupleStruct
 from sonolus.engine.value import Value, convert_value
 from sonolus.engine.void import Void
 
 __all__ = (
     "Value",
     "Struct",
-    "SlsTuple",
+    "TupleStruct",
     "Empty",
     "Array",
     "Pointer",
