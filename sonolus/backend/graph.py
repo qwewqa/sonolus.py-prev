@@ -83,7 +83,7 @@ class FlatCfg:
                         entries.append(f"{i}_{{{{{quote(fmt([node.test]))}}}}}")
                         entries.append(f"{i} --> {i}_")
                         entries.append(f"{i}_ --> |result| Exit")
-                case {0: f_branch, None: t_branch}:
+                case {0: f_branch, None: t_branch, **other} if not other:
                     entries.append(f"{i}_{{{{{quote(fmt([node.test]))}}}}}")
                     entries.append(f"{i} --> {i}_")
                     entries.append(f"{i}_ --> |true| {t_branch}")
@@ -149,7 +149,7 @@ class FlatCfgNode:
                 if self.test is None:
                     return f"{body} -> !"
                 return f"{body} -> {self.test} !"
-            case {0: f_branch, None: t_branch}:
+            case {0: f_branch, None: t_branch, **other} if not other:
                 return f"{body} -> {self.test} ? {t_branch} : {f_branch}"
             case dict() as tgt:
                 return f"{body} -> {self.test} ? {tgt}"

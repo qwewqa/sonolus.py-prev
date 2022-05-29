@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from sonolus.backend.ir import IRNode
 from sonolus.frontend.statement import Statement
-from sonolus.backend.compiler import Scope
+from sonolus.backend.evaluation import Scope
 
 
 class Void(Statement):

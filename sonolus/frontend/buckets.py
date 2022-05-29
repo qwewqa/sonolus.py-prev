@@ -13,6 +13,9 @@ from sonolus.frontend.struct import Struct
 class Bucket:
     sprites: list[BucketSprite]
 
+    def to_dict(self):
+        return {"sprites": [sprite.to_dict() for sprite in self.sprites]}
+
 
 @dataclass
 class BucketSprite:
@@ -22,6 +25,16 @@ class BucketSprite:
     w: float
     h: float
     rotation: float = 0
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "x": self.x,
+            "y": self.y,
+            "w": self.w,
+            "h": self.h,
+            "rotation": self.rotation,
+        }
 
 
 class BucketStruct(Struct):

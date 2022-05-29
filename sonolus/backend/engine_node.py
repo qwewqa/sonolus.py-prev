@@ -61,6 +61,8 @@ def get_engine_nodes(
                 nodes[i] = {"value": node.value}
             case FunctionNode(func, args):
                 nodes[i] = {"func": func, "args": [mapping[arg] for arg in args]}
+            case _:
+                raise ValueError(f"Unexpected node type: {type(node)}")
     return nodes, mapping
 
 
@@ -78,11 +80,11 @@ class FinalizeTransformer(IRTransformer):
         else:
             test = ValueNode(-1)
         match {edge.condition: edge for edge in self.cfg.edges_by_from[node]}:
-            case {}:
+            case empty if empty == {}:
                 terminal = test
-            case {None: edge}:
+            case {None: edge, **other} if not other:
                 terminal = ValueNode(self.node_indexes[edge.to_node])
-            case {None: t_branch, 0: f_branch}:
+            case {None: t_branch, 0: f_branch, **other} if not other:
                 terminal = FunctionNode(
                     "If",
                     (
@@ -131,7 +133,7 @@ class FinalizeTransformer(IRTransformer):
             if isinstance(offset, ValueNode):
                 index = ValueNode(offset.value + location.base)
             else:
-                index = FunctionNode("Add", (location.base, offset))
+                index = FunctionNode("Add", (ValueNode(location.base), offset))
         else:
             index = offset
         return ref, index

@@ -81,7 +81,7 @@ class OptionName(str, Enum):
 def slider_option(
     *,
     name: str,
-    standard: bool,
+    standard: bool = False,
     scope: str | None = None,
     default: float,
     min: float,
@@ -104,7 +104,7 @@ def slider_option(
 def toggle_option(
     *,
     name: str,
-    standard: bool,
+    standard: bool = False,
     scope: str | None = None,
     default: bool,
 ) -> Bool:
@@ -119,6 +119,9 @@ class Option:
     standard: bool
     scope: str | None = None
 
+    def to_dict(self):
+        raise NotImplementedError()
+
 
 @dataclass(kw_only=True)
 class SliderOption(Option):
@@ -130,12 +133,38 @@ class SliderOption(Option):
 
     _data_type_ = Num
 
+    def to_dict(self):
+        result = {
+            "name": self.name,
+            "standard": self.standard,
+            "type": "slider",
+            "def": self.default,
+            "min": self.min,
+            "max": self.max,
+            "step": self.step,
+            "display": self.display,
+        }
+        if self.scope is not None:
+            result["scope"] = self.scope
+        return result
+
 
 @dataclass(kw_only=True)
 class ToggleOption(Option):
     default: bool
 
     _data_type_ = Bool
+
+    def to_dict(self):
+        result = {
+            "name": self.name,
+            "standard": self.standard,
+            "type": "toggle",
+            "def": int(self.default),
+        }
+        if self.scope is not None:
+            result["scope"] = self.scope
+        return result
 
 
 class OptionConfig:

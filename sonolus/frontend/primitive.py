@@ -3,7 +3,7 @@ from __future__ import annotations
 import warnings
 from typing import Optional, Any, Sequence, Type, TYPE_CHECKING
 
-from sonolus.backend.evaluator import evaluate_ir
+from sonolus.backend.runner import run_ir
 from sonolus.backend.ir import (
     IRSet,
     IRNode,
@@ -14,7 +14,7 @@ from sonolus.backend.ir import (
     IRValueType,
 )
 from sonolus.frontend.sls_func import sls_func
-from sonolus.backend.compiler import CompilationInfo
+from sonolus.backend.evaluation import CompilationInfo
 from sonolus.frontend.control_flow import Execute, If
 from sonolus.frontend.value import Value, convert_value
 from sonolus.frontend.void import Void
@@ -44,7 +44,7 @@ class Primitive(Value):
             case int() | float() | bool() as constant:
                 return constant
             case IRNode() as node:
-                return evaluate_ir(node)
+                return run_ir(node)
             case _:
                 return None
 

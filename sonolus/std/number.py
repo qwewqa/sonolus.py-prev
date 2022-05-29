@@ -216,8 +216,8 @@ def Judge(
 
 
 @sls_func(ast=False)
-def JudgeSimple(src: Num, dst: Num, max1: Num, max2: Num, max3: Num):
-    return invoke_builtin("Judget", [src, dst, max1, max2, max3])
+def JudgeSimple(src: Num, dst: Num, max1: Num, max2: Num, max3: Num) -> Num:
+    return invoke_builtin("JudgeSimple", [src, dst, max1, max2, max3], Num)
 
 
 Pi = math.pi

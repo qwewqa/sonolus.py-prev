@@ -1,7 +1,7 @@
 from types import FunctionType
 from typing import Callable, Sized, Iterable
 
-from sonolus.backend.compiler import Scope, DeadScope
+from sonolus.backend.evaluation import Scope, DeadScope
 from sonolus.frontend.sls_func import convert_literal
 from sonolus.frontend.statement import Statement
 from sonolus.frontend.value import Value, convert_value

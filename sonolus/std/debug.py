@@ -1,6 +1,6 @@
 from sonolus.backend.callback import DEBUG_CALLBACK_TYPE
 from sonolus.backend.cfg import Cfg
-from sonolus.backend.compiler import compile_statement, CompilationInfo
+from sonolus.backend.evaluation import evaluate_statement, CompilationInfo
 from sonolus.backend.graph import get_flat_cfg
 from sonolus.backend.ir import IRComment
 from sonolus.frontend.primitive import Num, Bool, invoke_builtin
@@ -15,7 +15,7 @@ __all__ = (
     "Comment",
     "get_generated_src",
     "debug_compilation",
-    "compile_function",
+    "evaluate_function",
     "visualize",
 )
 
@@ -51,7 +51,7 @@ def debug_compilation():
     return CompilationInfo(DEBUG_CALLBACK_TYPE, {})
 
 
-def compile_function(fn, /):
+def evaluate_function(fn, /):
     """
     Compiles the given function and returns the result.
     The function may be standalone or a callback, but must not have any parameters without a default value,
@@ -59,11 +59,11 @@ def compile_function(fn, /):
     """
     with debug_compilation():
         if isinstance(fn, Statement):
-            return compile_statement(fn)
+            return evaluate_statement(fn)
         elif callable(fn) and hasattr(fn, "_script_"):
-            return compile_statement(fn(fn._script_.create_for_evaluation()))
+            return evaluate_statement(fn(fn._script_.create_for_evaluation()))
         elif callable(fn):
-            return compile_statement(fn())
+            return evaluate_statement(fn())
         else:
             raise TypeError("Unsupported function.")
 
@@ -71,4 +71,4 @@ def compile_function(fn, /):
 def visualize(fn, /):
     if isinstance(fn, Cfg):
         return get_flat_cfg(fn)
-    return get_flat_cfg(compile_function(fn))
+    return get_flat_cfg(evaluate_function(fn))

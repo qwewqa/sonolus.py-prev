@@ -10,7 +10,7 @@ import sonolus.backend.ir as ir
 import sonolus.backend.graph as graph
 
 
-class IREvaluator:
+class IRRunner:
     def __init__(
         self,
         *,
@@ -28,7 +28,7 @@ class IREvaluator:
         else:
             self.blocks = None
 
-    def evaluate(self, node: ir.IRNode | graph.FlatCfg) -> Optional[float]:
+    def run(self, node: ir.IRNode | graph.FlatCfg) -> Optional[float]:
         """Evaluates the given node and returns a float if it can be evaluated and None otherwise."""
         match node:
             case graph.FlatCfg(nodes):
@@ -36,12 +36,12 @@ class IREvaluator:
                 while 0 <= index < len(nodes) and float(index).is_integer():
                     graph_node: graph.FlatCfgNode = nodes[index]
                     for node in graph_node.body:
-                        result = self.evaluate(node)
+                        result = self.run(node)
                         if result is None:
                             return None
                     match graph_node:
                         case graph.FlatCfgNode(test=test, target={**targets}):
-                            test_result = self.evaluate(test)
+                            test_result = self.run(test)
                             if test_result not in targets:
                                 if None in targets:
                                     index = targets[None]
@@ -56,7 +56,7 @@ class IREvaluator:
                         ) if target is not None:
                             index = target
                         case graph.FlatCfgNode(test=test, target=None):
-                            return self.evaluate(test)
+                            return self.run(test)
                         case _:
                             raise ValueError(
                                 f"Unexpected graph node configuration: {graph_node}."
@@ -66,7 +66,7 @@ class IREvaluator:
                 if not self.allow_vars:
                     return None
                 ref = location.ref
-                offset = self.evaluate(location.offset)
+                offset = self.run(location.offset)
                 if offset is None:
                     return None
                 if ref not in self.blocks:
@@ -78,7 +78,7 @@ class IREvaluator:
                 if not self.allow_vars:
                     return None
                 ref = location.ref
-                offset = self.evaluate(location.offset)
+                offset = self.run(location.offset)
                 if offset is None:
                     return None
                 if ref not in self.blocks:
@@ -92,7 +92,7 @@ class IREvaluator:
                     size = location.base + location.span
                     if size > len(self.blocks[ref]):
                         self.blocks[ref] += [0] * (size - len(self.blocks[ref]))
-                value = self.evaluate(value)
+                value = self.run(value)
                 if value is None:
                     return None
                 if location.span is not None and not (0 <= offset < location.span):
@@ -136,18 +136,18 @@ class IREvaluator:
                         return self._reduce_args(args, operator.le)
 
                     case "Floor":
-                        value = self.evaluate(args[0])
+                        value = self.run(args[0])
                         if value is None:
                             return None
                         return floor(value)
                     case "Ceil":
-                        value = self.evaluate(args[0])
+                        value = self.run(args[0])
                         if value is None:
                             return None
                         return ceil(value)
 
                     case "Round":
-                        value = self.evaluate(args[0])
+                        value = self.run(args[0])
                         if value is None:
                             return None
                         return round(value)
@@ -168,12 +168,12 @@ class IREvaluator:
                         if test is None:
                             return None
                         elif test != 0:
-                            return self.evaluate(then)
+                            return self.run(then)
                         else:
-                            return self.evaluate(other)
+                            return self.run(other)
                     case "And":
                         for arg in args:
-                            evaluated = self.evaluate(arg)
+                            evaluated = self.run(arg)
                             if evaluated is None:
                                 return None
                             if evaluated == 0:
@@ -181,7 +181,7 @@ class IREvaluator:
                         return 1
                     case "Or":
                         for arg in args:
-                            evaluated = self.evaluate(arg)
+                            evaluated = self.run(arg)
                             if evaluated is None:
                                 return None
                             if evaluated != 0:
@@ -189,7 +189,7 @@ class IREvaluator:
                         return 1
                     case "Not":
                         arg = args[0]
-                        evaluated = self.evaluate(arg)
+                        evaluated = self.run(arg)
                         if evaluated is None:
                             return None
                         if evaluated == 0:
@@ -211,12 +211,12 @@ class IREvaluator:
     def _evaluate_arguments(self, args: list[ir.IRNode]) -> Optional[list[float]]:
         results = []
         for arg in args:
-            evaluated = self.evaluate(arg)
+            evaluated = self.run(arg)
             if evaluated is None:
                 return None
             results.append(evaluated)
         return results
 
 
-def evaluate_ir(node: ir.IRNode | graph.FlatCfg):
-    return IREvaluator().evaluate(node)
+def run_ir(node: ir.IRNode | graph.FlatCfg):
+    return IRRunner().run(node)

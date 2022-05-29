@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import TypeVar
 
-from sonolus.backend.compiler import Scope
+from sonolus.backend.evaluation import Scope
 
 TStatement = TypeVar("TStatement", bound="Statement")
 

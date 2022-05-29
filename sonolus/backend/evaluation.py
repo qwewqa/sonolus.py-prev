@@ -5,7 +5,6 @@ from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, ClassVar
 
 from sonolus.backend.cfg import CfgNode, Cfg, CfgEdge
-from sonolus.backend.graph import FlatCfg, FlatCfgNode
 from sonolus.backend.ir import IRNode
 
 if TYPE_CHECKING:
@@ -13,7 +12,7 @@ if TYPE_CHECKING:
     from sonolus.backend.callback import CallbackType
 
 
-def compile_statement(statement: Statement):
+def evaluate_statement(statement: Statement):
     from sonolus.frontend.primitive import Primitive
 
     start = Scope().activate(entry=True)

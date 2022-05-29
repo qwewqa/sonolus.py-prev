@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import TypeVar, Type, ClassVar, Any, ParamSpec, Callable, overload
 
-from sonolus.backend.compiler import CompilationInfo
+from sonolus.backend.evaluation import CompilationInfo
 from sonolus.backend.ir import IRNode, Location, TempRef, IRConst
 from sonolus.frontend.statement import Statement
 

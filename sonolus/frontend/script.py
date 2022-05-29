@@ -6,7 +6,7 @@ from enum import Enum
 from typing import TypeVar, Type, Callable, ClassVar, get_type_hints
 
 from sonolus.backend.callback import CallbackType, CALLBACK_TYPES
-from sonolus.backend.compiler import CompilationInfo
+from sonolus.backend.evaluation import CompilationInfo
 from sonolus.backend.ir import (
     Location,
     MemoryBlock,
@@ -19,11 +19,11 @@ from sonolus.backend.ir import (
 )
 from sonolus.frontend.control_flow import ExecuteVoid
 from sonolus.frontend.primitive import Num
+from sonolus.frontend.sls_func import sls_func
 from sonolus.frontend.statement import Statement
 from sonolus.frontend.struct import Empty, Struct
 from sonolus.frontend.value import Value, convert_value
 from sonolus.frontend.void import Void
-from sonolus.std import sls_func
 
 SHARED_MEMORY_SIZE = 32
 ENTITY_INFO_SIZE = 3
@@ -89,9 +89,10 @@ class Script(Statement):
     @property
     @sls_func(ast=False)
     def life(cls) -> ScriptLifeStruct:
+        offset = Num._create_(cls._get_archetype_id()) * Num(4)
         return ScriptLifeStruct._create_(
-            Location(MemoryBlock.ARCHETYPE_LIFE, cls._get_archetype_id(), 0, None)
-        )
+            Location(MemoryBlock.ARCHETYPE_LIFE, offset.ir(), 0, None)
+        )._set_parent_(offset)
 
     @life.setter
     def life(self, value: ScriptLifeStruct):
@@ -116,7 +117,7 @@ class Script(Statement):
         result.info = EntityInfo._create_(
             Location(MemoryBlock.ENTITY_INFO, IRConst(0), 0, 1)
         )
-        result.input = EntityInfo._create_(
+        result.input = EntityInput._create_(
             Location(MemoryBlock.ENTITY_INPUT, IRConst(0), 0, 1)
         )
 
@@ -138,13 +139,13 @@ class Script(Statement):
         ir_info_offset = info_offset.ir()
         result = cls.__new__(cls)
         result.shared_memory = meta.shared_memory_type._create_(
-            Location(MemoryBlock.ENTITY_SHARED_MEMORY, ir_offset, 0, None),
+            Location(MemoryBlock.ENTITY_SHARED_MEMORY_ARRAY, ir_offset, 0, None),
         )._set_parent_(result)
         result.data = meta.data_type._create_(
-            Location(MemoryBlock.ENTITY_DATA, ir_offset, 0, None),
+            Location(MemoryBlock.ENTITY_DATA_ARRAY, ir_offset, 0, None),
         )._set_parent_(result)
         result.info = EntityInfo._create_(
-            Location(MemoryBlock.ENTITY_INFO, ir_info_offset, 0, None),
+            Location(MemoryBlock.ENTITY_INFO_ARRAY, ir_info_offset, 0, None),
         )._set_parent_(result)
         result._set_parent_(ExecuteVoid(offset, info_offset))
         return result
