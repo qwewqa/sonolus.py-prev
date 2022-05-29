@@ -1,9 +1,10 @@
-from sonolus.engine.options import *
-from sonolus.engine.buckets import *
+from sonolus.frontend.options import *
+from sonolus.frontend.buckets import *
 
 __all__ = (
     "OptionConfig",
-    "OptionType",
+    "slider_option",
+    "toggle_option",
     "OptionName",
     "BucketConfig",
     "BucketSprite",

@@ -4,7 +4,7 @@ from typing import TypeVar, Type, ClassVar, Any, ParamSpec, Callable, overload
 
 from sonolus.backend.compiler import CompilationInfo
 from sonolus.backend.ir import IRNode, Location, TempRef, IRConst
-from sonolus.engine.statement import Statement
+from sonolus.frontend.statement import Statement
 
 
 T = TypeVar("T", bound="Value")

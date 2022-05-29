@@ -10,12 +10,12 @@ from typing import (
     Type,
 )
 
-from sonolus.engine.sls_func import sls_func
-from sonolus.engine.control_flow import Execute
-from sonolus.engine.generic_struct import GenericStruct
-from sonolus.engine.primitive import Bool, Num
-from sonolus.engine.tuple import TupleStruct
-from sonolus.engine.void import Void
+from sonolus.frontend.sls_func import sls_func
+from sonolus.frontend.control_flow import Execute
+from sonolus.frontend.generic_struct import GenericStruct
+from sonolus.frontend.primitive import Bool, Num
+from sonolus.frontend.tuple import TupleStruct
+from sonolus.frontend.void import Void
 
 T = TypeVar("T")
 
@@ -77,7 +77,7 @@ class SlsSequence(SlsEnumerable[T], Protocol[T]):
             case cls():
                 return sequence
             case [*values]:
-                from sonolus.engine.array import Array
+                from sonolus.frontend.array import Array
 
                 return Array.of(*values)
             case _:

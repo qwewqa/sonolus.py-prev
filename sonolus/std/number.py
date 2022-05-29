@@ -1,7 +1,7 @@
 import math
 
-from sonolus.engine.sls_func import sls_func
-from sonolus.engine.primitive import Num, invoke_builtin
+from sonolus.frontend.sls_func import sls_func
+from sonolus.frontend.primitive import Num, invoke_builtin
 
 __all__ = (
     "Num",

@@ -9,12 +9,12 @@ from sonolus.backend.graph import FlatCfg, FlatCfgNode
 from sonolus.backend.ir import IRNode
 
 if TYPE_CHECKING:
-    from sonolus.engine.statement import Statement
+    from sonolus.frontend.statement import Statement
     from sonolus.backend.callback import CallbackType
 
 
 def compile_statement(statement: Statement):
-    from sonolus.engine.primitive import Primitive
+    from sonolus.frontend.primitive import Primitive
 
     start = Scope().activate(entry=True)
     end = start.evaluate(statement)

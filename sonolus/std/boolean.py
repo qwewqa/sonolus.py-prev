@@ -1,5 +1,5 @@
-from sonolus.engine.sls_func import sls_func
-from sonolus.engine.primitive import Bool, invoke_builtin
+from sonolus.frontend.sls_func import sls_func
+from sonolus.frontend.primitive import Bool, invoke_builtin
 
 __all__ = (
     "Bool",

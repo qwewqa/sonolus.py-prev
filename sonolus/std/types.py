@@ -2,14 +2,14 @@ from __future__ import annotations
 
 from typing import TypeVar, overload, Type, Any, Callable, ParamSpec
 
-from sonolus.engine.array import Array
-from sonolus.engine.generic_struct import GenericStruct, generic_function
-from sonolus.engine.pointer import Pointer
-from sonolus.engine.primitive import Bool, Num
-from sonolus.engine.struct import Struct, Empty
-from sonolus.engine.tuple import TupleStruct
-from sonolus.engine.value import Value, convert_value
-from sonolus.engine.void import Void
+from sonolus.frontend.array import Array
+from sonolus.frontend.generic_struct import GenericStruct, generic_function
+from sonolus.frontend.pointer import Pointer
+from sonolus.frontend.primitive import Bool, Num
+from sonolus.frontend.struct import Struct, Empty
+from sonolus.frontend.tuple import TupleStruct
+from sonolus.frontend.value import Value, convert_value
+from sonolus.frontend.void import Void
 
 __all__ = (
     "Value",

@@ -8,8 +8,8 @@ from inspect import get_annotations
 from types import FunctionType
 from typing import TypeVar, Any, ClassVar
 
-from sonolus.engine.dataclass_transform import __dataclass_transform__
-from sonolus.engine.struct import Struct
+from sonolus.frontend.dataclass_transform import __dataclass_transform__
+from sonolus.frontend.struct import Struct
 
 
 @__dataclass_transform__(eq_default=True)

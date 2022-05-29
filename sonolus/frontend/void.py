@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from sonolus.backend.ir import IRNode
-from sonolus.engine.statement import Statement
+from sonolus.frontend.statement import Statement
 from sonolus.backend.compiler import Scope
 
 

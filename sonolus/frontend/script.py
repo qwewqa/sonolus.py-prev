@@ -17,12 +17,12 @@ from sonolus.backend.ir import (
     IRConst,
     IRValueType,
 )
-from sonolus.engine.control_flow import ExecuteVoid
-from sonolus.engine.primitive import Num
-from sonolus.engine.statement import Statement
-from sonolus.engine.struct import Empty, Struct
-from sonolus.engine.value import Value, convert_value
-from sonolus.engine.void import Void
+from sonolus.frontend.control_flow import ExecuteVoid
+from sonolus.frontend.primitive import Num
+from sonolus.frontend.statement import Statement
+from sonolus.frontend.struct import Empty, Struct
+from sonolus.frontend.value import Value, convert_value
+from sonolus.frontend.void import Void
 from sonolus.std import sls_func
 
 SHARED_MEMORY_SIZE = 32
@@ -86,13 +86,19 @@ class Script(Statement):
     def terminate(self):
         pass
 
-    @classmethod
     @property
     @sls_func(ast=False)
     def life(cls) -> ScriptLifeStruct:
         return ScriptLifeStruct._create_(
             Location(MemoryBlock.ARCHETYPE_LIFE, cls._get_archetype_id(), 0, None)
         )
+
+    @life.setter
+    def life(self, value: ScriptLifeStruct):
+        if value is not self.life:
+            raise ValueError("Cannot set life of script.")
+
+    life = classmethod(life)
 
     @classmethod
     def create_for_evaluation(cls):

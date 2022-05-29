@@ -2,13 +2,13 @@ from __future__ import annotations
 
 from typing import overload, Callable
 
-from sonolus.engine.sls_func import convert_literal
-from sonolus.engine.array import Array
-from sonolus.engine.control_flow import If
-from sonolus.engine.generic_struct import generic_function
-from sonolus.engine.iterator import *
-from sonolus.engine.primitive import Num, Bool
-from sonolus.engine.struct import Struct
+from sonolus.frontend.sls_func import convert_literal
+from sonolus.frontend.array import Array
+from sonolus.frontend.control_flow import If
+from sonolus.frontend.generic_struct import generic_function
+from sonolus.frontend.iterator import *
+from sonolus.frontend.primitive import Num, Bool
+from sonolus.frontend.struct import Struct
 from sonolus.std.number import NumMax, NumMin
 
 __all__ = (

@@ -4,7 +4,7 @@ from enum import Enum
 from typing import Literal, TYPE_CHECKING, TypeVar, ClassVar
 
 from sonolus.backend.ir import MemoryBlock, Location, IRConst
-from sonolus.engine.primitive import Num, Bool
+from sonolus.frontend.primitive import Num, Bool
 
 
 class OptionName(str, Enum):
@@ -78,41 +78,39 @@ class OptionName(str, Enum):
     SIMLINE_ALPHA = "#SIMLINE_ALPHA"
 
 
-class OptionType:
-    @staticmethod
-    def slider(
-        *,
-        name: str,
-        standard: bool,
-        scope: str | None = None,
-        default: float,
-        min: float,
-        max: float,
-        step: float,
-        display: Literal["number", "percentage"],
-    ) -> Num:
-        return SliderOption(
-            name=name,  # type: ignore
-            standard=standard,
-            scope=scope,
-            default=default,
-            min=min,
-            max=max,
-            step=step,
-            display=display,
-        )
+def slider_option(
+    *,
+    name: str,
+    standard: bool,
+    scope: str | None = None,
+    default: float,
+    min: float,
+    max: float,
+    step: float,
+    display: Literal["number", "percentage"],
+) -> Num:
+    return SliderOption(  # type: ignore
+        name=name,
+        standard=standard,
+        scope=scope,
+        default=default,
+        min=min,
+        max=max,
+        step=step,
+        display=display,
+    )
 
-    @staticmethod
-    def toggle(
-        *,
-        name: str,
-        standard: bool,
-        scope: str | None = None,
-        default: float,
-    ) -> Bool:
-        return ToggleOption(
-            name=name, standard=standard, scope=scope, default=default  # type: ignore
-        )
+
+def toggle_option(
+    *,
+    name: str,
+    standard: bool,
+    scope: str | None = None,
+    default: bool,
+) -> Bool:
+    return ToggleOption(  # type: ignore
+        name=name, standard=standard, scope=scope, default=default
+    )
 
 
 @dataclass(kw_only=True)
@@ -138,9 +136,6 @@ class ToggleOption(Option):
     default: bool
 
     _data_type_ = Bool
-
-
-TOptionConfig = TypeVar("TOptionConfig", bound="OptionConfig")
 
 
 class OptionConfig:

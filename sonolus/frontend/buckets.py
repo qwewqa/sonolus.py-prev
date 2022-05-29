@@ -4,9 +4,9 @@ from dataclasses import dataclass
 from typing import Protocol
 
 from sonolus.backend.ir import Location, MemoryBlock, IRConst
-from sonolus.engine.sls_func import sls_func
-from sonolus.engine.primitive import Num
-from sonolus.engine.struct import Struct
+from sonolus.frontend.sls_func import sls_func
+from sonolus.frontend.primitive import Num
+from sonolus.frontend.struct import Struct
 
 
 @dataclass

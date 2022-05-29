@@ -1,7 +1,7 @@
 from typing import TypeVar, Type
 
-from sonolus.engine.struct import Struct
-from sonolus.engine.value import Transmute, _new_temp_loc
+from sonolus.frontend.struct import Struct
+from sonolus.frontend.value import Transmute, _new_temp_loc
 
 __all__ = ("Transmute", "Unknown", "NewTemp")
 

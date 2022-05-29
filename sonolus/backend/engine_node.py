@@ -43,7 +43,9 @@ def finalize_cfg(cfg: Cfg) -> SimpleNode:
         return FunctionNode("JumpLoop", tuple(nodes))
 
 
-def get_engine_nodes(nodes: Iterable[SimpleNode]) -> tuple[list[dict], dict[SimpleNode, int]]:
+def get_engine_nodes(
+    nodes: Iterable[SimpleNode],
+) -> tuple[list[dict], dict[SimpleNode, int]]:
     mapping = {}
     queue = [*nodes]
     while queue:

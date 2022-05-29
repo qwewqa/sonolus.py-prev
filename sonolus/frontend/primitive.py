@@ -13,11 +13,11 @@ from sonolus.backend.ir import (
     Location,
     IRValueType,
 )
-from sonolus.engine.sls_func import sls_func
+from sonolus.frontend.sls_func import sls_func
 from sonolus.backend.compiler import CompilationInfo
-from sonolus.engine.control_flow import Execute, If
-from sonolus.engine.value import Value, convert_value
-from sonolus.engine.void import Void
+from sonolus.frontend.control_flow import Execute, If
+from sonolus.frontend.value import Value, convert_value
+from sonolus.frontend.void import Void
 
 
 class Primitive(Value):

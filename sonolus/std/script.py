@@ -1,4 +1,4 @@
-from sonolus.engine.script import *
+from sonolus.frontend.script import *
 
 __all__ = (
     "Script",

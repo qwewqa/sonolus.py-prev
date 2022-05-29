@@ -4,10 +4,10 @@ from typing import ClassVar, Generic, TYPE_CHECKING, Tuple, Sequence
 
 from typing_extensions import TypeVarTuple, Unpack
 
-from sonolus.engine.sls_func import convert_literal
-from sonolus.engine.primitive import Num
-from sonolus.engine.struct import Struct
-from sonolus.engine.value import Value
+from sonolus.frontend.sls_func import convert_literal
+from sonolus.frontend.primitive import Num
+from sonolus.frontend.struct import Struct
+from sonolus.frontend.value import Value
 
 Types = TypeVarTuple("Types")
 

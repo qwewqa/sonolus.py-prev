@@ -4,7 +4,7 @@ from .function import sls_func
 from .number import Num
 from .boolean import Bool
 from .types import Void
-from sonolus.engine.primitive import invoke_builtin
+from sonolus.frontend.primitive import invoke_builtin
 
 __all__ = (
     "Play",
