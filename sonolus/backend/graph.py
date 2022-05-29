@@ -6,12 +6,12 @@ import textwrap
 import zlib
 from dataclasses import dataclass
 
-from sonolus.backend.cfg import Cfg
+from sonolus.backend.cfg import CFG
 from sonolus.backend.cfg_traversal import traverse_preorder, traverse_postorder
 from sonolus.backend.ir import IRNode, SSARef
 
 
-def get_flat_cfg(cfg: Cfg) -> FlatCfg:
+def get_flat_cfg(cfg: CFG) -> FlatCfg:
     nodes = [*traverse_preorder(cfg)]
     if cfg.entry_node != cfg.exit_node:
         if cfg.exit_node in nodes:

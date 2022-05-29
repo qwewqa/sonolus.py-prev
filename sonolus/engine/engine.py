@@ -20,11 +20,11 @@ from sonolus.frontend.script import Script
 
 class Engine:
     def __init__(
-            self,
-            scripts: list[Type[Script]],
-            buckets: Type[BucketConfig],
-            options: Type[OptionConfig],
-            ui: UIConfig,
+        self,
+        scripts: list[Type[Script]],
+        buckets: Type[BucketConfig],
+        options: Type[OptionConfig],
+        ui: UIConfig,
     ):
         self.scripts = scripts
         self.buckets = buckets
@@ -56,8 +56,10 @@ class Engine:
         compiled_nodes, mapping = get_engine_nodes(nodes)
         scripts = [
             CompiledScript(
-                callbacks={name: CompiledCallback(mapping[node], order) for name, (node, order) in
-                           compiled[script].items()},
+                callbacks={
+                    name: CompiledCallback(mapping[node], order)
+                    for name, (node, order) in compiled[script].items()
+                },
                 input=script._metadata_.input,
             )
             for script in self.scripts
@@ -94,12 +96,18 @@ class CompiledEngine:
             json.dump(self.get_data(), f)
 
     def get_configuration(self):
-        return {"options": [option.to_dict() for option in self.options], "ui": self.ui.to_dict()}
+        return {
+            "options": [option.to_dict() for option in self.options],
+            "ui": self.ui.to_dict(),
+        }
 
     def get_data(self):
         return {
             "buckets": [bucket.to_dict() for bucket in self.buckets],
-            "archetypes": [{"script": i, "input": script.input} for i, script in enumerate(self.scripts)],
+            "archetypes": [
+                {"script": i, "input": script.input}
+                for i, script in enumerate(self.scripts)
+            ],
             "scripts": [script.to_dict() for script in self.scripts],
             "nodes": self.nodes,
         }

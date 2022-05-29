@@ -1,9 +1,9 @@
-from sonolus.backend.cfg import Cfg, CfgNode
+from sonolus.backend.cfg import CFG, CFGNode
 from sonolus.backend.optimization.optimization_pass import OptimizationPass
 
 
 class CoalesceFlow(OptimizationPass):
-    def run(self, cfg: Cfg):
+    def run(self, cfg: CFG):
         queue = [cfg.entry_node]
         visited = set()
         while queue:
@@ -26,7 +26,7 @@ class CoalesceFlow(OptimizationPass):
                         cfg.replace_node(node, next_node)
                     queue.append(next_node)
                 else:
-                    new_node = CfgNode(
+                    new_node = CFGNode(
                         node.body + next_node.body,
                         next_node.test,
                         {},

@@ -4,7 +4,7 @@ import collections
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, ClassVar
 
-from sonolus.backend.cfg import CfgNode, Cfg, CfgEdge
+from sonolus.backend.cfg import CFGNode, CFG, CFGEdge
 from sonolus.backend.ir import IRNode
 
 if TYPE_CHECKING:
@@ -12,7 +12,7 @@ if TYPE_CHECKING:
     from sonolus.backend.callback import CallbackType
 
 
-def evaluate_statement(statement: Statement):
+def evaluate_statement(statement: Statement) -> CFG:
     from sonolus.frontend.primitive import Primitive
 
     start = Scope().activate(entry=True)
@@ -35,8 +35,8 @@ def evaluate_statement(statement: Statement):
             case Scope() as target:
                 queue.append(target)
 
-    mapping = {scope: CfgNode(scope.body, scope.test) for scope in scopes}
-    cfg = Cfg(mapping[start], mapping[end])
+    mapping = {scope: CFGNode(scope.body, scope.test) for scope in scopes}
+    cfg = CFG(mapping[start], mapping[end])
 
     mapping[start].is_entry = True
     mapping[end].is_exit = True
@@ -47,10 +47,10 @@ def evaluate_statement(statement: Statement):
             case dict() as targets:
                 for condition, target in targets.items():
                     cfg.add_edge(
-                        CfgEdge(cfg_node, mapping[target], condition=condition)
+                        CFGEdge(cfg_node, mapping[target], condition=condition)
                     )
             case Scope() as target:
-                cfg.add_edge(CfgEdge(cfg_node, mapping[target], condition=None))
+                cfg.add_edge(CFGEdge(cfg_node, mapping[target], condition=None))
 
     return cfg
 

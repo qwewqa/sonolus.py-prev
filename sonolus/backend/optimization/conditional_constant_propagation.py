@@ -1,4 +1,4 @@
-from sonolus.backend.cfg import Cfg
+from sonolus.backend.cfg import CFG
 from sonolus.backend.cfg_traversal import traverse_cfg
 from sonolus.backend.ir import IRNode, IRFunc, IRGet, TempRef, IRConst, IRSet, Location
 from sonolus.backend.optimization.get_temp_ref_sizes import get_temp_ref_sizes
@@ -24,7 +24,7 @@ class ConditionalConstantPropagation(OptimizationPass):
         super().__init__()
         self.ref_sizes = None
 
-    def run(self, cfg: Cfg):
+    def run(self, cfg: CFG):
         self.ref_sizes = get_temp_ref_sizes(cfg)
 
         for cfg_node in traverse_cfg(cfg):

@@ -35,16 +35,18 @@ class Quad(Struct):
     @property
     @sls_func(ast=False)
     def coords(self):
-        return Array[Num, 8]([
-            self.bl.x,
-            self.bl.y,
-            self.tl.x,
-            self.tl.y,
-            self.tr.x,
-            self.tr.y,
-            self.br.x,
-            self.br.y,
-        ])
+        return Array[Num, 8](
+            [
+                self.bl.x,
+                self.bl.y,
+                self.tl.x,
+                self.tl.y,
+                self.tr.x,
+                self.tr.y,
+                self.br.x,
+                self.br.y,
+            ]
+        )
 
     @classmethod
     @sls_func

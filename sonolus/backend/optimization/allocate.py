@@ -1,6 +1,6 @@
 import dataclasses
 
-from sonolus.backend.cfg import Cfg
+from sonolus.backend.cfg import CFG
 from sonolus.backend.cfg_traversal import traverse_cfg
 from sonolus.backend.ir import TempRef, MemoryBlock
 from sonolus.backend.ir_visitor import IRTransformer
@@ -11,7 +11,7 @@ BASE_INDEX = 4095
 
 
 class Allocate(OptimizationPass):
-    def run(self, cfg: Cfg):
+    def run(self, cfg: CFG):
         sizes = get_temp_ref_sizes(cfg)
         offset = -1
         mapping = {}

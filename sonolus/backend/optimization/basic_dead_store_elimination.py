@@ -1,6 +1,6 @@
 from collections import defaultdict
 
-from sonolus.backend.cfg import Cfg
+from sonolus.backend.cfg import CFG
 from sonolus.backend.cfg_traversal import traverse_cfg, traverse_postorder
 from sonolus.backend.ir import TempRef, IRFunc
 from sonolus.backend.ir_visitor import IRVisitor, IRTransformer
@@ -9,7 +9,7 @@ from sonolus.backend.optimization.optimization_pass import OptimizationPass
 
 
 class BasicDeadStoreElimination(OptimizationPass):
-    def run(self, cfg: Cfg):
+    def run(self, cfg: CFG):
         visitor = AccessVisitor()
         for cfg_node in traverse_cfg(cfg):
             visitor.visit(cfg_node)
@@ -35,10 +35,10 @@ class DeadStoreTransformer(IRTransformer):
         # We use this to visit pruned nodes, and subtract the access count
         self.visitor = AccessVisitor()
 
-    def visit_CfgNode(self, node):
+    def visit_CFGNode(self, node):
         # We want to visit the body in reverse order
         node.body = node.body[::-1]
-        node = super().visit_CfgNode(node)
+        node = super().visit_CFGNode(node)
         node.body = [n for n in reversed(node.body) if n is not None]
         return node
 

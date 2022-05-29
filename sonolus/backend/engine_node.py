@@ -4,7 +4,7 @@ import itertools
 from dataclasses import dataclass
 from typing import Iterable
 
-from sonolus.backend.cfg import Cfg, CfgNode
+from sonolus.backend.cfg import CFG, CFGNode
 from sonolus.backend.cfg_traversal import traverse_preorder
 from sonolus.backend.ir_visitor import IRTransformer
 
@@ -23,7 +23,7 @@ class FunctionNode:
 SimpleNode = ValueNode | FunctionNode
 
 
-def finalize_cfg(cfg: Cfg) -> SimpleNode:
+def finalize_cfg(cfg: CFG) -> SimpleNode:
     nodes = [*traverse_preorder(cfg)]
     mapping = {node: i for i, node in enumerate(nodes)}
     if cfg.exit_node not in mapping:
@@ -67,13 +67,13 @@ def get_engine_nodes(
 
 
 class FinalizeTransformer(IRTransformer):
-    node_indexes: dict[CfgNode, int]
+    node_indexes: dict[CFGNode, int]
 
     def __init__(self, cfg, mapping):
         self.cfg = cfg
         self.node_indexes = mapping
 
-    def visit_CfgNode(self, node):
+    def visit_CFGNode(self, node):
         body = [self.visit(n) for n in node.body]
         if node.test is not None:
             test = self.visit(node.test)

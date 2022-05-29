@@ -1,4 +1,4 @@
-from sonolus.backend.cfg import CfgNode
+from sonolus.backend.cfg import CFGNode
 from sonolus.backend.cfg_traversal import traverse_cfg
 from sonolus.backend.ir import IRFunc, IRGet, IRSet, Location
 
@@ -9,11 +9,11 @@ class IRVisitor:
         visitor = getattr(self, method)
         return visitor(node)
 
-    def visit_Cfg(self, cfg):
+    def visit_CFG(self, cfg):
         for cfg_node in traverse_cfg(cfg):
             self.visit(cfg_node)
 
-    def visit_CfgNode(self, node):
+    def visit_CFGNode(self, node):
         for n in node.body:
             self.visit(n)
         if node.test is not None:
@@ -41,16 +41,16 @@ class IRVisitor:
 
 
 class IRTransformer(IRVisitor):
-    def visit_Cfg(self, cfg):
+    def visit_CFG(self, cfg):
         raise NotImplementedError()
 
-    def visit_CfgNode(self, node):
+    def visit_CFGNode(self, node):
         body = [self.visit(n) for n in node.body]
         if node.test is not None:
             test = self.visit(node.test)
         else:
             test = None
-        return CfgNode(
+        return CFGNode(
             body, test, node.annotations, node.phi, node.is_entry, node.is_exit
         )
 

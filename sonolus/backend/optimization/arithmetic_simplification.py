@@ -1,7 +1,7 @@
 import functools
 from typing import Tuple
 
-from sonolus.backend.cfg import Cfg
+from sonolus.backend.cfg import CFG
 from sonolus.backend.cfg_traversal import traverse_cfg
 from sonolus.backend.ir import IRConst, IRFunc, IRValueType
 from sonolus.backend.ir_visitor import IRTransformer
@@ -9,7 +9,7 @@ from sonolus.backend.optimization.optimization_pass import OptimizationPass
 
 
 class ArithmeticSimplification(OptimizationPass):
-    def run(self, cfg: Cfg):
+    def run(self, cfg: CFG):
         transformer = ArithmeticSimplificationTransformer()
         for cfg_node in [*traverse_cfg(cfg)]:
             cfg.replace_node(cfg_node, transformer.visit(cfg_node))

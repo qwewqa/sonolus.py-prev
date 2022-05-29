@@ -1,9 +1,9 @@
 from typing import Iterator
 
-from sonolus.backend.cfg import Cfg, CfgNode
+from sonolus.backend.cfg import CFG, CFGNode
 
 
-def traverse_cfg(cfg: Cfg) -> Iterator[CfgNode]:
+def traverse_cfg(cfg: CFG) -> Iterator[CFGNode]:
     # Traverse the cfg in arbitrary order
     visited = set()
     queue = [cfg.entry_node]
@@ -17,8 +17,8 @@ def traverse_cfg(cfg: Cfg) -> Iterator[CfgNode]:
 
 
 def traverse_postorder(
-    cfg: Cfg, node: CfgNode = None, visited: set = None
-) -> Iterator[CfgNode]:
+    cfg: CFG, node: CFGNode = None, visited: set = None
+) -> Iterator[CFGNode]:
     if node is None:
         node = cfg.entry_node
     if visited is None:
@@ -33,8 +33,8 @@ def traverse_postorder(
 
 
 def traverse_preorder(
-    cfg: Cfg, node: CfgNode = None, visited: set = None
-) -> Iterator[CfgNode]:
+    cfg: CFG, node: CFGNode = None, visited: set = None
+) -> Iterator[CFGNode]:
     if node is None:
         node = cfg.entry_node
     if visited is None:

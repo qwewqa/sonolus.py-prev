@@ -2,13 +2,13 @@ from __future__ import annotations
 
 from abc import ABC
 
-from sonolus.backend.cfg import Cfg
+from sonolus.backend.cfg import CFG
 
 
 class OptimizationPass(ABC):
     requires: tuple[AnalysisPass, ...] = ()
 
-    def run(self, cfg: Cfg):
+    def run(self, cfg: CFG):
         ...
 
 
@@ -16,12 +16,12 @@ class AnalysisPass(ABC):
     requires: tuple[AnalysisPass, ...] = ()
 
     @classmethod
-    def analyze(cls, cfg: Cfg):
+    def analyze(cls, cfg: CFG):
         ...
 
 
 def run_optimization_passes(
-    cfg: Cfg,
+    cfg: CFG,
     passes: list[OptimizationPass],
 ):
     for opt_pass in passes:

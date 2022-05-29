@@ -1,5 +1,5 @@
 from sonolus.backend.callback import DEBUG_CALLBACK_TYPE
-from sonolus.backend.cfg import Cfg
+from sonolus.backend.cfg import CFG
 from sonolus.backend.evaluation import evaluate_statement, CompilationInfo
 from sonolus.backend.graph import get_flat_cfg
 from sonolus.backend.ir import IRComment
@@ -69,6 +69,6 @@ def evaluate_function(fn, /):
 
 
 def visualize(fn, /):
-    if isinstance(fn, Cfg):
+    if isinstance(fn, CFG):
         return get_flat_cfg(fn)
     return get_flat_cfg(evaluate_function(fn))

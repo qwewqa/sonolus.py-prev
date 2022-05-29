@@ -1,7 +1,7 @@
 import itertools
 import operator
 
-from sonolus.backend.cfg import Cfg
+from sonolus.backend.cfg import CFG
 from sonolus.backend.cfg_traversal import traverse_cfg
 from sonolus.backend.ir import TempRef, Location, IRConst
 from sonolus.backend.ir_visitor import IRVisitor, IRTransformer
@@ -10,7 +10,7 @@ from sonolus.backend.optimization.optimization_pass import OptimizationPass
 
 
 class AggregateToScalar(OptimizationPass):
-    def run(self, cfg: Cfg):
+    def run(self, cfg: CFG):
         visitor = _AggregateAccessVisitor(cfg)
         for cfg_node in traverse_cfg(cfg):
             visitor.visit(cfg_node)
