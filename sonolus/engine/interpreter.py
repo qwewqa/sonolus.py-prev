@@ -45,6 +45,7 @@ class CFGInterpreter:
         *,
         blocks: dict[TempRef | int, list[float]] = None,
         functions: dict[str, Callable[[list[float]], float]] = None,
+        allow_uninitialized_reads: bool = False,
         seed=None,
     ):
         if functions is None:
@@ -54,6 +55,7 @@ class CFGInterpreter:
 
         self.functions = functions
         self.blocks = blocks
+        self.allow_uninitialized = allow_uninitialized_reads
 
         if seed is not None:
             self.random = random.Random(seed)
@@ -91,10 +93,20 @@ class CFGInterpreter:
             case IRGet(location):
                 ref = self.get_block(location.ref)
                 index = int(location.base + self.run_node(location.offset))
+                if self.allow_uninitialized:
+                    if ref not in self.blocks:
+                        self.blocks[ref] = [0] * (index + 1)
+                    elif index >= len(self.blocks[ref]):
+                        self.blocks[ref] += [0] * (index + 1 - len(self.blocks[ref]))
                 return self.blocks[ref][index]
             case IRSet(location, value):
                 ref = self.get_block(location.ref)
                 index = int(location.base + self.run_node(location.offset))
+                if self.allow_uninitialized:
+                    if ref not in self.blocks:
+                        self.blocks[ref] = [0] * (index + 1)
+                    elif index >= len(self.blocks[ref]):
+                        self.blocks[ref] += [0] * (index + 1 - len(self.blocks[ref]))
                 self.blocks[ref][index] = self.run_node(value)
                 return 0
             case IRFunc(name, args):

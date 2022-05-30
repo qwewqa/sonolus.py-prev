@@ -69,6 +69,11 @@ class CompilationInfo:
             raise RuntimeError("No compilation is currently active.")
         return cls._current
 
+    @classmethod
+    @property
+    def active(cls):
+        return cls._current is not None
+
     def __enter__(self):
         if CompilationInfo._current is not None:
             raise RuntimeError("A compilation is already active.")

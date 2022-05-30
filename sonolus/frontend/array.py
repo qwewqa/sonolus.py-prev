@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import dataclasses
 from typing import (
     ClassVar,
     Type,
@@ -152,6 +153,15 @@ def _create_typed_array_class(type_: Type[Value]):
                         idx = convert_value(idx, Num)
                         match self._value_:
                             case Location() as loc:
+                                if (constant_index := idx.constant()) is not None:
+                                    idx = constant_index
+                                    return self.contained_type._create_(
+                                        dataclasses.replace(
+                                            loc,
+                                            base=loc.base
+                                            + idx * self.contained_type._size_,
+                                        )
+                                    )._set_parent_(self)
                                 new_offset = Num._create_(
                                     loc.offset
                                 ) + idx * Num._create_(self.contained_type._size_)
@@ -176,7 +186,7 @@ def _create_typed_array_class(type_: Type[Value]):
                                     )
                                 )._set_parent_(parent)
                             case tuple() as values:
-                                if (constant_index := idx.ir().constant()) is not None:
+                                if (constant_index := idx.constant()) is not None:
                                     if int(constant_index) != constant_index:
                                         raise ValueError(
                                             "Array may only be subscripted with integers."
@@ -250,6 +260,9 @@ def _create_typed_array_class(type_: Type[Value]):
                                 return cls(*s)
                             case _:
                                 return NotImplemented
+
+                    def _const_evaluate_(self, runner):
+                        return type(self)([v._const_evaluate_(runner) for v in self])
 
                 SizedArray.__name__ = f"Array_{type_.__name__}_{size}"
                 SizedArray.__qualname__ = SizedArray.__name__

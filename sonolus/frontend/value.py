@@ -98,6 +98,12 @@ class Value(Statement):
         """
         return NotImplemented
 
+    def _const_evaluate_(self: T, runner: Callable[[IRNode], float]) -> T:
+        """
+        Evaluates this value as a constant.
+        """
+        raise NotImplementedError
+
     @classmethod
     @overload
     def new(cls: Callable[P, TValue], *args: P.args, **kwargs: P.kwargs) -> TValue:

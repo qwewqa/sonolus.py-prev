@@ -23,7 +23,7 @@ from sonolus.frontend.void import Void
 class Primitive(Value):
     _size_: int = 1
 
-    def __init__(self, value=0):
+    def __init__(self, value: float = 0):
         self._value_ = value
         self._check_readable()
 
@@ -92,6 +92,9 @@ class Primitive(Value):
         result: cls = super()._create_(value)  # type: ignore
         result._check_readable()
         return result
+
+    def _const_evaluate_(self, runner):
+        return type(self)(runner(self.ir()))._standalone_()
 
     def _check_readable(self):
         if CompilationInfo._current is None:

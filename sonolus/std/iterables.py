@@ -394,7 +394,7 @@ class Range(Struct, SlsSequence[Num]):
         super().__init__(start, stop, step)
 
     @sls_func
-    def __len__(self, _ret: Num = new()):
+    def _len_(self, _ret: Num = new()):
         if self.step > 0:
             return Max((self.stop - self.start - 1) // self.step + 1, 0)
         else:
