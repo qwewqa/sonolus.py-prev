@@ -33,7 +33,6 @@ from sonolus.backend.ir import (
     IRSet,
     IRComment,
     IRFunc,
-    MemoryBlock,
 )
 from sonolus.backend.optimization.get_temp_ref_sizes import get_temp_ref_sizes
 from sonolus.frontend.statement import Statement

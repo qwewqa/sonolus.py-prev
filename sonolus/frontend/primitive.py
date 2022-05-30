@@ -12,7 +12,6 @@ from sonolus.backend.ir import (
     Location,
     IRValueType,
 )
-from sonolus.engine.interpreter import run_ir
 from sonolus.frontend.sls_func import sls_func
 from sonolus.backend.evaluation import CompilationInfo
 from sonolus.frontend.control_flow import Execute, If
@@ -43,11 +42,6 @@ class Primitive(Value):
         match self._value_:
             case int() | float() | bool() as constant:
                 return constant
-            case IRNode() as node:
-                try:
-                    return run_ir(node)
-                except (TypeError, IndexError):
-                    return None
             case _:
                 return None
 
