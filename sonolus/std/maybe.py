@@ -51,7 +51,12 @@ class Maybe(GenericStruct, Generic[T], type_vars=MaybeTypeVars):
     @generic_method
     @sls_func
     def unwrap(self) -> T:
-        return self._value
+        return self._value.copy()
+
+    @generic_method
+    @sls_func
+    def unwrap_or(self, default: T) -> T:
+        return self._value if self._exists else default
 
     @generic_method
     @sls_func
