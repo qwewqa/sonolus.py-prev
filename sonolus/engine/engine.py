@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import gzip
+import itertools
 import json
 from dataclasses import dataclass
 from pathlib import Path
@@ -10,21 +11,23 @@ from sonolus.backend.evaluation import CompilationInfo, evaluate_statement
 from sonolus.backend.engine_node import finalize_cfg, get_engine_nodes
 from sonolus.backend.optimization.optimization_pass import run_optimization_passes
 from sonolus.backend.optimization.optmization_presets import DEFAULT_OPTIMIZATION_PRESET
+from sonolus.engine.level import Entity, EntityData, Level
 from sonolus.engine.ui import UIConfig
 from sonolus.frontend.buckets import BucketConfig, Bucket
 from sonolus.frontend.control_flow import Execute
 from sonolus.frontend.options import OptionConfig, Option
 from sonolus.frontend.primitive import Bool, Primitive, Num
 from sonolus.frontend.script import Script
+from sonolus.frontend.value import Value
 
 
 class Engine:
     def __init__(
-        self,
-        scripts: list[Type[Script]],
-        buckets: Type[BucketConfig],
-        options: Type[OptionConfig],
-        ui: UIConfig,
+            self,
+            scripts: list[Type[Script]],
+            buckets: Type[BucketConfig],
+            options: Type[OptionConfig],
+            ui: UIConfig,
     ):
         self.scripts = scripts
         self.buckets = buckets
@@ -71,6 +74,20 @@ class Engine:
             scripts=scripts,
             nodes=compiled_nodes,
         )
+
+    def make_level(self, entries: list[tuple[Type[Script], Value]], /) -> Level:
+        script_ids = {script: i for i, script in enumerate(self.scripts)}
+        entities = []
+        for script, data in entries:
+            data = [node.constant() for node in data._flatten_()]
+            if any(v is None for v in data):
+                raise ValueError("Expected all entity data to be constants.")
+            index = sum(1 for _ in itertools.takewhile(lambda v: v == 0, data))
+            data = data[index:]
+            while data and data[-1] == 0:
+                data.pop()
+            entities.append(Entity(script_ids[script], EntityData(index, data)))
+        return Level(entities)
 
 
 @dataclass

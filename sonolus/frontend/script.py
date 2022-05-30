@@ -3,7 +3,7 @@ from __future__ import annotations
 import warnings
 from dataclasses import dataclass
 from enum import Enum
-from typing import TypeVar, Type, Callable, ClassVar, get_type_hints
+from typing import TypeVar, Type, Callable, ClassVar, get_type_hints, Protocol
 
 from sonolus.backend.callback import CallbackType, CALLBACK_TYPES
 from sonolus.backend.evaluation import CompilationInfo
@@ -29,6 +29,11 @@ SHARED_MEMORY_SIZE = 32
 ENTITY_INFO_SIZE = 3
 
 TScript = TypeVar("TScript", bound="Script")
+T = TypeVar("T", bound="Value")
+
+
+class _LevelScript(Protocol[T]):
+    data: T
 
 
 class Script(Statement):
@@ -100,6 +105,14 @@ class Script(Statement):
             raise ValueError("Cannot set life of script.")
 
     life = classmethod(life)
+
+    @classmethod
+    def entity(cls: Type[_LevelScript[T]], data: T = None) -> tuple[Type[_LevelScript[T]], T]:
+        if data is None:
+            data = cls._metadata_.data_type._default_()
+        elif not isinstance(data, cls._metadata_.data_type):
+            data = convert_value(data, cls._metadata_.data_type)
+        return cls, data
 
     @classmethod
     def create_for_evaluation(cls):
