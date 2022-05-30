@@ -1,13 +1,14 @@
 from __future__ import annotations
 
-from typing import Generic, TypeVar, NamedTuple
+from typing import Generic, TypeVar, NamedTuple, Type, Callable, TYPE_CHECKING
 
 from sonolus.frontend.generic_struct import GenericStruct, generic_method
 
-__all__ = ("Maybe",)
+__all__ = ("Maybe", "Some", "Nothing")
 
 from sonolus.frontend.primitive import Bool
 from sonolus.frontend.sls_func import sls_func
+from sonolus.frontend.struct import Struct
 
 T = TypeVar("T")
 
@@ -60,3 +61,36 @@ class Maybe(GenericStruct, Generic[T], type_vars=MaybeTypeVars):
             self._value @= value._value
         else:
             self._exists @= False
+
+    @classmethod
+    def _convert_(cls, value) -> Maybe[T]:
+        if isinstance(value, cls):
+            return value
+        elif isinstance(value, Maybe) and value.type_vars.T is _Dummy:
+            return cls(False)
+        else:
+            return NotImplemented
+
+
+class _Some:
+    def __call__(self, value: T) -> Maybe[T]:
+        return Maybe[type(value)].some(value)
+
+    def __getitem__(self, item: Type[T]) -> Callable[[T], Maybe[T]]:
+        return Maybe[item].some
+
+
+class _Dummy(Struct):
+    pass
+
+
+class _Nothing:
+    def __call__(self) -> Maybe:
+        return Maybe[_Dummy].nothing()
+
+    def __getitem__(self, item: Type[T]) -> Callable[[], Maybe[T]]:
+        return Maybe[item].nothing
+
+
+Some = _Some()
+Nothing = _Nothing()

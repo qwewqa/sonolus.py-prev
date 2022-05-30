@@ -21,5 +21,6 @@ DEFAULT_OPTIMIZATION_PRESET = [
     AggregateToScalar(),
     BasicDeadCodeElimination(),
     BasicDeadStoreElimination(),
+    CoalesceFlow(),
     Allocate(),
 ]
