@@ -7,6 +7,7 @@ from .draw import *
 from .easing import *
 from .effects import *
 from .function import *
+from .maybe import *
 from .number import *
 from .point import *
 from .script import *

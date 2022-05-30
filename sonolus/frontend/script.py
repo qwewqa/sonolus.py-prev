@@ -246,3 +246,9 @@ class ScriptLifeStruct(Struct):
     great_life_increment: Num
     good_life_increment: Num
     miss_life_increment: Num
+
+
+@dataclass
+class LevelScriptData:
+    script: Type[Script]
+    data: Value

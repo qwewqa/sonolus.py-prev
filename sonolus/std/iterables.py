@@ -5,7 +5,7 @@ from typing import overload, Callable
 from sonolus.frontend.sls_func import convert_literal
 from sonolus.frontend.array import Array
 from sonolus.frontend.control_flow import If
-from sonolus.frontend.generic_struct import generic_function
+from sonolus.frontend.generic_struct import generic_method
 from sonolus.frontend.iterator import *
 from sonolus.frontend.primitive import Num, Bool
 from sonolus.frontend.struct import Struct
@@ -437,14 +437,14 @@ class SizeLimitedArray(
     # noinspection PyUnresolvedReferences
     values: Array[T, max_size]
 
-    @generic_function
+    @generic_method
     @sls_func
     def append(self, value: T):
         if self.size >= self.type_vars.max_size:
             return
         self.append_unsafe(value)
 
-    @generic_function
+    @generic_method
     @sls_func
     def append_unsafe(self, value: T):
         """
@@ -456,14 +456,14 @@ class SizeLimitedArray(
         self.values[self.size] @= value
         self.size += 1
 
-    @generic_function
+    @generic_method
     @sls_func
     def pop(self, _ret: T = new()):
         if self.size == 0:
             return
         return self.pop_unsafe()
 
-    @generic_function
+    @generic_method
     @sls_func
     def pop_unsafe(self, _ret: T = new()):
         """

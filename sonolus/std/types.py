@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import TypeVar, overload, Type, Any, Callable, ParamSpec
 
 from sonolus.frontend.array import Array
-from sonolus.frontend.generic_struct import GenericStruct, generic_function
+from sonolus.frontend.generic_struct import GenericStruct, generic_method
 from sonolus.frontend.pointer import Pointer
 from sonolus.frontend.primitive import Bool, Num
 from sonolus.frontend.struct import Struct, Empty
@@ -20,7 +20,7 @@ __all__ = (
     "Pointer",
     "Void",
     "GenericStruct",
-    "generic_function",
+    "generic_method",
     "new",
     "alloc",
     "default_factory",

@@ -95,9 +95,9 @@ class GenericStruct(Struct, _no_init_struct_=True):
 T = TypeVar("T", bound=FunctionType)
 
 
-def generic_function(fn: T = None, /) -> T:
+def generic_method(fn: T = None, /) -> T:
     """
-    Decorator to make a function generic.
+    Decorator to make a method generic.
     Causes the function to be re-evaluated with generic type variables
     injected into the global namespace for each concrete type.
     Should only be used on methods of a generic struct.
@@ -105,7 +105,7 @@ def generic_function(fn: T = None, /) -> T:
     """
 
     def wrap(fn):
-        return GenericFunction(fn)
+        return GenericMethod(fn)
 
     if fn is None:
         return wrap
@@ -113,27 +113,19 @@ def generic_function(fn: T = None, /) -> T:
     return wrap(fn)
 
 
-class GenericFunction:
+class GenericMethod:
     def __init__(self, fn: FunctionType):
         self.fn = fn
-        original = getattr(fn, "__wrapped__", fn)
-        self.source_file = inspect.getsourcefile(original)
+        self.original = fn
+        while hasattr(self.original, "__wrapped__"):
+            self.original = self.original.__wrapped__
+        self.source_file = inspect.getsourcefile(self.original)
 
         lines, lnum = inspect.getsourcelines(fn)
         tree = ast.parse(textwrap.dedent("".join(lines)))
         ast.increment_lineno(tree, lnum - 1)
-        self.transformed = GenericFunctionTransformer().visit(tree)
+        self.transformed = GenericMethodTransformer().visit(tree)
         ast.fix_missing_locations(self.transformed)
-
-        # Same as how it's done in ast_function
-        closure = inspect.getclosurevars(original)
-        self.gbl = {}
-        self.gbl.update(vars(inspect.getmodule(fn)))
-        self.gbl.update(fn.__globals__)
-        self.gbl.update(closure.globals)
-        self.gbl.update(closure.nonlocals)
-        self.gbl.update(closure.builtins)
-        self.loc = {}
 
         self.cache = {}
 
@@ -153,19 +145,25 @@ class GenericFunction:
         else:  # Concrete generic class
             if owner not in self.cache:
                 compiled = compile(self.transformed, self.source_file, "exec")
-                gbl = {**self.gbl}
-                loc = {**self.loc}
+                closure = inspect.getclosurevars(self.original)
+                gbl = {}
+                gbl.update(vars(inspect.getmodule(self.original)))
+                gbl.update(self.original.__globals__)
+                gbl.update(closure.globals)
+                gbl.update(closure.nonlocals)
+                gbl.update(closure.builtins)
                 gbl.update(
                     {k: v for k, v in zip(owner.type_vars._fields, owner.type_vars)}
                 )
                 gbl["type_vars"] = owner.type_vars
+                loc = {}
                 exec(compiled, gbl, loc)
                 concrete = loc[self.fn.__name__]
                 self.cache[owner] = concrete
             return self.cache[owner].__get__(instance, owner)
 
 
-class GenericFunctionTransformer(ast.NodeTransformer):
+class GenericMethodTransformer(ast.NodeTransformer):
     # Remove first decorator
     def visit_FunctionDef(self, node: ast.FunctionDef) -> Any:
         result = ast.FunctionDef(
