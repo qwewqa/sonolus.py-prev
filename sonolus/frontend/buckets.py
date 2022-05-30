@@ -81,7 +81,7 @@ class BucketConfig:
             bucket_entries[k] = v
             accessor = BucketStruct._create_(
                 Location(MemoryBlock.LEVEL_BUCKET, IRConst(0), offset, None),
-            )._standalone_()
+            )._static_()
             accessor.index = index
             setattr(cls, k, accessor)
             offset += BucketStruct._size_

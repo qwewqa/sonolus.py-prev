@@ -9,11 +9,11 @@ TStatement = TypeVar("TStatement", bound="Statement")
 
 class Statement:
     _parent_statement_: Statement | None = None
-    _is_standalone_: bool = False
+    _is_static_: bool = False
 
     def __new__(cls, *args, **kwargs):
         result = object.__new__(cls)
-        result._is_standalone_ = not CompilationInfo.active
+        result._is_static_ = not CompilationInfo.active
         return result
 
     def _evaluate_(self, scope: Scope) -> Scope:

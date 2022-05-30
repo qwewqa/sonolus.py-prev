@@ -38,14 +38,14 @@ class Value(Statement):
         """
         raise NotImplementedError
 
-    def _standalone_(self: TValue) -> TValue:
+    def _static_(self: TValue) -> TValue:
         """
-        Marks this value standalone and returns it.
+        Marks this value static and returns it.
         Standalone values are not evaluated by the compiler, so this is for values
         that don't require any initialization and do not have any side effects.
         This is primarily for constants and dereferenced values of constant pointers.
         """
-        self._is_standalone_ = True
+        self._is_static_ = True
         return self
 
     @classmethod
@@ -74,9 +74,9 @@ class Value(Statement):
     @classmethod
     def _default_(cls: Type[TValue]) -> TValue:
         """
-        Returns a new standalone instance of the default value of this class.
+        Returns a new static instance of the default value of this class.
         """
-        return cls()._standalone_()
+        return cls()._static_()
 
     @classmethod
     def _convert_(cls: Type[TValue], value) -> TValue:

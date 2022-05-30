@@ -122,7 +122,7 @@ class Scope:
         scope = self
         if statement is None:
             return scope
-        if statement._is_standalone_:
+        if statement._is_static_:
             return scope
         scope = scope.evaluate(statement._parent_statement_)
         if statement in scope.evaluated:

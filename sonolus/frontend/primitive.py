@@ -88,7 +88,7 @@ class Primitive(Value):
         return result
 
     def _const_evaluate_(self, runner):
-        return type(self)(runner(self.ir()))._standalone_()
+        return type(self)(runner(self.ir()))._static_()
 
     def _check_readable(self):
         if CompilationInfo._current is None:
