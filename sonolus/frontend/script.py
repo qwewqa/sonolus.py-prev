@@ -107,7 +107,9 @@ class Script(Statement):
     life = classmethod(life)
 
     @classmethod
-    def entity(cls: Type[_LevelScript[T]], data: T = None) -> tuple[Type[_LevelScript[T]], T]:
+    def entity(
+        cls: Type[_LevelScript[T]], data: T = None
+    ) -> tuple[Type[_LevelScript[T]], T]:
         if data is None:
             data = cls._metadata_.data_type._default_()
         elif not isinstance(data, cls._metadata_.data_type):

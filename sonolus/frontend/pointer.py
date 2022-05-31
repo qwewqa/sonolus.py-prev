@@ -28,9 +28,11 @@ class Pointer(Struct, Generic[T]):
     def deref_as(self, type_: Type[TTarget]) -> TTarget:
         if not Value.is_value_class(type_):
             raise TypeError("Can only dereference as a subclass of Value.")
-        if (block := self.block.constant()) is not None and (
-            index := self.index.constant()
-        ) is not None and self._is_static_:
+        if (
+            (block := self.block.constant()) is not None
+            and (index := self.index.constant()) is not None
+            and self._is_static_
+        ):
             return type_._create_(Location(block, IRConst(0), index, 1))._set_static_()
         return type_._create_(
             Location(self.block.ir(), self.index.ir(), 0, None)

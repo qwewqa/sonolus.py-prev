@@ -1,7 +1,7 @@
 import functools
 import inspect
 from types import FunctionType
-from typing import Callable, TypeVar, get_type_hints
+from typing import Callable, TypeVar, get_type_hints, overload
 
 from sonolus.frontend.ast_function import process_ast_function
 from sonolus.frontend.statement import Statement
@@ -10,7 +10,17 @@ from sonolus.frontend.value import convert_value
 T = TypeVar("T", bound=Callable)
 
 
-def sls_func(fn: T = None, *, ast: bool = True) -> T:
+@overload
+def sls_func(fn: T, *, ast: bool = True) -> T:
+    pass
+
+
+@overload
+def sls_func(*, ast: bool = True) -> Callable[[T], T]:
+    pass
+
+
+def sls_func(fn=None, *, ast: bool = True):
     def wrap(fn):
         return _lazy_process(fn, ast)
 

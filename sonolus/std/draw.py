@@ -32,6 +32,14 @@ class Quad(Struct):
     tr: Point
     br: Point
 
+    @sls_func
+    def __add__(self, pt: Point, /) -> Quad:
+        return Quad(self.bl + pt, self.tl + pt, self.tr + pt, self.br + pt)
+
+    @sls_func
+    def __sub__(self, pt: Point, /) -> Quad:
+        return Quad(self.bl - pt, self.tl - pt, self.tr - pt, self.br - pt)
+
     @property
     @sls_func(ast=False)
     def coords(self):
@@ -63,7 +71,7 @@ class Quad(Struct):
     @classmethod
     @sls_func
     def rectangle(cls, left: Num, right: Num, top: Num, bottom: Num):
-        return cls.new(
+        return cls(
             bl=Point(left, bottom),
             tl=Point(left, top),
             tr=Point(right, top),

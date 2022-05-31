@@ -9,6 +9,7 @@ from sonolus.frontend.generic_struct import generic_method
 from sonolus.frontend.iterator import *
 from sonolus.frontend.primitive import Num, Bool
 from sonolus.frontend.struct import Struct
+from sonolus.std import Maybe, Nothing, Some
 from sonolus.std.number import NumMax, NumMin
 
 __all__ = (
@@ -29,7 +30,9 @@ __all__ = (
     "Reduce",
     "IsEmpty",
     "IsNotEmpty",
-    "SizeLimitedArray",
+    "LimitedSizeArray",
+    "sequence_iterator",
+    "indexed_sequence_iterator",
 )
 
 from sonolus.std.types import alloc, new
@@ -48,7 +51,7 @@ def Map(f: Callable[[T], R], iterable: SlsIterable[T], /) -> SlsIterable[R]:
 
 @sls_func
 def SeqMap(f: Callable[[T], R], sequence: SlsSequence[T], /) -> SlsSequence[R]:
-    result = SizeLimitedArray[type(f(sequence[0])), sequence._max_size_()].alloc()
+    result = LimitedSizeArray[type(f(sequence[0])), sequence._max_size_()].alloc()
     result.size @= Len(sequence)
     for i, v in Enumerate(sequence):
         result[i] @= f(v)
@@ -63,7 +66,7 @@ def Filter(f: Callable[[T], Bool], iterable: SlsIterable[T], /) -> SlsIterable[T
 
 @sls_func
 def SeqFilter(f: Callable[[T], Bool], sequence: SlsSequence[T], /) -> SlsSequence[T]:
-    result = alloc(SizeLimitedArray[sequence._contained_type_(), sequence._max_size_()])
+    result = alloc(LimitedSizeArray[sequence._contained_type_(), sequence._max_size_()])
     result.size @= 0
     for v in sequence:
         if f(v):
@@ -425,13 +428,13 @@ class Range(Struct, SlsSequence[Num]):
             raise ValueError("Range is not statically iterable.")
 
 
-class SizeLimitedArrayTypeVars(NamedTuple):
+class LimitedSizeArrayTypeVars(NamedTuple):
     T: type
     max_size: int
 
 
-class SizeLimitedArray(
-    SlsSequence[T], GenericStruct, Generic[T], type_vars=SizeLimitedArrayTypeVars
+class LimitedSizeArray(
+    SlsSequence[T], GenericStruct, Generic[T], type_vars=LimitedSizeArrayTypeVars
 ):
     size: Num
     # noinspection PyUnresolvedReferences
@@ -439,10 +442,11 @@ class SizeLimitedArray(
 
     @generic_method
     @sls_func
-    def append(self, value: T):
+    def append(self, value: T) -> Bool:
         if self.size >= self.type_vars.max_size:
-            return
+            return False
         self.append_unsafe(value)
+        return True
 
     @generic_method
     @sls_func
@@ -458,10 +462,10 @@ class SizeLimitedArray(
 
     @generic_method
     @sls_func
-    def pop(self, _ret: T = new()):
+    def pop(self, _ret: T = new()) -> Maybe[T]:
         if self.size == 0:
-            return
-        return self.pop_unsafe()
+            return Nothing()
+        return Some(self.pop_unsafe())
 
     @generic_method
     @sls_func

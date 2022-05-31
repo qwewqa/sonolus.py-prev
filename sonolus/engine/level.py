@@ -10,9 +10,7 @@ class Level:
     entities: list[Entity]
 
     def to_dict(self):
-        return {
-            "entities": [entity.to_dict() for entity in self.entities]
-        }
+        return {"entities": [entity.to_dict() for entity in self.entities]}
 
     def save(self, path):
         with open(path, "wb") as f:
@@ -29,10 +27,7 @@ class Entity:
     data: EntityData
 
     def to_dict(self):
-        return {
-            "archetype": self.archetype,
-            "data": self.data.to_dict()
-        }
+        return {"archetype": self.archetype, "data": self.data.to_dict()}
 
 
 @dataclass
@@ -41,7 +36,4 @@ class EntityData:
     values: list[float]
 
     def to_dict(self):
-        return {
-            "index": self.index,
-            "values": self.values
-        }
+        return {"index": self.index, "values": self.values}

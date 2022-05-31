@@ -23,11 +23,11 @@ from sonolus.frontend.value import Value
 
 class Engine:
     def __init__(
-            self,
-            scripts: list[Type[Script]],
-            buckets: Type[BucketConfig],
-            options: Type[OptionConfig],
-            ui: UIConfig,
+        self,
+        scripts: list[Type[Script]],
+        buckets: Type[BucketConfig],
+        options: Type[OptionConfig],
+        ui: UIConfig,
     ):
         self.scripts = scripts
         self.buckets = buckets
