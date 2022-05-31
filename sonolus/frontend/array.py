@@ -270,7 +270,9 @@ def _create_typed_array_class(type_: Type[Value]):
 
                     def __eq__(self, other):
                         other = convert_value(other, type(self))
-                        result = invoke_builtin("And", [a.__eq__(b) for a, b in zip(self, other)], Bool)
+                        result = invoke_builtin(
+                            "And", [a.__eq__(b) for a, b in zip(self, other)], Bool
+                        )
                         result.override_truthiness = self is other
                         return result
 

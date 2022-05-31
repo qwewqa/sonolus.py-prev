@@ -186,7 +186,7 @@ def Max(*args, **kwargs):
         if key is None:
             return Execute(
                 max_value := args[0].copy(),
-                *(If(v > max_value, max_value << v) for v in args[1:]),
+                *(If(v > max_value, max_value @ v) for v in args[1:]),
                 max_value,
             )
         else:
@@ -196,7 +196,7 @@ def Max(*args, **kwargs):
                 *(
                     Execute(
                         keyed := key(v),
-                        If(keyed > max_key, Execute(max_value << v, max_key << keyed)),
+                        If(keyed > max_key, Execute(max_value @ v, max_key @ keyed)),
                     )
                     for v in args[1:]
                 ),
@@ -279,7 +279,7 @@ def Min(*args, **kwargs):
         if key is None:
             return Execute(
                 min_value := args[0].copy(),
-                *(If(v < min_value, min_value << v) for v in args[1:]),
+                *(If(v < min_value, min_value @ v) for v in args[1:]),
                 min_value,
             )
         else:
@@ -289,7 +289,7 @@ def Min(*args, **kwargs):
                 *(
                     Execute(
                         keyed := key(v),
-                        If(keyed < min_key, Execute(min_value << v, min_key << keyed)),
+                        If(keyed < min_key, Execute(min_value @ v, min_key @ keyed)),
                     )
                     for v in args[1:]
                 ),

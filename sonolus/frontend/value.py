@@ -133,14 +133,52 @@ class Value(Statement):
         """
         See _assign_.
         """
-        return self._assign_(other)
+        return self._dup_()._set_parent_(self._assign_(other))
 
-    def __lshift__(self, other):
+    def __matmul__(self, other):
         """
         See _assign_.
         This is an alternative to @= in places where an expression is required.
         """
         return self._assign_(other)
+
+    # The following is so subclasses don't have to manually implement inplace operators.
+
+    def __iadd__(self, other):
+        return self._dup_()._set_parent_(self._assign_(self + other))
+
+    def __iand__(self, other):
+        return self._dup_()._set_parent_(self._assign_(self & other))
+
+    def __ifloordiv__(self, other):
+        return self._dup_()._set_parent_(self._assign_(self // other))
+
+    def __ilshift__(self, other):
+        return self._dup_()._set_parent_(self._assign_(self << other))
+
+    def __imod__(self, other):
+        return self._dup_()._set_parent_(self._assign_(self % other))
+
+    def __imul__(self, other):
+        return self._dup_()._set_parent_(self._assign_(self * other))
+
+    def __ior__(self, other):
+        return self._dup_()._set_parent_(self._assign_(self | other))
+
+    def __ipow__(self, other):
+        return self._dup_()._set_parent_(self._assign_(self**other))
+
+    def __irshift__(self, other):
+        return self._dup_()._set_parent_(self._assign_(self >> other))
+
+    def __isub__(self, other):
+        return self._dup_()._set_parent_(self._assign_(self - other))
+
+    def __itruediv__(self, other):
+        return self._dup_()._set_parent_(self._assign_(self / other))
+
+    def __ixor__(self, other):
+        return self._dup_()._set_parent_(self._assign_(self ^ other))
 
 
 def convert_value(value, target_type: Type[T]) -> T:

@@ -152,7 +152,7 @@ class Boolean(Primitive):
         lhs = convert_value(self, Bool)
         rhs = convert_value(other, Bool)
         result = Execute(
-            result := Bool.new(), If(lhs, result << rhs, result << False), result
+            result := Bool.new(), If(lhs, result @ rhs, result @ False), result
         )
         result.override_float_value = bool(lhs.constant() and rhs.constant())
         return result
@@ -161,7 +161,7 @@ class Boolean(Primitive):
         lhs = convert_value(self, Bool)
         rhs = convert_value(other, Bool)
         result = Execute(
-            result := Bool.new(), If(lhs, result << True, result << rhs), result
+            result := Bool.new(), If(lhs, result @ True, result @ rhs), result
         )
         result.override_float_value = bool(lhs.constant() or rhs.constant())
         return result
@@ -325,34 +325,6 @@ class Number(Primitive):
     @sls_func(ast=False)
     def __neg__(self):
         return 0 - self
-
-    @sls_func(ast=False)
-    def __iadd__(self: Num, other: Num):
-        return self << self + other
-
-    @sls_func(ast=False)
-    def __isub__(self: Num, other: Num):
-        return self << self - other
-
-    @sls_func(ast=False)
-    def __imul__(self: Num, other: Num):
-        return self << self * other
-
-    @sls_func(ast=False)
-    def __itruediv__(self: Num, other: Num):
-        return self << self / other
-
-    @sls_func(ast=False)
-    def __ifloordiv__(self: Num, other: Num):
-        return self << self // other
-
-    @sls_func(ast=False)
-    def __imod__(self: Num, other: Num):
-        return self << self % other
-
-    @sls_func(ast=False)
-    def __ipow__(self: Num, other: Num):
-        return self << self**other
 
     @sls_func(ast=False)
     def to_boolean(self) -> Bool:

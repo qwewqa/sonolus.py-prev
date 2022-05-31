@@ -98,7 +98,11 @@ class Struct(Value):
 
     def __eq__(self, other):
         other = convert_value(other, type(self))
-        result = invoke_builtin("And", [a.__eq__(b) for a, b in zip(self._as_tuple_(), other._as_tuple_())], Bool)
+        result = invoke_builtin(
+            "And",
+            [a.__eq__(b) for a, b in zip(self._as_tuple_(), other._as_tuple_())],
+            Bool,
+        )
         result.override_truthiness = self is other
         return result
 
