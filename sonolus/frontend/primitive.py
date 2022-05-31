@@ -25,6 +25,7 @@ class Primitive(Value):
     def __init__(self, value: float = 0):
         self._value_ = value
         self._check_readable()
+        self._is_static_ = True  # __init__ is always called with a constant
 
     def _assign_(self, value: Primitive) -> Void:
         value = convert_value(value, type(self))
@@ -88,7 +89,7 @@ class Primitive(Value):
         return result
 
     def _const_evaluate_(self, runner):
-        return type(self)(runner(self.ir()))._static_()
+        return type(self)(runner(self.ir()))._set_static_()
 
     def _check_readable(self):
         if CompilationInfo._current is None:

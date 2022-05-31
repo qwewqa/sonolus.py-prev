@@ -65,7 +65,11 @@ class Struct(Value):
             convert_value(bound.arguments[field.name], field.type)
             for field in self._struct_fields_
         )
-        self._parent_statement_ = ExecuteVoid(*self._value_)
+
+        if all(v._is_static_ for v in self._value_):
+            self._is_static_ = True
+        else:
+            self._parent_statement_ = ExecuteVoid(*self._value_)
 
     def _as_tuple_(self):
         if isinstance(self._value_, tuple):

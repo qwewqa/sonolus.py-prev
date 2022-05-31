@@ -190,7 +190,7 @@ class OptionConfig:
                 k,
                 option_type._create_(
                     Location(MemoryBlock.LEVEL_OPTION, IRConst(0), offset, None)
-                )._static_(),
+                )._set_static_(),
             )
             offset += option_type._size_
         cls._option_entries_ = option_entries

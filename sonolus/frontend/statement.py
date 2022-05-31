@@ -11,11 +11,6 @@ class Statement:
     _parent_statement_: Statement | None = None
     _is_static_: bool = False
 
-    def __new__(cls, *args, **kwargs):
-        result = object.__new__(cls)
-        result._is_static_ = not CompilationInfo.active
-        return result
-
     def _evaluate_(self, scope: Scope) -> Scope:
         return scope
 
@@ -23,4 +18,5 @@ class Statement:
         if self._parent_statement_ is not None:
             raise ValueError("Statement already has a parent.")
         self._parent_statement_ = parent
+        self._is_static_ = False
         return self

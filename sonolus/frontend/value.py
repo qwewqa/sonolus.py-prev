@@ -38,7 +38,7 @@ class Value(Statement):
         """
         raise NotImplementedError
 
-    def _static_(self: TValue) -> TValue:
+    def _set_static_(self: TValue) -> TValue:
         """
         Marks this value static and returns it.
         Standalone values are not evaluated by the compiler, so this is for values
@@ -76,7 +76,7 @@ class Value(Statement):
         """
         Returns a new static instance of the default value of this class.
         """
-        return cls()._static_()
+        return cls()._set_static_()
 
     @classmethod
     def _convert_(cls: Type[TValue], value) -> TValue:

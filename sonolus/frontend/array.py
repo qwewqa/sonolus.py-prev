@@ -142,7 +142,11 @@ def _create_typed_array_class(type_: Type[Value]):
                         self._value_ = tuple(
                             convert_value(v, self.contained_type) for v in values
                         )
-                        self._parent_statement_ = ExecuteVoid(*self._value_)
+
+                        if all(v._is_static_ for v in self._value_):
+                            self._is_static_ = True
+                        else:
+                            self._parent_statement_ = ExecuteVoid(*self._value_)
 
                     def __getitem__(self, idx):
                         # If size > 0, then 0 <= idx < size.
