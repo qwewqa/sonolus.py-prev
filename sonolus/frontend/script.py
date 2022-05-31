@@ -29,11 +29,6 @@ SHARED_MEMORY_SIZE = 32
 ENTITY_INFO_SIZE = 3
 
 TScript = TypeVar("TScript", bound="Script")
-T = TypeVar("T", bound="Value")
-
-
-class _LevelScript(Protocol[T]):
-    data: T
 
 
 class Script(Statement):
@@ -105,16 +100,6 @@ class Script(Statement):
             raise ValueError("Cannot set life of script.")
 
     life = classmethod(life)
-
-    @classmethod
-    def entity(
-        cls: Type[_LevelScript[T]], data: T = None
-    ) -> tuple[Type[_LevelScript[T]], T]:
-        if data is None:
-            data = cls._metadata_.data_type._default_()
-        elif not isinstance(data, cls._metadata_.data_type):
-            data = convert_value(data, cls._metadata_.data_type)
-        return cls, data
 
     @classmethod
     def create_for_evaluation(cls):

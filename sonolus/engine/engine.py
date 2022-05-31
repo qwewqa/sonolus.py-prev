@@ -11,7 +11,7 @@ from sonolus.backend.evaluation import CompilationInfo, evaluate_statement
 from sonolus.backend.engine_node import finalize_cfg, get_engine_nodes
 from sonolus.backend.optimization.optimization_pass import run_optimization_passes
 from sonolus.backend.optimization.optmization_presets import DEFAULT_OPTIMIZATION_PRESET
-from sonolus.engine.level import Entity, EntityData, Level
+from sonolus.engine.level import CompiledEntity, CompiledEntityData, CompiledLevel, Entity
 from sonolus.engine.ui import UIConfig
 from sonolus.frontend.buckets import BucketConfig, Bucket
 from sonolus.frontend.control_flow import Execute
@@ -75,10 +75,10 @@ class Engine:
             nodes=compiled_nodes,
         )
 
-    def make_level(self, entries: list[tuple[Type[Script], Value]], /) -> Level:
+    def make_level(self, entities: list[Entity], /) -> CompiledLevel:
         script_ids = {script: i for i, script in enumerate(self.scripts)}
-        entities = []
-        for script, data in entries:
+        compiled = []
+        for script, data in entities:
             data = [node.constant() for node in data._flatten_()]
             if any(v is None for v in data):
                 raise ValueError("Expected all entity data to be constants.")
@@ -86,8 +86,8 @@ class Engine:
             data = data[index:]
             while data and data[-1] == 0:
                 data.pop()
-            entities.append(Entity(script_ids[script], EntityData(index, data)))
-        return Level(entities)
+            compiled.append(CompiledEntity(script_ids[script], CompiledEntityData(index, data)))
+        return CompiledLevel(compiled)
 
 
 @dataclass
