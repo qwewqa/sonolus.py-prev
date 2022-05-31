@@ -81,6 +81,42 @@ class ArithmeticSimplificationTransformer(IRTransformer):
                     return args[0]
                 else:
                     return IRFunc("Divide", args)
+            case "And":
+                args = []
+                for arg in node.args:
+                    if isinstance(arg, IRFunc) and arg.name == "And":
+                        args += arg.args
+                    else:
+                        args.append(arg)
+                other, const = self.get_commutative_const_args(args)
+                if any(not x for x in const):
+                    return IRConst(0)
+                else:
+                    match other:
+                        case []:
+                            return IRConst(1)
+                        case [single]:
+                            return single
+                        case _:
+                            return IRFunc("And", other)
+            case "Or":
+                args = []
+                for arg in node.args:
+                    if isinstance(arg, IRFunc) and arg.name == "Or":
+                        args += arg.args
+                    else:
+                        args.append(arg)
+                other, const = self.get_commutative_const_args(args)
+                if any(x for x in const):
+                    return IRConst(1)
+                else:
+                    match other:
+                        case []:
+                            return IRConst(0)
+                        case [single]:
+                            return single
+                        case _:
+                            return IRFunc("Or", other)
             case _:
                 return node
 

@@ -175,17 +175,17 @@ class CFGInterpreter:
             case "Log":
                 return log(self.run_node(args[0]))
             case "Equal":
-                return self.run_node(args[0]) == self.run_node(args[1])
+                return float(self.run_node(args[0]) == self.run_node(args[1]))
             case "NotEqual":
-                return self.run_node(args[0]) != self.run_node(args[1])
+                return float(self.run_node(args[0]) != self.run_node(args[1]))
             case "Greater":
-                return self.run_node(args[0]) > self.run_node(args[1])
+                return float(self.run_node(args[0]) > self.run_node(args[1]))
             case "GreaterOr":
-                return self.run_node(args[0]) >= self.run_node(args[1])
+                return float(self.run_node(args[0]) >= self.run_node(args[1]))
             case "Less":
-                return self.run_node(args[0]) < self.run_node(args[1])
+                return float(self.run_node(args[0]) < self.run_node(args[1]))
             case "LessOr":
-                return self.run_node(args[0]) <= self.run_node(args[1])
+                return float(self.run_node(args[0]) <= self.run_node(args[1]))
             case "And":
                 for arg in args:
                     if not self.run_node(arg):
