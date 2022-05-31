@@ -7,6 +7,7 @@ from typing import Type, ClassVar
 from sonolus.backend.ir import Location, IRNode
 from sonolus.frontend.control_flow import ExecuteVoid
 from sonolus.frontend.dataclass_transform import __dataclass_transform__
+from sonolus.frontend.primitive import invoke_builtin, Bool
 from sonolus.frontend.value import Value, convert_value
 from sonolus.frontend.void import Void
 
@@ -94,6 +95,15 @@ class Struct(Value):
         return self._create_(
             tuple(v._const_evaluate_(runner) for v in self._as_tuple_())
         )
+
+    def __eq__(self, other):
+        other = convert_value(other, type(self))
+        result = invoke_builtin("And", [a.__eq__(b) for a, b in zip(self._as_tuple_(), other._as_tuple_())], Bool)
+        result.override_truthiness = self is other
+        return result
+
+    def __hash__(self):
+        return id(self)
 
 
 @dataclass

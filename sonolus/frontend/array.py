@@ -19,7 +19,7 @@ from sonolus.frontend.iterator import (
     IndexedSequenceIterator,
     SlsIterator,
 )
-from sonolus.frontend.primitive import Num, Bool
+from sonolus.frontend.primitive import Num, Bool, invoke_builtin
 from sonolus.frontend.tuple import TupleStruct
 from sonolus.frontend.value import Value, convert_value
 from sonolus.frontend.void import Void
@@ -267,6 +267,15 @@ def _create_typed_array_class(type_: Type[Value]):
 
                     def _const_evaluate_(self, runner):
                         return type(self)([v._const_evaluate_(runner) for v in self])
+
+                    def __eq__(self, other):
+                        other = convert_value(other, type(self))
+                        result = invoke_builtin("And", [a.__eq__(b) for a, b in zip(self, other)], Bool)
+                        result.override_truthiness = self is other
+                        return result
+
+                    def __hash__(self):
+                        return id(self)
 
                 SizedArray.__name__ = f"Array_{type_.__name__}_{size}"
                 SizedArray.__qualname__ = SizedArray.__name__
