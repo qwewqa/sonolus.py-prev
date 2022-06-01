@@ -10,7 +10,7 @@ from pydantic import BaseModel
 
 from sonolus.engine.engine import CompiledEngine
 from sonolus.engine.level import CompiledLevel
-from sonolus.pack.resource import Resource, RemoteResource, JsonResource, EMPTY_PNG, EMPTY_MP3
+from sonolus.pack.resource import Resource, RemoteResource, JSONResource, EMPTY_PNG, EMPTY_MP3
 from sonolus.server.items import (
     LevelItem,
     UseItem,
@@ -72,6 +72,22 @@ class LevelInfo(BaseModel):
             description={localization: description},
         )
 
+    def merge_localizations(self, other: LevelInfo) -> LevelInfo:
+        return LevelInfo(
+            version=self.version,
+            rating=self.rating,
+            engine=self.engine,
+            useSkin=self.useSkin,
+            useBackground=self.useBackground,
+            useEffect=self.useEffect,
+            useParticle=self.useParticle,
+            title=self.title | other.title,
+            artists=self.artists | other.artists,
+            author=self.author | other.author,
+            description=self.description | other.description,
+            meta=self.meta,
+        )
+
 
 @dataclass
 class LevelBundle:
@@ -107,6 +123,15 @@ class LevelBundle:
             data=RemoteResource(server, item.data),
         )
 
+    def merge_localizations(self, other: LevelBundle) -> LevelBundle:
+        return LevelBundle(
+            info=self.info.merge_localizations(other.info),
+            cover=self.cover,
+            bgm=self.bgm,
+            preview=self.preview,
+            data=self.data,
+        )
+
 
 class SkinInfo(BaseModel):
     version: int
@@ -129,6 +154,16 @@ class SkinInfo(BaseModel):
             subtitle={localization: item.subtitle},
             author={localization: item.author},
             description={localization: description},
+        )
+
+    def merge_localizations(self, other: SkinInfo) -> SkinInfo:
+        return SkinInfo(
+            version=self.version,
+            title=self.title | other.title,
+            subtitle=self.subtitle | other.subtitle,
+            author=self.author | other.author,
+            description=self.description | other.description,
+            meta=self.meta,
         )
 
 
@@ -163,6 +198,14 @@ class SkinBundle:
             texture=RemoteResource(server, item.texture),
         )
 
+    def merge_localizations(self, other: SkinBundle) -> SkinBundle:
+        return SkinBundle(
+            info=self.info.merge_localizations(other.info),
+            thumbnail=self.thumbnail,
+            data=self.data,
+            texture=self.texture,
+        )
+
 
 class BackgroundInfo(BaseModel):
     version: int
@@ -185,6 +228,16 @@ class BackgroundInfo(BaseModel):
             subtitle={localization: item.subtitle},
             author={localization: item.author},
             description={localization: description},
+        )
+
+    def merge_localizations(self, other: BackgroundInfo) -> BackgroundInfo:
+        return BackgroundInfo(
+            version=self.version,
+            title=self.title | other.title,
+            subtitle=self.subtitle | other.subtitle,
+            author=self.author | other.author,
+            description=self.description | other.description,
+            meta=self.meta,
         )
 
 
@@ -222,6 +275,15 @@ class BackgroundBundle:
             configuration=RemoteResource(server, item.configuration),
         )
 
+    def merge_localizations(self, other: BackgroundBundle) -> BackgroundBundle:
+        return BackgroundBundle(
+            info=self.info.merge_localizations(other.info),
+            thumbnail=self.thumbnail,
+            data=self.data,
+            image=self.image,
+            configuration=self.configuration,
+        )
+
 
 class EffectInfo(BaseModel):
     version: int
@@ -246,6 +308,16 @@ class EffectInfo(BaseModel):
             description={localization: description},
         )
 
+    def merge_localizations(self, other: EffectInfo) -> EffectInfo:
+        return EffectInfo(
+            version=self.version,
+            title=self.title | other.title,
+            subtitle=self.subtitle | other.subtitle,
+            author=self.author | other.author,
+            description=self.description | other.description,
+            meta=self.meta,
+        )
+
 
 @dataclass
 class EffectBundle:
@@ -266,7 +338,7 @@ class EffectBundle:
 
     @staticmethod
     def unpack_clip_data(data: RemoteResource) -> dict:
-        clip_data = data.load()
+        clip_data = data.get()
         if data.format is None:
             clip_data = gzip.decompress(clip_data)
         return json.loads(clip_data)
@@ -288,8 +360,16 @@ class EffectBundle:
         return cls(
             info=EffectInfo.from_item(item, localization, description),
             thumbnail=RemoteResource(server, item.thumbnail),
-            data=JsonResource(clip_data),
+            data=JSONResource(clip_data),
             clips=clips,
+        )
+
+    def merge_localizations(self, other: EffectBundle) -> EffectBundle:
+        return EffectBundle(
+            self.info.merge_localizations(other.info),
+            self.thumbnail,
+            self.data,
+            self.clips
         )
 
 
@@ -314,6 +394,16 @@ class ParticleInfo(BaseModel):
             subtitle={localization: item.subtitle},
             author={localization: item.author},
             description={localization: description},
+        )
+
+    def merge_localizations(self, other: ParticleInfo) -> ParticleInfo:
+        return ParticleInfo(
+            version=self.version,
+            title=self.title | other.title,
+            subtitle=self.subtitle | other.subtitle,
+            author=self.author | other.author,
+            description=self.description | other.description,
+            meta=self.meta,
         )
 
 
@@ -348,6 +438,14 @@ class ParticleBundle:
             texture=RemoteResource(server, item.texture),
         )
 
+    def merge_localizations(self, other: ParticleBundle) -> ParticleBundle:
+        return ParticleBundle(
+            self.info.merge_localizations(other.info),
+            self.thumbnail,
+            self.data,
+            self.texture,
+        )
+
 
 class EngineInfo(BaseModel):
     version: int
@@ -378,6 +476,20 @@ class EngineInfo(BaseModel):
             background=item.background.name,
             effect=item.effect.name,
             particle=item.particle.name,
+        )
+
+    def merge_localizations(self, other: EngineInfo) -> EngineInfo:
+        return EngineInfo(
+            version=self.version,
+            title=self.title | other.title,
+            subtitle=self.subtitle | other.subtitle,
+            author=self.author | other.author,
+            description=self.description | other.description,
+            skin=self.skin,
+            background=self.background,
+            effect=self.effect,
+            particle=self.particle,
+            meta=self.meta,
         )
 
 
@@ -416,6 +528,15 @@ class EngineBundle:
             configuration=RemoteResource(server, item.configuration),
         )
 
+    def merge_localizations(self, other: EngineBundle) -> EngineBundle:
+        return EngineBundle(
+            self.info.merge_localizations(other.info),
+            self.thumbnail,
+            self.data,
+            self.rom,
+            self.configuration,
+        )
+
 
 def make_engine_bundle(
     engine: CompiledEngine,
@@ -446,9 +567,9 @@ def make_engine_bundle(
             meta=meta,
         ),
         thumbnail=thumbnail,
-        data=JsonResource(engine.get_data()),
+        data=JSONResource(engine.get_data()),
         rom=None,
-        configuration=JsonResource(engine.get_configuration()),
+        configuration=JSONResource(engine.get_configuration()),
     )
 
 
@@ -489,5 +610,5 @@ def make_level_bundle(
         cover=cover,
         bgm=bgm,
         preview=preview,
-        data=JsonResource(level.to_dict()),
+        data=JSONResource(level.to_dict()),
     )

@@ -1,4 +1,7 @@
+from functools import reduce
 from pathlib import Path
+from typing import Collection, Literal
+from urllib.error import HTTPError
 
 from sonolus.pack.bundles import (
     LevelBundle,
@@ -8,69 +11,60 @@ from sonolus.pack.bundles import (
     ParticleBundle,
     EngineBundle,
 )
+from sonolus.server.items import ItemList, ItemDetails
 from sonolus.server.server import SonolusServer
 
+_DOWNLOAD_CATEGORIES = {
+    "levels": ("levels", LevelBundle, SonolusServer.levels, SonolusServer.level),
+    "skins": ("skins", SkinBundle, SonolusServer.skins, SonolusServer.skin),
+    "backgrounds": ("backgrounds", BackgroundBundle, SonolusServer.backgrounds, SonolusServer.background),
+    "effects": ("effects", EffectBundle, SonolusServer.effects, SonolusServer.effect),
+    "particles": ("particles", ParticleBundle, SonolusServer.particles, SonolusServer.particle),
+    "engines": ("engines", EngineBundle, SonolusServer.engines, SonolusServer.engine),
+}
 
-def download_homepage(
+DownloadCategory = Literal["levels", "skins", "backgrounds", "effects", "particles", "engines"]
+
+
+def download_server(
     server: SonolusServer,
     path: str | Path,
-    localization: str = "en",
+    *,
+    localizations: Collection[str] = ("en",),
+    categories: Collection[DownloadCategory] = ("levels", "skins", "backgrounds", "effects", "particles", "engines"),
+    limit: int | None | Literal["homepage"] = "homepage",
 ) -> None:
     path = Path(path)
 
-    info = server.info(localization=localization)
+    info = server.info()
 
-    (path / "levels").mkdir(parents=True, exist_ok=True)
-    (path / "skins").mkdir(parents=True, exist_ok=True)
-    (path / "backgrounds").mkdir(parents=True, exist_ok=True)
-    (path / "effects").mkdir(parents=True, exist_ok=True)
-    (path / "particles").mkdir(parents=True, exist_ok=True)
-    (path / "engines").mkdir(parents=True, exist_ok=True)
+    for category in categories:
+        name, bundle_type, get_list, get_item = _DOWNLOAD_CATEGORIES[category]
+        category_path = path / name
+        category_path.mkdir(parents=True, exist_ok=True)
 
-    for level in info.levels.items:
-        level = server.level(level.name)
-        LevelBundle.from_item(
-            server, level.item, localization=localization, description=level.description
-        ).save(path / "levels" / level.item.name)
+        items: list
+        if limit == "homepage":
+            items = getattr(info, name).items
+        else:
+            items = []
+            page = 0
+            while True:
+                page_items: ItemList = get_list(server, page=page)
+                items.extend(page_items.items)
+                page += 1
+                if (limit is not None and len(items) >= limit) or (page >= page_items.pageCount):
+                    break
 
-    for skin in info.skins.items:
-        skin = server.skin(skin.name)
-        SkinBundle.from_item(
-            server, skin.item, localization=localization, description=skin.description
-        ).save(path / "skins" / skin.item.name)
+        if isinstance(limit, int) and len(items) > limit:
+            items = items[:limit]
 
-    for background in info.backgrounds.items:
-        background = server.background(background.name)
-        BackgroundBundle.from_item(
-            server,
-            background.item,
-            localization=localization,
-            description=background.description,
-        ).save(path / "backgrounds" / background.item.name)
-
-    for effect in info.effects.items:
-        effect = server.effect(effect.name)
-        EffectBundle.from_item(
-            server,
-            effect.item,
-            localization=localization,
-            description=effect.description,
-        ).save(path / "effects" / effect.item.name)
-
-    for particle in info.particles.items:
-        particle = server.particle(particle.name)
-        ParticleBundle.from_item(
-            server,
-            particle.item,
-            localization=localization,
-            description=particle.description,
-        ).save(path / "particles" / particle.item.name)
-
-    for engine in info.engines.items:
-        engine = server.engine(engine.name)
-        EngineBundle.from_item(
-            server,
-            engine.item,
-            localization=localization,
-            description=engine.description,
-        ).save(path / "engines" / engine.item.name)
+        for item in items:
+            try:
+                details: dict[str, ItemDetails] = {l: get_item(server, item.name, localization=l) for l in localizations}
+                bundles = [bundle_type.from_item(server, d.item, localization=l, description=d.description) for l, d in details.items()]
+                bundle = reduce(lambda a, b: a.merge_localizations(b), bundles)
+                bundle.save(category_path / item.name)
+                print(f"Downloaded {category}/{item.name}")
+            except (HTTPError, PermissionError) as e:
+                print(f"Failed to download {category}/{item.name}: {e}")

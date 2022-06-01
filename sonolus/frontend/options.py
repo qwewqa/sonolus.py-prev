@@ -14,6 +14,8 @@ class OptionName(str, Enum):
     AUTO = "#AUTO"
     MIRROR = "#MIRROR"
     RANDOM = "#RANDOM"
+    NOTE_SPEED_RANDOM = "#NOTE_SPEED_RANDOM"
+    JUDGEMENT_STRICT = "#JUDGEMENT_STRICT"
     HIDDEN = "#HIDDEN"
     EFFECT = "#EFFECT"
     UI = "#UI"
