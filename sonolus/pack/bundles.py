@@ -10,7 +10,13 @@ from pydantic import BaseModel
 
 from sonolus.engine.engine import CompiledEngine
 from sonolus.engine.level import CompiledLevel
-from sonolus.pack.resource import Resource, RemoteResource, JSONResource, EMPTY_PNG, EMPTY_MP3
+from sonolus.pack.resource import (
+    Resource,
+    RemoteResource,
+    JSONResource,
+    EMPTY_PNG,
+    EMPTY_MP3,
+)
 from sonolus.server.items import (
     LevelItem,
     UseItem,
@@ -369,7 +375,7 @@ class EffectBundle:
             self.info.merge_localizations(other.info),
             self.thumbnail,
             self.data,
-            self.clips
+            self.clips,
         )
 
 

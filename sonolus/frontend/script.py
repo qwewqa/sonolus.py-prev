@@ -43,7 +43,13 @@ class Script(Statement):
     def __init__(self):
         raise TypeError("Script may not be instantiated directly.")
 
-    def __init_subclass__(cls, input: bool = False, **kwargs):
+    def __init_subclass__(cls, input: bool | None = None, **kwargs):
+        if input is None:
+            if hasattr(cls, "_metadata_"):
+                input = cls._metadata_.input
+            else:
+                input = False
+
         hints = get_type_hints(cls)
         callbacks = {}
         for name, value in CALLBACK_TYPES.items():
