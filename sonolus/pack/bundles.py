@@ -8,7 +8,9 @@ from typing import Any
 
 from pydantic import BaseModel
 
-from sonolus.pack.resource import Resource, RemoteResource, JsonResource
+from sonolus.engine.engine import CompiledEngine
+from sonolus.engine.level import CompiledLevel
+from sonolus.pack.resource import Resource, RemoteResource, JsonResource, EMPTY_PNG, EMPTY_MP3
 from sonolus.server.items import (
     LevelItem,
     UseItem,
@@ -413,3 +415,79 @@ class EngineBundle:
             rom=RemoteResource(server, item.rom) if item.rom is not None else None,
             configuration=RemoteResource(server, item.configuration),
         )
+
+
+def make_engine_bundle(
+    engine: CompiledEngine,
+    *,
+    version: int = 5,
+    title: LocalizationText,
+    subtitle: LocalizationText,
+    author: LocalizationText,
+    description: LocalizationText,
+    skin: str,
+    background: str,
+    effect: str,
+    particle: str,
+    meta: Any = None,
+    thumbnail: Resource = EMPTY_PNG,
+) -> EngineBundle:
+    return EngineBundle(
+        info=EngineInfo(
+            version=version,
+            title=title,
+            subtitle=subtitle,
+            author=author,
+            description=description,
+            skin=skin,
+            background=background,
+            effect=effect,
+            particle=particle,
+            meta=meta,
+        ),
+        thumbnail=thumbnail,
+        data=JsonResource(engine.get_data()),
+        rom=None,
+        configuration=JsonResource(engine.get_configuration()),
+    )
+
+
+def make_level_bundle(
+    level: CompiledLevel,
+    *,
+    version: int = 1,
+    rating: float = 5,
+    engine: str,
+    use_skin: Use = Use(),
+    use_background: Use = Use(),
+    use_effect: Use = Use(),
+    use_particle: Use = Use(),
+    title: LocalizationText,
+    artists: LocalizationText,
+    author: LocalizationText,
+    description: LocalizationText,
+    meta: Any = None,
+    cover: Resource = EMPTY_PNG,
+    bgm: Resource = EMPTY_MP3,
+    preview: Resource = EMPTY_MP3,
+) -> LevelBundle:
+    return LevelBundle(
+        info=LevelInfo(
+            version=version,
+            rating=rating,
+            engine=engine,
+            useSkin=use_skin,
+            useBackground=use_background,
+            useEffect=use_effect,
+            useParticle=use_particle,
+            title=title,
+            artists=artists,
+            author=author,
+            description=description,
+            meta=meta,
+        ),
+        cover=cover,
+        bgm=bgm,
+        preview=preview,
+        data=JsonResource(level.to_dict()),
+    )
