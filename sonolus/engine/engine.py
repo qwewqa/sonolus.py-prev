@@ -7,18 +7,22 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Type
 
-from sonolus.backend.evaluation import CompilationInfo, evaluate_statement
 from sonolus.backend.engine_node import finalize_cfg, get_engine_nodes
+from sonolus.backend.evaluation import CompilationInfo, evaluate_statement
 from sonolus.backend.optimization.optimization_pass import run_optimization_passes
 from sonolus.backend.optimization.optmization_presets import DEFAULT_OPTIMIZATION_PRESET
-from sonolus.engine.level import CompiledEntity, CompiledEntityData, CompiledLevel, Entity
+from sonolus.engine.level import (
+    CompiledEntity,
+    CompiledEntityData,
+    CompiledLevel,
+    Entity,
+)
 from sonolus.engine.ui import UIConfig
 from sonolus.frontend.buckets import BucketConfig, Bucket
 from sonolus.frontend.control_flow import Execute
 from sonolus.frontend.options import OptionConfig, Option
-from sonolus.frontend.primitive import Bool, Primitive, Num
+from sonolus.frontend.primitive import Primitive, Num
 from sonolus.frontend.script import Script
-from sonolus.frontend.value import Value
 
 
 class Engine:
@@ -86,7 +90,9 @@ class Engine:
             data = data[index:]
             while data and data[-1] == 0:
                 data.pop()
-            compiled.append(CompiledEntity(script_ids[script], CompiledEntityData(index, data)))
+            compiled.append(
+                CompiledEntity(script_ids[script], CompiledEntityData(index, data))
+            )
         return CompiledLevel(compiled)
 
 
