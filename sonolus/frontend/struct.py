@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import inspect
 from dataclasses import dataclass
-from typing import Type, ClassVar
+from typing import Type, ClassVar, get_type_hints, get_origin
 
 from sonolus.backend.ir import Location, IRNode
 from sonolus.frontend.control_flow import ExecuteVoid
@@ -31,11 +31,14 @@ class Struct(Value):
         if _override_fields_ is not None:
             hints = _override_fields_
         else:
-            hints = inspect.get_annotations(cls, eval_str=True)
+            hints = get_type_hints(cls)
         fields = []
         offset = 0
-        for index, (name, hint) in enumerate(hints.items()):
-            if hint is ClassVar or getattr(hint, "__origin__", ()) is ClassVar:
+        index = 0
+        for name, hint in hints.items():
+            if name not in cls.__annotations__ and not _override_fields_:
+                continue
+            if hint is ClassVar or get_origin(hint) is ClassVar:
                 continue
             default = getattr(cls, name, hint._default_())
             if not Value.is_value_class(hint):
@@ -44,6 +47,7 @@ class Struct(Value):
             fields.append(field)
             setattr(cls, name, field)
             offset += hint._size_
+            index += 1
         params = [
             inspect.Parameter(
                 field.name,

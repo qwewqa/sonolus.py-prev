@@ -4,7 +4,6 @@ import inspect
 import re
 import sys
 import textwrap
-from inspect import get_annotations
 from types import FunctionType
 from typing import TypeVar, Any, ClassVar
 
@@ -60,7 +59,9 @@ class GenericStruct(Struct, _no_init_struct_=True):
                 )
             localns[field] = getattr(type_vars, field)
         localns["type_vars"] = type_vars
-        hints = get_annotations(cls, globals=globalns, locals=localns, eval_str=True)
+        hints = inspect.get_annotations(
+            cls, globals=globalns, locals=localns, eval_str=True
+        )
         hints = {k: v for k, v in hints.items() if k in cls.__annotations__}
 
         for name, hint in hints.items():
