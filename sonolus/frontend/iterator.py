@@ -27,7 +27,7 @@ class SlsIterable(Protocol[T]):
 
     def __iter__(self) -> Iterator[T]:
         # Dummy to satisfy type checkers in for loops
-        raise TypeError("Cannot call __iter__ on an SlsIterable.")
+        raise TypeError("Calling __iter__() is not supported on this SlsIterable.")
 
 
 @runtime_checkable

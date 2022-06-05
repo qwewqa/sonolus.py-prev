@@ -5,7 +5,7 @@ from enum import Enum
 from sonolus.frontend.primitive import invoke_builtin, Num, Bool
 from .function import sls_func
 from .point import Point
-from .types import Struct, Array, Void
+from .values import Struct, Array, Void
 
 __all__ = (
     "Quad",
@@ -22,6 +22,7 @@ __all__ = (
     "HasSkinSprite",
     "HasParticleEffect",
     "SpriteId",
+    "CustomSpriteId",
     "ParticleEffectId",
 )
 
@@ -145,6 +146,10 @@ def HasSkinSprite(id: Num) -> Bool:
 @sls_func(ast=False)
 def HasParticleEffect(id: Num) -> Bool:
     return invoke_builtin("HasParticleEffect", [id], Bool)
+
+
+def CustomSpriteId(engine_id: Num, sprite_id: Num) -> Num:
+    return 100000 + engine_id * 100 + sprite_id
 
 
 class SpriteId(int, Enum):

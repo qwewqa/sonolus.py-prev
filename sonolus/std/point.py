@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from .number import Num, Sin, Cos
-from .types import Struct
+from .values import Struct
 from .function import sls_func
 
 __all__ = ("Point",)

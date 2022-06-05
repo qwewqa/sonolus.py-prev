@@ -12,4 +12,4 @@ from .number import *
 from .point import *
 from .script import *
 from .iterables import *
-from .types import *
+from .values import *

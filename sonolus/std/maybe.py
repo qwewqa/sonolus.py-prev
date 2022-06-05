@@ -55,6 +55,11 @@ class Maybe(GenericStruct, Generic[T], type_vars=MaybeTypeVars):
 
     @generic_method
     @sls_func
+    def unwrap_direct(self) -> T:
+        return self._value
+
+    @generic_method
+    @sls_func
     def unwrap_or(self, default: T) -> T:
         return self._value if self._exists else default
 
@@ -69,12 +74,17 @@ class Maybe(GenericStruct, Generic[T], type_vars=MaybeTypeVars):
 
     @classmethod
     def _convert_(cls, value) -> Maybe[T]:
-        if isinstance(value, cls):
-            return value
-        elif isinstance(value, Maybe) and value.type_vars.T is _Dummy:
-            return cls(False)
-        else:
-            return NotImplemented
+        match value:
+            case cls():
+                return value
+            case Maybe() if value.type_vars.T is _Dummy:
+                return cls(False)
+            case cls.type_vars.T():
+                return cls.some(value)
+            case None:
+                return cls.nothing()
+            case _:
+                return NotImplemented
 
 
 class _Some:

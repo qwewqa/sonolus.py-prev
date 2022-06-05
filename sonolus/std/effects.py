@@ -5,7 +5,7 @@ from enum import Enum
 from .function import sls_func
 from .number import Num
 from .boolean import Bool
-from .types import Void
+from .values import Void
 from sonolus.frontend.struct import Struct
 from sonolus.frontend.primitive import invoke_builtin
 

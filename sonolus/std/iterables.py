@@ -30,12 +30,12 @@ __all__ = (
     "Reduce",
     "IsEmpty",
     "IsNotEmpty",
-    "LimitedSizeArray",
+    "Vector",
     "sequence_iterator",
     "indexed_sequence_iterator",
 )
 
-from sonolus.std.types import alloc, new
+from sonolus.std.values import alloc, new
 
 T = TypeVar("T")
 R = TypeVar("R")
@@ -51,7 +51,7 @@ def Map(f: Callable[[T], R], iterable: SlsIterable[T], /) -> SlsIterable[R]:
 
 @sls_func
 def SeqMap(f: Callable[[T], R], sequence: SlsSequence[T], /) -> SlsSequence[R]:
-    result = LimitedSizeArray[type(f(sequence[0])), sequence._max_size_()].alloc()
+    result = Vector[type(f(sequence[0])), sequence._max_size_()].alloc()
     result.size @= Len(sequence)
     for i, v in Enumerate(sequence):
         result[i] @= f(v)
@@ -66,7 +66,7 @@ def Filter(f: Callable[[T], Bool], iterable: SlsIterable[T], /) -> SlsIterable[T
 
 @sls_func
 def SeqFilter(f: Callable[[T], Bool], sequence: SlsSequence[T], /) -> SlsSequence[T]:
-    result = alloc(LimitedSizeArray[sequence._contained_type_(), sequence._max_size_()])
+    result = alloc(Vector[sequence._contained_type_(), sequence._max_size_()])
     result.size @= 0
     for v in sequence:
         if f(v):
@@ -428,14 +428,12 @@ class Range(Struct, SlsSequence[Num]):
             raise ValueError("Range is not statically iterable.")
 
 
-class LimitedSizeArrayTypeVars(NamedTuple):
+class VectorTypeVars(NamedTuple):
     T: type
     max_size: int
 
 
-class LimitedSizeArray(
-    SlsSequence[T], GenericStruct, Generic[T], type_vars=LimitedSizeArrayTypeVars
-):
+class Vector(SlsSequence[T], GenericStruct, Generic[T], type_vars=VectorTypeVars):
     size: Num
     # noinspection PyUnresolvedReferences
     values: Array[T, max_size]

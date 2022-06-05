@@ -8,7 +8,7 @@ from .boolean import *
 from .draw import *
 from .number import *
 from .point import *
-from .types import *
+from .values import *
 from ..backend.ir import MemoryBlock
 
 __all__ = (
