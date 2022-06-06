@@ -104,24 +104,6 @@ class Value(Statement):
         """
         raise NotImplementedError
 
-    @classmethod
-    @overload
-    def new(cls: Callable[P, TValue], *args: P.args, **kwargs: P.kwargs) -> TValue:
-        pass
-
-    @classmethod
-    @overload
-    def new(cls: Callable[P, TValue], *args, **kwargs) -> TValue:
-        pass
-
-    @classmethod
-    def new(cls, *args, **kwargs):
-        """
-        Creates a new allocated instance of this class.
-        Should not be overridden.
-        """
-        return cls._allocate_(cls(*args, **kwargs))  # type: ignore
-
     def copy(self: TValue) -> TValue:
         return self._allocate_(self)
 

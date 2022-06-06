@@ -81,8 +81,8 @@ class Array(Value, Generic[T, U]):
         if len(types) != 1:
             raise TypeError("Array elements must be of the same type.")
 
-        # Argument evaluation handled by Array.new
-        return Array[types.pop(), len(elements)].new([*elements])
+        # Argument evaluation handled by Array constructor
+        return Array[types.pop(), len(elements)]([*elements]).copy()
 
     def __getitem__(self, item) -> T:
         raise NotImplementedError

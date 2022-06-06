@@ -77,13 +77,13 @@ def new(value=None, /):
         case list():
             return Array.of(*value)
         case type() if Value.is_value_class(value):
-            return value.new()
+            return value._default_().copy()
         case Value():
             return value.copy()
         case bool() as boolean:
-            return Bool.new(boolean)
+            return Bool(boolean).copy()
         case int() | float() as number:
-            return Num.new(number)
+            return Num(number).copy()
         case _:
             raise TypeError(f"Cannot create new value from {value}.")
 
@@ -102,7 +102,7 @@ class _NewValue:
         self.kwargs = kwargs
 
     def _convert_to_(self, type_):
-        return type_.new(*self.args, **self.kwargs)
+        return type_(*self.args, **self.kwargs).copy()
 
 
 class _DefaultFactory:

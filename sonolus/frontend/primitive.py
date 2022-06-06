@@ -152,7 +152,7 @@ class Boolean(Primitive):
         lhs = convert_value(self, Bool)
         rhs = convert_value(other, Bool)
         result = Execute(
-            result := Bool.new(), If(lhs, result @ rhs, result @ False), result
+            result := +Bool(), If(lhs, result @ rhs, result @ False), result
         )
         result.override_float_value = bool(lhs.constant() and rhs.constant())
         return result
@@ -161,7 +161,7 @@ class Boolean(Primitive):
         lhs = convert_value(self, Bool)
         rhs = convert_value(other, Bool)
         result = Execute(
-            result := Bool.new(), If(lhs, result @ True, result @ rhs), result
+            result := +Bool(), If(lhs, result @ True, result @ rhs), result
         )
         result.override_float_value = bool(lhs.constant() or rhs.constant())
         return result

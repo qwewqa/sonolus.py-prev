@@ -105,7 +105,7 @@ class SequenceIterator(
     def for_sequence(cls, seq, /):
         if not (hasattr(seq, "__getitem__") and isinstance(seq, SlsSequence)):
             raise TypeError("Expected a sequence.")
-        return cls[type(seq)](seq, Num.new(), Len(seq))
+        return cls[type(seq)](seq, +Num(), Len(seq))
 
     def _iter_(self):
         return self
@@ -137,7 +137,7 @@ class IndexedSequenceIterator(
     def for_sequence(cls, seq, /):
         if not (hasattr(seq, "__getitem__") and isinstance(seq, SlsSequence)):
             raise TypeError("Expected a sequence.")
-        return cls[type(seq)](seq, Num.new(), Len(seq))
+        return cls[type(seq)](seq, +Num(), Len(seq))
 
     def _iter_(self):
         return self
@@ -191,7 +191,7 @@ class IndexedIteratorWrapper(
 
     @classmethod
     def for_iterator(cls, i, /):
-        return cls(i, Num.new())
+        return cls(i, +Num())
 
 
 def Len(v: SlsSequence, /):

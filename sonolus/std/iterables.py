@@ -101,7 +101,7 @@ def Count(*args):
 
 @sls_func
 def _count_simple(iterable: SlsIterable[T], /, _ret: Num = new()) -> Num:
-    count = Num.new(0)
+    count = +Num(0)
     for _ in Iter(iterable):
         count += 1
     return count
@@ -111,7 +111,7 @@ def _count_simple(iterable: SlsIterable[T], /, _ret: Num = new()) -> Num:
 def _count_cond(
     f: Callable[[T], Bool], iterable: SlsIterable[T], /, _ret: Num = new()
 ) -> Num:
-    count = Num.new(0)
+    count = +Num(0)
     for v in Iter(iterable):
         if f(v):
             count += 1
@@ -161,7 +161,7 @@ def Max(*args, **kwargs):
     elif len(args) == 1:
         iterable = args[0]
         key = kwargs.pop("key", None)
-        default = kwargs.pop("default", type(Iter(iterable)._item_()).new())
+        default = kwargs.pop("default", type(Iter(iterable)._item_())._default_().copy())
         if kwargs:
             raise TypeError(
                 f"Max() got an unexpected keyword argument {list(kwargs.keys())[0]}"
@@ -254,7 +254,7 @@ def Min(*args, **kwargs):
     elif len(args) == 1:
         iterable = args[0]
         key = kwargs.pop("key", None)
-        default = kwargs.pop("default", type(Iter(iterable)._item_()).new())
+        default = kwargs.pop("default", type(Iter(iterable)._item_())._default_().copy())
         if kwargs:
             raise TypeError(
                 f"Min() got an unexpected keyword argument {list(kwargs.keys())[0]}"
@@ -333,7 +333,7 @@ def Reduce(
     """
     if initializer is None:
         return _reduce_no_initializer(
-            func, iterable, _ret=type(Iter(iterable)._item_()).new()
+            func, iterable, _ret=type(Iter(iterable)._item_())._default_().copy()
         )
     else:
         initializer = convert_literal(initializer)
