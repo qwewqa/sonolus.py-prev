@@ -1,5 +1,5 @@
 # sonolus.py
-An ergonomic Python library for writing Sonolus engines.
+A high-level Python library for writing Sonolus engines.
 
 ## WIP
 This project is a work in progress.

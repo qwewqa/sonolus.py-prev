@@ -1,7 +1,8 @@
 from __future__ import annotations
 
+import gzip
 import json
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Protocol, Any
 from urllib.parse import urlparse
@@ -58,17 +59,35 @@ class LocalResource(Resource):
         return open(self.path, "rb").read()
 
 
+RESOURCE_FORMATS = {
+    "LevelData": "json",
+    "BackgroundData": "json",
+    "EffectData": "json",
+    "ParticleData": "json",
+    "EngineData": "json",
+    "EngineConfiguration": "json",
+    "EngineRom": "bin",
+}
+
+
 @dataclass
 class RemoteResource(Resource):
     server: SonolusServer
     srl: SRL
+    compressed_format: str | None = field(init=False)
+
+    def __post_init__(self):
+        self.compressed_format = RESOURCE_FORMATS.get(self.srl.type)
 
     @property
     def format(self) -> str:
-        return Path(urlparse(self.srl.url).path).suffix[1:] or None
+        return self.compressed_format or Path(urlparse(self.srl.url).path).suffix[1:] or None
 
     def get(self) -> bytes:
-        return self.server.download_srl(self.srl)
+        result = self.server.download_srl(self.srl)
+        if self.compressed_format:
+            return gzip.decompress(result)
+        return result
 
 
 EMPTY_PNG = BinaryResource(
