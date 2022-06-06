@@ -106,8 +106,7 @@ class LevelBundle:
     def save(self, path: str | Path):
         path = Path(path)
         path.mkdir(parents=True, exist_ok=True)
-        with (path / "info.json").open("w") as f:
-            f.write(self.info.json(exclude_none=True))
+        (path / "info.json").write_text(self.info.json(exclude_none=True))
         self.cover.save(path / "cover")
         self.bgm.save(path / "bgm")
         self.preview.save(path / "preview")
@@ -183,8 +182,7 @@ class SkinBundle:
     def save(self, path: str | Path):
         path = Path(path)
         path.mkdir(parents=True, exist_ok=True)
-        with (path / "info.json").open("w") as f:
-            f.write(self.info.json(exclude_none=True))
+        (path / "info.json").write_text(self.info.json(exclude_none=True))
         self.thumbnail.save(path / "thumbnail")
         self.data.save(path / "data")
         self.texture.save(path / "texture")
@@ -258,8 +256,7 @@ class BackgroundBundle:
     def save(self, path: str | Path):
         path = Path(path)
         path.mkdir(parents=True, exist_ok=True)
-        with (path / "info.json").open("w") as f:
-            f.write(self.info.json(exclude_none=True))
+        (path / "info.json").write_text(self.info.json(exclude_none=True))
         self.thumbnail.save(path / "thumbnail")
         self.data.save(path / "data")
         self.image.save(path / "image")
@@ -335,8 +332,7 @@ class EffectBundle:
     def save(self, path: str | Path):
         path = Path(path)
         path.mkdir(parents=True, exist_ok=True)
-        with (path / "info.json").open("w") as f:
-            f.write(self.info.json(exclude_none=True))
+        (path / "info.json").write_text(self.info.json(exclude_none=True))
         self.thumbnail.save(path / "thumbnail")
         self.data.save(path / "data")
         for cid, clip in self.clips.items():
@@ -423,8 +419,7 @@ class ParticleBundle:
     def save(self, path: str | Path):
         path = Path(path)
         path.mkdir(parents=True, exist_ok=True)
-        with (path / "info.json").open("w") as f:
-            f.write(self.info.json(exclude_none=True))
+        (path / "info.json").write_text(self.info.json(exclude_none=True))
         self.thumbnail.save(path / "thumbnail")
         self.data.save(path / "data")
         self.texture.save(path / "texture")
@@ -510,8 +505,7 @@ class EngineBundle:
     def save(self, path: str | Path):
         path = Path(path)
         path.mkdir(parents=True, exist_ok=True)
-        with (path / "info.json").open("w") as f:
-            f.write(self.info.json(exclude_none=True))
+        (path / "info.json").write_text(self.info.json(exclude_none=True))
         self.thumbnail.save(path / "thumbnail")
         self.data.save(path / "data")
         if self.rom is not None:

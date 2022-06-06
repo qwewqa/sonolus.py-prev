@@ -37,6 +37,13 @@ class Value(Statement):
         """
         raise NotImplementedError
 
+    @classmethod
+    def _from_flat_(cls: Type[TValue], flat: list[IRNode]) -> TValue:
+        """
+        Creates a value from a list of IRNodes.
+        """
+        raise NotImplementedError
+
     def _set_static_(self: TValue, value=True) -> TValue:
         """
         Marks this value static and returns it.

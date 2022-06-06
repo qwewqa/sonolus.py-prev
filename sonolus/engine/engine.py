@@ -9,6 +9,7 @@ from typing import Type
 
 from sonolus.backend.engine_node import finalize_cfg, get_engine_nodes
 from sonolus.backend.evaluation import CompilationInfo, evaluate_statement
+from sonolus.backend.ir import IRConst
 from sonolus.backend.optimization.optimization_pass import run_optimization_passes
 from sonolus.backend.optimization.optmization_presets import DEFAULT_OPTIMIZATION_PRESET
 from sonolus.engine.level import (
@@ -95,6 +96,18 @@ class Engine:
             )
         return CompiledLevel(compiled)
 
+    def load_level(self, level: CompiledLevel) -> list[Entity]:
+        entities = []
+        for entity_data in level.entities:
+            script = self.scripts[entity_data.archetype]
+            data_type = script._metadata_.data_type
+            raw_data = [0.0] * entity_data.data.index + entity_data.data.values
+            raw_data.extend([0.0] * (data_type._size_ - len(raw_data)))
+            raw_data = raw_data[:data_type._size_]
+            data = data_type._from_flat_([IRConst(v) for v in raw_data])
+            entities.append(Entity(script, data))
+        return entities
+
 
 @dataclass
 class CompiledEngine:
@@ -106,17 +119,13 @@ class CompiledEngine:
 
     def save(self, path):
         path = Path(path)
-        with open(path / "EngineConfiguration", "wb") as f:
-            f.write(gzip.compress(json.dumps(self.get_configuration()).encode("utf-8")))
-        with open(path / "EngineData", "wb") as f:
-            f.write(gzip.compress(json.dumps(self.get_data()).encode("utf-8")))
+        (path / "EngineConfiguration").write_bytes(gzip.compress(json.dumps(self.get_configuration()).encode("utf-8")))
+        (path / "EngineData").write_bytes(gzip.compress(json.dumps(self.get_data()).encode("utf-8")))
 
     def save_uncompressed(self, path):
         path = Path(path)
-        with open(path / "EngineConfiguration.json", "w") as f:
-            json.dump(self.get_configuration(), f)
-        with open(path / "EngineData.json", "w") as f:
-            json.dump(self.get_data(), f)
+        (path / "EngineConfiguration").write_text(json.dumps(self.get_configuration()))
+        (path / "EngineData").write_text(json.dumps(self.get_data()))
 
     def get_configuration(self):
         return {

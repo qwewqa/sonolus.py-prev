@@ -144,15 +144,27 @@ class Script(Statement):
         info_offset = index * ENTITY_INFO_SIZE
         ir_info_offset = info_offset.ir()
         result = cls.__new__(cls)
-        result.shared_memory = meta.shared_memory_type._create_(
-            Location(MemoryBlock.ENTITY_SHARED_MEMORY_ARRAY, ir_offset, 0, None),
-        )._set_parent_(result)._suppress_()
-        result.data = meta.data_type._create_(
-            Location(MemoryBlock.ENTITY_DATA_ARRAY, ir_offset, 0, None),
-        )._set_parent_(result)._suppress_()
-        result.info = EntityInfo._create_(
-            Location(MemoryBlock.ENTITY_INFO_ARRAY, ir_info_offset, 0, None),
-        )._set_parent_(result)._suppress_()
+        result.shared_memory = (
+            meta.shared_memory_type._create_(
+                Location(MemoryBlock.ENTITY_SHARED_MEMORY_ARRAY, ir_offset, 0, None),
+            )
+            ._set_parent_(result)
+            ._suppress_()
+        )
+        result.data = (
+            meta.data_type._create_(
+                Location(MemoryBlock.ENTITY_DATA_ARRAY, ir_offset, 0, None),
+            )
+            ._set_parent_(result)
+            ._suppress_()
+        )
+        result.info = (
+            EntityInfo._create_(
+                Location(MemoryBlock.ENTITY_INFO_ARRAY, ir_info_offset, 0, None),
+            )
+            ._set_parent_(result)
+            ._suppress_()
+        )
         result._set_parent_(ExecuteVoid(offset, info_offset))
         return result
 

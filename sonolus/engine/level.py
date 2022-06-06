@@ -3,6 +3,7 @@ from __future__ import annotations
 import gzip
 import json
 from dataclasses import dataclass
+from pathlib import Path
 from typing import TypeVar, Generic, Protocol
 
 from sonolus.frontend.script import ScriptMetadata
@@ -42,13 +43,22 @@ class CompiledLevel:
     def to_dict(self):
         return {"entities": [entity.to_dict() for entity in self.entities]}
 
+    @classmethod
+    def from_dict(cls, data: dict):
+        return cls(entities=[CompiledEntity.from_dict(entity) for entity in data["entities"]])
+
+    @classmethod
+    def load(cls, path):
+        data = Path(path).read_bytes()
+        if data[:2] == b"\x1f\x8b":
+            data = gzip.decompress(data)
+        return cls.from_dict(json.loads(data.decode("utf-8")))
+
     def save(self, path):
-        with open(path, "wb") as f:
-            f.write(gzip.compress(json.dumps(self.to_dict()).encode("utf-8")))
+        Path(path).write_bytes(gzip.compress(json.dumps(self.to_dict()).encode("utf-8")))
 
     def save_uncompressed(self, path):
-        with open(path, "w") as f:
-            json.dump(self.to_dict(), f)
+        Path(path).write_text(json.dumps(self.to_dict()))
 
 
 @dataclass
@@ -59,6 +69,10 @@ class CompiledEntity:
     def to_dict(self):
         return {"archetype": self.archetype, "data": self.data.to_dict()}
 
+    @classmethod
+    def from_dict(cls, data: dict):
+        return cls(archetype=data["archetype"], data=CompiledEntityData.from_dict(data["data"]))
+
 
 @dataclass
 class CompiledEntityData:
@@ -67,3 +81,7 @@ class CompiledEntityData:
 
     def to_dict(self):
         return {"index": self.index, "values": self.values}
+
+    @classmethod
+    def from_dict(cls, data: dict):
+        return cls(index=data["index"], values=data["values"])

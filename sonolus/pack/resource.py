@@ -22,8 +22,7 @@ class Resource(Protocol):
         if self.format is not None:
             path = Path(f"{path}.{self.format}")
         path.parent.mkdir(parents=True, exist_ok=True)
-        with open(path, "wb") as f:
-            f.write(self.get())
+        path.write_bytes(self.get())
 
 
 @dataclass
@@ -81,7 +80,11 @@ class RemoteResource(Resource):
 
     @property
     def format(self) -> str:
-        return self.compressed_format or Path(urlparse(self.srl.url).path).suffix[1:] or None
+        return (
+            self.compressed_format
+            or Path(urlparse(self.srl.url).path).suffix[1:]
+            or None
+        )
 
     def get(self) -> bytes:
         result = self.server.download_srl(self.srl)

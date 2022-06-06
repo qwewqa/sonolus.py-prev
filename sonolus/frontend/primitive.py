@@ -22,10 +22,11 @@ from sonolus.frontend.void import Void
 class Primitive(Value):
     _size_: int = 1
 
-    def __init__(self, value: float = 0):
+    def __init__(self, value: float | IRNode = 0):
+        value = isinstance(value, IRNode) and value.constant() or value
         self._value_ = value
         self._check_readable()
-        self._is_static_ = True  # __init__ is always called with a constant
+        self._is_static_ = isinstance(value, (float, int, bool))
 
     def _assign_(self, value: Primitive) -> Void:
         value = convert_value(value, type(self))
@@ -39,10 +40,16 @@ class Primitive(Value):
     def _flatten_(self) -> list[IRNode]:
         return [self.ir()]
 
+    @classmethod
+    def _from_flat_(cls, flat):
+        return cls(flat[0])
+
     def constant(self):
         match self._value_:
             case int() | float() | bool() as constant:
                 return constant
+            case IRNode() as node:
+                return node.constant()
             case _:
                 return None
 
@@ -124,7 +131,7 @@ class Boolean(Primitive):
     _is_concrete_ = True
 
     def __init__(self, value=False, /, *, override_truthiness: Optional[bool] = None):
-        if not isinstance(value, bool) and value not in (0, 1):
+        if not isinstance(value, (bool, IRNode)) and value not in (0, 1):
             raise TypeError("Expected a bool.")
         super().__init__(value)
         self.override_truthiness = override_truthiness
@@ -211,7 +218,7 @@ class Number(Primitive):
     _is_concrete_ = True
 
     def __init__(self, value=0, /, *, override_float_value: Optional[float] = None):
-        if not isinstance(value, (int, float)):
+        if not isinstance(value, (int, float, IRNode)):
             raise TypeError("Expected an int or float.")
         super().__init__(value)
         self.override_float_value = override_float_value

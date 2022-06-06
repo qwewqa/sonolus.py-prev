@@ -254,6 +254,17 @@ def _create_typed_array_class(type_: Type[Value]):
                             for ele in entry._flatten_()
                         ]
 
+                    @classmethod
+                    def _from_flat_(cls, flat):
+                        return cls(
+                            [
+                                cls.contained_type._from_flat_(
+                                    flat[i : i + cls.contained_type._size_]
+                                )
+                                for i in range(0, len(flat), cls.contained_type._size_)
+                            ]
+                        )
+
                     def _enumerate_(self):
                         if isinstance(self._value_, tuple):
                             raise ValueError("Cannot iterate over a reference array.")

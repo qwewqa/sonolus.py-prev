@@ -95,6 +95,17 @@ class Struct(Value):
     def _flatten_(self) -> list[IRNode]:
         return [ele for v in self._as_tuple_() for ele in v._flatten_()]
 
+    @classmethod
+    def _from_flat_(cls, flat):
+        return cls(
+            *(
+                field.type._from_flat_(
+                    flat[field.offset : field.offset + field.type._size_]
+                )
+                for field in cls._struct_fields_
+            )
+        )
+
     def _const_evaluate_(self, runner):
         return self._create_(
             tuple(v._const_evaluate_(runner) for v in self._as_tuple_())
