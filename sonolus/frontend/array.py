@@ -159,13 +159,19 @@ def _create_typed_array_class(type_: Type[Value]):
                             case Location() as loc:
                                 if (constant_index := idx.constant()) is not None:
                                     idx = constant_index
-                                    return self.contained_type._create_(
-                                        dataclasses.replace(
-                                            loc,
-                                            base=loc.base
-                                            + idx * self.contained_type._size_,
+                                    return (
+                                        self.contained_type._create_(
+                                            dataclasses.replace(
+                                                loc,
+                                                base=loc.base
+                                                + idx * self.contained_type._size_,
+                                            )
                                         )
-                                    )._set_parent_(self)
+                                        ._set_parent_(
+                                            not self._is_static_ and self or None
+                                        )
+                                        ._set_static_(self._is_static_)
+                                    )
                                 new_offset = Num._create_(
                                     loc.offset
                                 ) + idx * Num._create_(self.contained_type._size_)
@@ -195,7 +201,11 @@ def _create_typed_array_class(type_: Type[Value]):
                                         raise ValueError(
                                             "Array may only be subscripted with integers."
                                         )
-                                    return values[int(constant_index)]
+                                    return (
+                                        values[int(constant_index)]
+                                        ._dup_(not self._is_static_ and self or None)
+                                        ._set_static_(self._is_static_)
+                                    )
                                 else:
                                     raise ValueError(
                                         "Cannot subscript non-allocated arrays with a non-constant index."

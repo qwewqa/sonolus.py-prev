@@ -29,6 +29,14 @@ class ExecuteStatement(Statement):
             after = after.activate()
             return after
 
+    def _suppress_(self):
+        if self._was_evaluated_:
+            return self
+        super()._suppress_()
+        for statement in self.statements:
+            statement._suppress_()
+        return self
+
 
 class IfStatement(Statement):
     def __init__(self, test, then, else_):
@@ -49,6 +57,15 @@ class IfStatement(Statement):
         else_.jump(after)
         after = after.activate()
         return after
+
+    def _suppress_(self):
+        if self._was_evaluated_:
+            return self
+        super()._suppress_()
+        self.test._suppress_()
+        self.then._suppress_()
+        self.else_._suppress_()
+        return self
 
 
 class WhileStatement(Statement):
@@ -80,6 +97,15 @@ class WhileStatement(Statement):
         end.jump(after)
         after = after.activate()
         return after
+
+    def _suppress_(self):
+        if self._was_evaluated_:
+            return self
+        super()._suppress_()
+        self.test._suppress_()
+        self.body._suppress_()
+        self.else_._suppress_()
+        return self
 
 
 class Break(Statement):
@@ -173,11 +199,12 @@ def For(iterator, /, body: Callable, else_=None, unpack: bool = False):
     iterator_item = iterator._item_()
     iterator_advance = iterator._advance_()
     if unpack:
+        items = [*iterator_item]
         return ExecuteVoid(
             iterator,
             While(
                 iterator_has_next,
-                ExecuteVoid(iterator_item, iterator_advance, body(*iterator_item)),
+                ExecuteVoid(*items, iterator_advance, body(*items)),
                 else_,
             ),
         )

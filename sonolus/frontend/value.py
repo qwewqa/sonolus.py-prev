@@ -1,11 +1,10 @@
 from __future__ import annotations
 
-from typing import TypeVar, Type, ClassVar, Any, ParamSpec, Callable, overload
+from typing import TypeVar, Type, ClassVar, Any, ParamSpec, Callable
 
 from sonolus.backend.evaluation import CompilationInfo
 from sonolus.backend.ir import IRNode, Location, TempRef, IRConst
 from sonolus.frontend.statement import Statement
-
 
 T = TypeVar("T", bound="Value")
 TValue = TypeVar("TValue", bound="Value")
@@ -38,14 +37,14 @@ class Value(Statement):
         """
         raise NotImplementedError
 
-    def _set_static_(self: TValue) -> TValue:
+    def _set_static_(self: TValue, value=True) -> TValue:
         """
         Marks this value static and returns it.
         Standalone values are not evaluated by the compiler, so this is for values
         that don't require any initialization and do not have any side effects.
         This is primarily for constants and dereferenced values of constant pointers.
         """
-        self._is_static_ = True
+        self._is_static_ = value
         return self
 
     @classmethod

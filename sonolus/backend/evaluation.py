@@ -124,6 +124,7 @@ class Scope:
             return scope
         if statement._is_static_:
             return scope
+        statement._was_evaluated_ = True
         scope = scope.evaluate(statement._parent_statement_)
         if statement in scope.evaluated:
             return scope
@@ -207,6 +208,8 @@ class DeadScope(Scope):
         return self
 
     def evaluate(self, statement):
+        if statement is not None:
+            statement._was_evaluated_ = True
         return self
 
     def add(self, node: IRNode):

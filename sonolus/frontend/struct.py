@@ -127,11 +127,19 @@ class StructField:
             return self
         match instance._value_:
             case Location() as loc:
-                return self.type._create_(
-                    Location(loc.ref, loc.offset, loc.base + self.offset, loc.span),
-                )._set_parent_(instance)
+                return (
+                    self.type._create_(
+                        Location(loc.ref, loc.offset, loc.base + self.offset, loc.span),
+                    )
+                    ._set_parent_(not instance._is_static_ and instance or None)
+                    ._set_static_(instance._is_static_)
+                )
             case [*values]:
-                return values[self.index]._dup_(instance)
+                return (
+                    values[self.index]
+                    ._dup_(not instance._is_static_ and instance or None)
+                    ._set_static_(instance._is_static_)
+                )
             case _:
                 raise ValueError("Unexpected value.")
 

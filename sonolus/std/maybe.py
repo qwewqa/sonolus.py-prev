@@ -78,7 +78,7 @@ class Maybe(GenericStruct, Generic[T], type_vars=MaybeTypeVars):
             case cls():
                 return value
             case Maybe() if value.type_vars.T is _Dummy:
-                return cls(False)
+                return cls(False)._set_parent_(value)
             case cls.type_vars.T():
                 return cls.some(value)
             case None:

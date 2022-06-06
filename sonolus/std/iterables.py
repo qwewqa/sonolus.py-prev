@@ -44,14 +44,14 @@ R = TypeVar("R")
 @sls_func
 def Map(f: Callable[[T], R], iterable: SlsIterable[T], /) -> SlsIterable[R]:
     iterator = Iter(iterable)
-    return MappingIterator[type(iterator), type(f(Next(iterator))), f].from_iterator(
-        Iter(iterable)
-    )
+    return MappingIterator[
+        type(iterator), type(f(Next(iterator))._suppress_()), f
+    ].from_iterator(Iter(iterable))
 
 
 @sls_func
 def SeqMap(f: Callable[[T], R], sequence: SlsSequence[T], /) -> SlsSequence[R]:
-    result = Vector[type(f(sequence[0])), sequence._max_size_()].alloc()
+    result = Vector[type(f(sequence[0])._suppress_()), sequence._max_size_()].alloc()
     result.size @= Len(sequence)
     for i, v in Enumerate(sequence):
         result[i] @= f(v)
@@ -161,7 +161,9 @@ def Max(*args, **kwargs):
     elif len(args) == 1:
         iterable = args[0]
         key = kwargs.pop("key", None)
-        default = kwargs.pop("default", type(Iter(iterable)._item_())._default_().copy())
+        default = kwargs.pop(
+            "default", type(Iter(iterable)._item_())._default_().copy()
+        )
         if kwargs:
             raise TypeError(
                 f"Max() got an unexpected keyword argument {list(kwargs.keys())[0]}"
@@ -254,7 +256,9 @@ def Min(*args, **kwargs):
     elif len(args) == 1:
         iterable = args[0]
         key = kwargs.pop("key", None)
-        default = kwargs.pop("default", type(Iter(iterable)._item_())._default_().copy())
+        default = kwargs.pop(
+            "default", type(Iter(iterable)._item_())._default_().copy()
+        )
         if kwargs:
             raise TypeError(
                 f"Min() got an unexpected keyword argument {list(kwargs.keys())[0]}"

@@ -113,19 +113,19 @@ class Script(Statement):
         result = cls.__new__(cls)
         result.memory = meta.memory_type._create_(
             Location(MemoryBlock.ENTITY_MEMORY, IRConst(0), 0, 1)
-        )
+        )._set_static_()
         result.shared_memory = meta.shared_memory_type._create_(
             Location(MemoryBlock.ENTITY_SHARED_MEMORY, IRConst(0), 0, 1)
-        )
+        )._set_static_()
         result.data = meta.data_type._create_(
             Location(MemoryBlock.ENTITY_DATA, IRConst(0), 0, 1)
-        )
+        )._set_static_()
         result.info = EntityInfo._create_(
             Location(MemoryBlock.ENTITY_INFO, IRConst(0), 0, 1)
-        )
+        )._set_static_()
         result.input = EntityInput._create_(
             Location(MemoryBlock.ENTITY_INPUT, IRConst(0), 0, 1)
-        )
+        )._set_static_()
 
         return result
 
@@ -146,13 +146,13 @@ class Script(Statement):
         result = cls.__new__(cls)
         result.shared_memory = meta.shared_memory_type._create_(
             Location(MemoryBlock.ENTITY_SHARED_MEMORY_ARRAY, ir_offset, 0, None),
-        )._set_parent_(result)
+        )._set_parent_(result)._suppress_()
         result.data = meta.data_type._create_(
             Location(MemoryBlock.ENTITY_DATA_ARRAY, ir_offset, 0, None),
-        )._set_parent_(result)
+        )._set_parent_(result)._suppress_()
         result.info = EntityInfo._create_(
             Location(MemoryBlock.ENTITY_INFO_ARRAY, ir_info_offset, 0, None),
-        )._set_parent_(result)
+        )._set_parent_(result)._suppress_()
         result._set_parent_(ExecuteVoid(offset, info_offset))
         return result
 
