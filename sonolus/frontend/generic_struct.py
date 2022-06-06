@@ -43,9 +43,9 @@ class GenericStruct(Struct, _no_init_struct_=True):
             raise TypeError("Class is already a constructed generic.")
         if not isinstance(item, tuple):
             item = (item,)
+        item = cls._type_arg_type_(*item)
         if item not in cls._typed_subclasses_:
-            type_vars = cls._type_arg_type_(*item)
-            cls._typed_subclasses_[item] = cls._create_typed_subclass(type_vars)
+            cls._typed_subclasses_[item] = cls._create_typed_subclass(item)
         return cls._typed_subclasses_[item]
 
     @classmethod
