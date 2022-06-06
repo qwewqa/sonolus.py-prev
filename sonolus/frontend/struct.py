@@ -131,7 +131,7 @@ class StructField:
                     Location(loc.ref, loc.offset, loc.base + self.offset, loc.span),
                 )._set_parent_(instance)
             case [*values]:
-                return values[self.index]._dup_()._set_parent_(instance)
+                return values[self.index]._dup_(instance)
             case _:
                 raise ValueError("Unexpected value.")
 

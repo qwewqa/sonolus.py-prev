@@ -111,7 +111,7 @@ def Execute(*args: Statement):
     statement = ExecuteStatement(args)
     last = args[-1]
     if args and isinstance(last, Value):
-        return last._dup_()._set_parent_(statement)
+        return last._dup_(statement)
     return statement
 
 

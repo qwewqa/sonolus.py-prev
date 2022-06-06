@@ -25,11 +25,11 @@ class Value(Statement):
         """
         raise NotImplementedError
 
-    def _dup_(self: TValue) -> TValue:
+    def _dup_(self: TValue, parent: Statement) -> TValue:
         """
         Returns a shallow copy of this value with the same underlying value.
         """
-        return self._create_(self._value_)
+        return self._create_(self._value_)._set_parent_(parent)
 
     def _flatten_(self) -> list[IRNode]:
         """
@@ -65,9 +65,7 @@ class Value(Statement):
         """
         result = cls._create_(_new_temp_loc(cls.__name__))
         if initial_value is not None:
-            # Mind the _dup_
-            # A value should not be its own parent.
-            return result._dup_()._set_parent_(result._assign_(initial_value))
+            return result._dup_(result._assign_(initial_value))
         else:
             return result
 
@@ -107,7 +105,7 @@ class Value(Statement):
     def copy(self: TValue) -> TValue:
         return self._allocate_(self)
 
-    def __pos__(self):
+    def __pos__(self: TValue) -> TValue:
         """
         Shorthand for copy().
         """
@@ -121,7 +119,7 @@ class Value(Statement):
         """
         See _assign_.
         """
-        return self._dup_()._set_parent_(self._assign_(other))
+        return self._dup_(self._assign_(other))
 
     def __matmul__(self, other):
         """
@@ -133,40 +131,40 @@ class Value(Statement):
     # The following is so subclasses don't have to manually implement inplace operators.
 
     def __iadd__(self, other):
-        return self._dup_()._set_parent_(self._assign_(self + other))
+        return self._dup_(self._assign_(self + other))
 
     def __iand__(self, other):
-        return self._dup_()._set_parent_(self._assign_(self & other))
+        return self._dup_(self._assign_(self & other))
 
     def __ifloordiv__(self, other):
-        return self._dup_()._set_parent_(self._assign_(self // other))
+        return self._dup_(self._assign_(self // other))
 
     def __ilshift__(self, other):
-        return self._dup_()._set_parent_(self._assign_(self << other))
+        return self._dup_(self._assign_(self << other))
 
     def __imod__(self, other):
-        return self._dup_()._set_parent_(self._assign_(self % other))
+        return self._dup_(self._assign_(self % other))
 
     def __imul__(self, other):
-        return self._dup_()._set_parent_(self._assign_(self * other))
+        return self._dup_(self._assign_(self * other))
 
     def __ior__(self, other):
-        return self._dup_()._set_parent_(self._assign_(self | other))
+        return self._dup_(self._assign_(self | other))
 
     def __ipow__(self, other):
-        return self._dup_()._set_parent_(self._assign_(self**other))
+        return self._dup_(self._assign_(self**other))
 
     def __irshift__(self, other):
-        return self._dup_()._set_parent_(self._assign_(self >> other))
+        return self._dup_(self._assign_(self >> other))
 
     def __isub__(self, other):
-        return self._dup_()._set_parent_(self._assign_(self - other))
+        return self._dup_(self._assign_(self - other))
 
     def __itruediv__(self, other):
-        return self._dup_()._set_parent_(self._assign_(self / other))
+        return self._dup_(self._assign_(self / other))
 
     def __ixor__(self, other):
-        return self._dup_()._set_parent_(self._assign_(self ^ other))
+        return self._dup_(self._assign_(self ^ other))
 
 
 def convert_value(value, target_type: Type[T]) -> T:
