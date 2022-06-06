@@ -1,10 +1,11 @@
 from __future__ import annotations
 
+import dataclasses
 from typing import TypeVar, Type, ClassVar, Any, ParamSpec, Callable
 
 from sonolus.backend.evaluation import CompilationInfo
 from sonolus.backend.ir import IRNode, Location, TempRef, IRConst
-from sonolus.frontend.statement import Statement
+from sonolus.frontend.statement import Statement, StatementAttributes
 
 T = TypeVar("T", bound="Value")
 TValue = TypeVar("TValue", bound="Value")
@@ -28,7 +29,7 @@ class Value(Statement):
         """
         Returns a shallow copy of this value with the same underlying value.
         """
-        return self._create_(self._value_)._set_parent_(parent)
+        return self._create_(self._value_, self._attributes_)._set_parent_(parent)
 
     def _flatten_(self) -> list[IRNode]:
         """
@@ -51,16 +52,19 @@ class Value(Statement):
         that don't require any initialization and do not have any side effects.
         This is primarily for constants and dereferenced values of constant pointers.
         """
-        self._is_static_ = value
+        self._attributes_.is_static = value
         return self
 
     @classmethod
-    def _create_(cls: Type[TValue], value: Location | Any) -> TValue:
+    def _create_(
+        cls: Type[TValue], value: Location | Any, attributes: StatementAttributes = None
+    ) -> TValue:
         """
         Returns a new instance of this class as an alternative to __init__,
         which may take other arguments.
         """
         result = cls.__new__(cls)
+        Value.__init__(result, attributes=attributes)
         result._value_ = value
         return result
 
@@ -189,7 +193,7 @@ def convert_value(value, target_type: Type[T]) -> T:
 def Transmute(value: Value, type_: Type[TValue], /) -> TValue:
     if not isinstance(value._value_, Location):
         raise TypeError(f"Cannot transmute unallocated value {value}.")
-    return type_._create_(value._value_)._set_parent_(value)
+    return type_._create_(value._value_, value._attributes_)._set_parent_(value)
 
 
 def _new_temp_loc(name: str):

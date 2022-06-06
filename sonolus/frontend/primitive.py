@@ -23,10 +23,11 @@ class Primitive(Value):
     _size_: int = 1
 
     def __init__(self, value: float | IRNode = 0):
+        super().__init__()
         value = isinstance(value, IRNode) and value.constant() or value
         self._value_ = value
         self._check_readable()
-        self._is_static_ = isinstance(value, (float, int, bool))
+        self._attributes_.is_static = isinstance(value, (float, int, bool))
 
     def _assign_(self, value: Primitive) -> Void:
         value = convert_value(value, type(self))
@@ -90,8 +91,8 @@ class Primitive(Value):
         return id(self)
 
     @classmethod
-    def _create_(cls, value: Location | Any):
-        result: cls = super()._create_(value)  # type: ignore
+    def _create_(cls, value: Location | Any, attributes=None):
+        result: cls = super()._create_(value, attributes)  # type: ignore
         result._check_readable()
         return result
 
@@ -137,8 +138,8 @@ class Boolean(Primitive):
         self.override_truthiness = override_truthiness
 
     @classmethod
-    def _create_(cls, value: Location | Any):
-        result = super()._create_(value)
+    def _create_(cls, value: Location | Any, attributes=None):
+        result = super()._create_(value, attributes)
         result.override_truthiness = None
         return result
 
@@ -224,8 +225,8 @@ class Number(Primitive):
         self.override_float_value = override_float_value
 
     @classmethod
-    def _create_(cls, value: Location | Any):
-        result = super()._create_(value)
+    def _create_(cls, value: Location | Any, attributes=None):
+        result = super()._create_(value, attributes)
         result.override_float_value = None
         return result
 

@@ -45,7 +45,9 @@ class CompiledLevel:
 
     @classmethod
     def from_dict(cls, data: dict):
-        return cls(entities=[CompiledEntity.from_dict(entity) for entity in data["entities"]])
+        return cls(
+            entities=[CompiledEntity.from_dict(entity) for entity in data["entities"]]
+        )
 
     @classmethod
     def load(cls, path):
@@ -55,7 +57,9 @@ class CompiledLevel:
         return cls.from_dict(json.loads(data.decode("utf-8")))
 
     def save(self, path):
-        Path(path).write_bytes(gzip.compress(json.dumps(self.to_dict()).encode("utf-8")))
+        Path(path).write_bytes(
+            gzip.compress(json.dumps(self.to_dict()).encode("utf-8"))
+        )
 
     def save_uncompressed(self, path):
         Path(path).write_text(json.dumps(self.to_dict()))
@@ -71,7 +75,9 @@ class CompiledEntity:
 
     @classmethod
     def from_dict(cls, data: dict):
-        return cls(archetype=data["archetype"], data=CompiledEntityData.from_dict(data["data"]))
+        return cls(
+            archetype=data["archetype"], data=CompiledEntityData.from_dict(data["data"])
+        )
 
 
 @dataclass

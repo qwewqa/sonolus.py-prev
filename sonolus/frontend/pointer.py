@@ -31,7 +31,7 @@ class Pointer(Struct, Generic[T]):
         if (
             (block := self.block.constant()) is not None
             and (index := self.index.constant()) is not None
-            and self._is_static_
+            and self._attributes_.is_static
         ):
             return type_._create_(Location(block, IRConst(0), index, 1))._set_static_()
         return type_._create_(
@@ -77,7 +77,7 @@ def _create_typed_pointer_class(type_: Type[Value]):
                 case cls() as p:
                     return p
                 case Pointer() as p:
-                    return cls._create_(p._value_)._set_parent_(p)
+                    return cls._create_(p._value_, p._attributes_)._set_parent_(p)
                 case _:
                     return NotImplemented
 

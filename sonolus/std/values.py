@@ -6,12 +6,14 @@ from sonolus.frontend.array import Array
 from sonolus.frontend.generic_struct import GenericStruct, generic_method
 from sonolus.frontend.pointer import Pointer
 from sonolus.frontend.primitive import Bool, Num
+from sonolus.frontend.statement import Statement
 from sonolus.frontend.struct import Struct, Empty
 from sonolus.frontend.tuple import TupleStruct
 from sonolus.frontend.value import Value, convert_value
 from sonolus.frontend.void import Void
 
 __all__ = (
+    "Statement",
     "Value",
     "Struct",
     "TupleStruct",

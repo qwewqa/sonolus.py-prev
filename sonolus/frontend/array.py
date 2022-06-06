@@ -31,10 +31,12 @@ U = TypeVar("U")
 class Array(Value, Generic[T, U]):
     _typed_subclasses_: ClassVar[dict] = {}
 
-    def __init__(self, *args, **kwargs):
-        raise TypeError(
-            "Array cannot be directly instantiated without a type and size."
-        )
+    def __init__(self):
+        super().__init__()
+        if not self._is_concrete_:
+            raise TypeError(
+                "Array cannot be directly instantiated without a type and size."
+            )
 
     def __class_getitem__(cls, contained_type):
         if isinstance(contained_type, TypeVar):
@@ -131,6 +133,7 @@ def _create_typed_array_class(type_: Type[Value]):
                     _size_ = size * type_._size_
 
                     def __init__(self, values=None):
+                        super().__init__()
                         if values is None:
                             values = [
                                 self.contained_type._default_() for _ in range(size)
@@ -143,8 +146,8 @@ def _create_typed_array_class(type_: Type[Value]):
                             convert_value(v, self.contained_type) for v in values
                         )
 
-                        if all(v._is_static_ for v in self._value_):
-                            self._is_static_ = True
+                        if all(v._attributes_.is_static for v in self._value_):
+                            self._attributes_.is_static = True
                         else:
                             self._parent_statement_ = ExecuteVoid(*self._value_)
 
@@ -165,12 +168,15 @@ def _create_typed_array_class(type_: Type[Value]):
                                                 loc,
                                                 base=loc.base
                                                 + idx * self.contained_type._size_,
-                                            )
+                                            ),
+                                            self._attributes_,
                                         )
                                         ._set_parent_(
-                                            not self._is_static_ and self or None
+                                            not self._attributes_.is_static
+                                            and self
+                                            or None
                                         )
-                                        ._set_static_(self._is_static_)
+                                        ._set_static_(self._attributes_.is_static)
                                     )
                                 new_offset = Num._create_(
                                     loc.offset
@@ -193,7 +199,8 @@ def _create_typed_array_class(type_: Type[Value]):
                                         new_offset.ir(),
                                         loc.base,
                                         new_span,
-                                    )
+                                    ),
+                                    self._attributes_,
                                 )._set_parent_(parent)
                             case tuple() as values:
                                 if (constant_index := idx.constant()) is not None:
@@ -203,8 +210,12 @@ def _create_typed_array_class(type_: Type[Value]):
                                         )
                                     return (
                                         values[int(constant_index)]
-                                        ._dup_(not self._is_static_ and self or None)
-                                        ._set_static_(self._is_static_)
+                                        ._dup_(
+                                            not self._attributes_.is_static
+                                            and self
+                                            or None
+                                        )
+                                        ._set_static_(self._attributes_.is_static)
                                     )
                                 else:
                                     raise ValueError(

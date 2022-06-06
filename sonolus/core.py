@@ -15,9 +15,11 @@ from sonolus import (
     default_factory,
     Script,
     callback_function,
+    Statement,
 )
 
 __all__ = (
+    "Statement",
     "Num",
     "Bool",
     "Value",

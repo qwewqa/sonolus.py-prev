@@ -10,6 +10,7 @@ from sonolus.frontend.void import Void
 
 class ExecuteStatement(Statement):
     def __init__(self, statements: list[Statement], *, labels: list[str] | None = None):
+        super().__init__()
         self.statements = statements
         self.labels = labels
 
@@ -29,17 +30,10 @@ class ExecuteStatement(Statement):
             after = after.activate()
             return after
 
-    def _suppress_(self):
-        if self._was_evaluated_:
-            return self
-        super()._suppress_()
-        for statement in self.statements:
-            statement._suppress_()
-        return self
-
 
 class IfStatement(Statement):
     def __init__(self, test, then, else_):
+        super().__init__()
         self.test = test
         self.then = then
         self.else_ = else_
@@ -58,18 +52,10 @@ class IfStatement(Statement):
         after = after.activate()
         return after
 
-    def _suppress_(self):
-        if self._was_evaluated_:
-            return self
-        super()._suppress_()
-        self.test._suppress_()
-        self.then._suppress_()
-        self.else_._suppress_()
-        return self
-
 
 class WhileStatement(Statement):
     def __init__(self, test, body, else_):
+        super().__init__()
         self.test = test
         self.body = body
         self.else_ = else_
@@ -98,18 +84,10 @@ class WhileStatement(Statement):
         after = after.activate()
         return after
 
-    def _suppress_(self):
-        if self._was_evaluated_:
-            return self
-        super()._suppress_()
-        self.test._suppress_()
-        self.body._suppress_()
-        self.else_._suppress_()
-        return self
-
 
 class Break(Statement):
     def __init__(self, label="_loop"):
+        super().__init__()
         self.label = label
 
     def _evaluate_(self, scope: Scope):
@@ -119,6 +97,7 @@ class Break(Statement):
 
 class Continue(Statement):
     def __init__(self, label="_loop"):
+        super().__init__()
         self.label = label
 
     def _evaluate_(self, scope: Scope):

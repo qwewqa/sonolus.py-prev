@@ -7,6 +7,7 @@ from sonolus.backend.evaluation import Scope
 
 class Void(Statement):
     def __init__(self, node: IRNode | None = None):
+        super().__init__()
         self.node = node
 
     def _evaluate_(self, scope: Scope):

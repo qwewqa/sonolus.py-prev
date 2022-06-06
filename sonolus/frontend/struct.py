@@ -62,6 +62,7 @@ class Struct(Value):
         cls._is_concrete_ = True
 
     def __init__(self, *args, **kwargs):
+        super().__init__()
         bound: inspect.BoundArguments = self._constructor_signature_.bind(
             *args, **kwargs
         )
@@ -71,8 +72,8 @@ class Struct(Value):
             for field in self._struct_fields_
         )
 
-        if all(v._is_static_ for v in self._value_):
-            self._is_static_ = True
+        if all(v._attributes_.is_static for v in self._value_):
+            self._attributes_.is_static = True
         else:
             self._parent_statement_ = ExecuteVoid(*self._value_)
 
@@ -141,15 +142,18 @@ class StructField:
                 return (
                     self.type._create_(
                         Location(loc.ref, loc.offset, loc.base + self.offset, loc.span),
+                        instance._attributes_,
                     )
-                    ._set_parent_(not instance._is_static_ and instance or None)
-                    ._set_static_(instance._is_static_)
+                    ._set_parent_(
+                        not instance._attributes_.is_static and instance or None
+                    )
+                    ._set_static_(instance._attributes_.is_static)
                 )
             case [*values]:
                 return (
                     values[self.index]
-                    ._dup_(not instance._is_static_ and instance or None)
-                    ._set_static_(instance._is_static_)
+                    ._dup_(not instance._attributes_.is_static and instance or None)
+                    ._set_static_(instance._attributes_.is_static)
                 )
             case _:
                 raise ValueError("Unexpected value.")

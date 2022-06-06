@@ -69,7 +69,7 @@ class TupleStruct(
 
     def __init__(self, *args: Unpack[Types]):
         if self._types_ is None:
-            raise TypeError("Cannot instantiate untyped SlsTuple directly.")
+            raise TypeError("Cannot instantiate untyped TupleStruct directly.")
         super().__init__(*args)
 
     def __iter__(self):

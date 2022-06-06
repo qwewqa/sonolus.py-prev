@@ -122,8 +122,10 @@ class Scope:
         scope = self
         if statement is None:
             return scope
-        if statement._is_static_:
+        if statement._attributes_.is_static:
             return scope
+        if statement._attributes_.is_discarded:
+            raise ValueError("Statement was marked discarded but was still evaluated.")
         statement._was_evaluated_ = True
         scope = scope.evaluate(statement._parent_statement_)
         if statement in scope.evaluated:

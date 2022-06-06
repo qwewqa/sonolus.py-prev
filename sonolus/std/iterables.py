@@ -8,6 +8,7 @@ from sonolus.frontend.control_flow import If
 from sonolus.frontend.generic_struct import generic_method
 from sonolus.frontend.iterator import *
 from sonolus.frontend.primitive import Num, Bool
+from sonolus.frontend.statement import run_discarding
 from sonolus.frontend.struct import Struct
 from sonolus.std import Maybe, Nothing, Some
 from sonolus.std.number import NumMax, NumMin
@@ -45,13 +46,15 @@ R = TypeVar("R")
 def Map(f: Callable[[T], R], iterable: SlsIterable[T], /) -> SlsIterable[R]:
     iterator = Iter(iterable)
     return MappingIterator[
-        type(iterator), type(f(Next(iterator))._suppress_()), f
+        type(iterator), type(run_discarding(lambda: f(Next(iterator)))), f
     ].from_iterator(Iter(iterable))
 
 
 @sls_func
 def SeqMap(f: Callable[[T], R], sequence: SlsSequence[T], /) -> SlsSequence[R]:
-    result = Vector[type(f(sequence[0])._suppress_()), sequence._max_size_()].alloc()
+    result = Vector[
+        type(run_discarding(lambda: f(sequence[0]))), sequence._max_size_()
+    ].alloc()
     result.size @= Len(sequence)
     for i, v in Enumerate(sequence):
         result[i] @= f(v)

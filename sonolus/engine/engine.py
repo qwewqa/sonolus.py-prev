@@ -103,7 +103,7 @@ class Engine:
             data_type = script._metadata_.data_type
             raw_data = [0.0] * entity_data.data.index + entity_data.data.values
             raw_data.extend([0.0] * (data_type._size_ - len(raw_data)))
-            raw_data = raw_data[:data_type._size_]
+            raw_data = raw_data[: data_type._size_]
             data = data_type._from_flat_([IRConst(v) for v in raw_data])
             entities.append(Entity(script, data))
         return entities
@@ -119,8 +119,12 @@ class CompiledEngine:
 
     def save(self, path):
         path = Path(path)
-        (path / "EngineConfiguration").write_bytes(gzip.compress(json.dumps(self.get_configuration()).encode("utf-8")))
-        (path / "EngineData").write_bytes(gzip.compress(json.dumps(self.get_data()).encode("utf-8")))
+        (path / "EngineConfiguration").write_bytes(
+            gzip.compress(json.dumps(self.get_configuration()).encode("utf-8"))
+        )
+        (path / "EngineData").write_bytes(
+            gzip.compress(json.dumps(self.get_data()).encode("utf-8"))
+        )
 
     def save_uncompressed(self, path):
         path = Path(path)
