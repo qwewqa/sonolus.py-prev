@@ -125,6 +125,12 @@ class Value(Statement):
     def copy(self: TValue) -> TValue:
         return self._allocate_(self)
 
+    def __pos__(self):
+        """
+        Shorthand for copy().
+        """
+        return self.copy()
+
     @staticmethod
     def is_value_class(cls: type):
         return isinstance(cls, type) and issubclass(cls, Value) and cls._is_concrete_

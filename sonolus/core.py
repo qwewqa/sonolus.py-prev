@@ -13,6 +13,8 @@ from sonolus import (
     new,
     alloc,
     default_factory,
+    Script,
+    callback_function,
 )
 
 __all__ = (
@@ -30,4 +32,6 @@ __all__ = (
     "alloc",
     "default_factory",
     "sls_func",
+    "Script",
+    "callback_function",
 )

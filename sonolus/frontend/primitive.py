@@ -174,19 +174,19 @@ class Boolean(Primitive):
             return not Value
 
     @sls_func(ast=False)
-    def __and__(self, other):
+    def __and__(self, other) -> Bool:
         return invoke_builtin("And", [self, other], Bool)
 
     @sls_func(ast=False)
-    def __rand__(self, other):
+    def __rand__(self, other) -> Bool:
         return invoke_builtin("And", [other, self], Bool)
 
     @sls_func(ast=False)
-    def __or__(self, other):
+    def __or__(self, other) -> Bool:
         return invoke_builtin("Or", [self, other], Bool)
 
     @sls_func(ast=False)
-    def __ror__(self, other):
+    def __ror__(self, other) -> Bool:
         return invoke_builtin("Or", [other, self], Bool)
 
     @sls_func(ast=False)
@@ -251,59 +251,59 @@ class Number(Primitive):
         return int(value)
 
     @sls_func(ast=False)
-    def __add__(self: Num, other: Num):
+    def __add__(self: Num, other: Num) -> Num:
         return invoke_builtin("Add", [self, other], Num)
 
     @sls_func(ast=False)
-    def __radd__(self: Num, other: Num):
+    def __radd__(self: Num, other: Num) -> Num:
         return invoke_builtin("Add", [other, self], Num)
 
     @sls_func(ast=False)
-    def __sub__(self: Num, other: Num):
+    def __sub__(self: Num, other: Num) -> Num:
         return invoke_builtin("Subtract", [self, other], Num)
 
     @sls_func(ast=False)
-    def __rsub__(self: Num, other: Num):
+    def __rsub__(self: Num, other: Num) -> Num:
         return invoke_builtin("Subtract", [other, self], Num)
 
     @sls_func(ast=False)
-    def __mul__(self: Num, other: Num):
+    def __mul__(self: Num, other: Num) -> Num:
         return invoke_builtin("Multiply", [self, other], Num)
 
     @sls_func(ast=False)
-    def __rmul__(self: Num, other: Num):
+    def __rmul__(self: Num, other: Num) -> Num:
         return invoke_builtin("Multiply", [other, self], Num)
 
     @sls_func(ast=False)
-    def __truediv__(self: Num, other: Num):
+    def __truediv__(self: Num, other: Num) -> Num:
         return invoke_builtin("Divide", [self, other], Num)
 
     @sls_func(ast=False)
-    def __rtruediv__(self: Num, other: Num):
+    def __rtruediv__(self: Num, other: Num) -> Num:
         return invoke_builtin("Divide", [other, self], Num)
 
     @sls_func(ast=False)
-    def __floordiv__(self: Num, other: Num):
+    def __floordiv__(self: Num, other: Num) -> Num:
         return invoke_builtin("Floor", [self / other], Num)
 
     @sls_func(ast=False)
-    def __rfloordiv__(self: Num, other: Num):
+    def __rfloordiv__(self: Num, other: Num) -> Num:
         return invoke_builtin("Floor", [other / self], Num)
 
     @sls_func(ast=False)
-    def __mod__(self: Num, other: Num):
+    def __mod__(self: Num, other: Num) -> Num:
         return invoke_builtin("Mod", [self, other], Num)
 
     @sls_func(ast=False)
-    def __rmod__(self: Num, other: Num):
+    def __rmod__(self: Num, other: Num) -> Num:
         return invoke_builtin("Mod", [other, self], Num)
 
     @sls_func(ast=False)
-    def __pow__(self: Num, other: Num):
+    def __pow__(self: Num, other: Num) -> Num:
         return invoke_builtin("Power", [self, other], Num)
 
     @sls_func(ast=False)
-    def __rpow__(self: Num, other: Num):
+    def __rpow__(self: Num, other: Num) -> Num:
         return invoke_builtin("Power", [other, self], Num)
 
     @sls_func(ast=False)
@@ -323,7 +323,7 @@ class Number(Primitive):
         return invoke_builtin("LessOr", [self, other], Bool)
 
     @sls_func(ast=False)
-    def __neg__(self):
+    def __neg__(self) -> Num:
         return 0 - self
 
     @sls_func(ast=False)
