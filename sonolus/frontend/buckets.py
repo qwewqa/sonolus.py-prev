@@ -37,7 +37,7 @@ class BucketSprite:
         }
 
 
-class BucketStruct(Struct):
+class BucketData(Struct):
     min_perfect: Num
     max_perfect: Num
     min_great: Num
@@ -48,16 +48,21 @@ class BucketStruct(Struct):
     @classmethod
     @sls_func
     def simple(cls, perfect, great, good):
-        return BucketStruct(perfect, perfect, great, great, good, good)
+        return BucketData(-perfect, perfect, -great, great, -good, good)
+
+    @classmethod
+    @sls_func
+    def late(cls, perfect, great, good):
+        return BucketData(0, perfect, 0, great, 0, good)
 
 
-class _BucketStructWithMetadata(Protocol):
+class _BucketDataWithMetadata(Protocol):
     index: int
 
 
 def judgement_bucket(
     sprites: list[BucketSprite],
-) -> BucketStruct | _BucketStructWithMetadata:
+) -> BucketData | _BucketDataWithMetadata:
     return Bucket(sprites=sprites)  # type: ignore
 
 
@@ -79,11 +84,11 @@ class BucketConfig:
             if not isinstance(v, Bucket):
                 raise TypeError("Expected all class members to be buckets.")
             bucket_entries[k] = v
-            accessor = BucketStruct._create_(
+            accessor = BucketData._create_(
                 Location(MemoryBlock.LEVEL_BUCKET, IRConst(0), offset, None),
             )._set_static_()
             accessor.index = index
             setattr(cls, k, accessor)
-            offset += BucketStruct._size_
+            offset += BucketData._size_
             index += 1
         cls._bucket_entries_ = bucket_entries

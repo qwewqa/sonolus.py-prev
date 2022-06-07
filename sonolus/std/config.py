@@ -14,7 +14,7 @@ __all__ = (
     "OptionName",
     "BucketConfig",
     "BucketSprite",
-    "BucketStruct",
+    "BucketData",
     "judgement_bucket",
     "UIConfig",
     "UIConfigVisibility",

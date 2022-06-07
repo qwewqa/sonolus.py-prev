@@ -70,8 +70,8 @@ class LevelUIElement(Struct):
     height: Num
     rotation: Num = 0
     alpha: Num = 1
-    horizontal_align: Num = UIHorizontalAlign.Center
-    background: Bool = False
+    horizontal_align: Num
+    background: Bool
 
 
 class LevelUIStruct(Struct):
