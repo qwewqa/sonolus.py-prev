@@ -2,17 +2,17 @@ from sonolus.backend.callback import DEBUG_CALLBACK_TYPE
 from sonolus.backend.cfg import CFG
 from sonolus.backend.evaluation import evaluate_statement, CompilationInfo
 from sonolus.backend.graph import get_flat_cfg
-from sonolus.backend.ir import IRComment
+from sonolus.backend.ir import IRComment, IRFunc
 from sonolus.frontend.primitive import Num, Bool, invoke_builtin
 from sonolus.frontend.statement import Statement
 from sonolus.frontend.void import Void
 from sonolus.std.function import sls_func
 
 __all__ = (
-    "IsDebug",
-    "DebugPause",
-    "DebugLog",
-    "Comment",
+    "is_debug",
+    "debug_pause",
+    "debug_log",
+    "comment",
     "get_generated_src",
     "debug_compilation",
     "evaluate_function",
@@ -20,18 +20,16 @@ __all__ = (
 )
 
 
-@sls_func(ast=False)
-def IsDebug() -> Bool:
-    return invoke_builtin("IsDebug", [], Bool)
+is_debug: Bool = Bool._create_(IRFunc("IsDebug", []))._set_static_()
 
 
 @sls_func(ast=False)
-def DebugPause() -> Void:
+def debug_pause() -> Void:
     return invoke_builtin("DebugPause", [])
 
 
 @sls_func(ast=False)
-def DebugLog(n: Num | Bool, /) -> Void:
+def debug_log(n: Num | Bool, /) -> Void:
     if isinstance(n, (int, float, bool)):
         n = Num(n)
     if not isinstance(n, (Num, Bool)):
@@ -39,7 +37,7 @@ def DebugLog(n: Num | Bool, /) -> Void:
     return invoke_builtin("DebugLog", [n])
 
 
-def Comment(message) -> Void:
+def comment(message) -> Void:
     return Void(IRComment(str(message)))
 
 

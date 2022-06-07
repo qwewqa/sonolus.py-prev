@@ -11,64 +11,63 @@ from sonolus.frontend.primitive import Num, Bool
 from sonolus.frontend.statement import run_discarding
 from sonolus.frontend.struct import Struct
 from sonolus.std import Maybe, Nothing, Some
-from sonolus.std.number import NumMax, NumMin
+from sonolus.std.number import num_max, num_min
+from sonolus.std.values import alloc, new
 
 __all__ = (
     "Range",
-    "Len",
-    "Iter",
-    "Next",
-    "Enumerate",
-    "Map",
-    "SeqMap",
-    "Filter",
-    "SeqFilter",
-    "Count",
-    "Any",
-    "All",
-    "Max",
-    "Min",
-    "Reduce",
-    "IsEmpty",
-    "IsNotEmpty",
+    "len_of",
+    "iter_of",
+    "next_of",
+    "indexed_of",
+    "select",
+    "select_seq",
+    "where",
+    "where_seq",
+    "count_of",
+    "any_of",
+    "all_of",
+    "max_of",
+    "min_of",
+    "reduce",
+    "is_empty",
+    "is_not_empty",
     "Vector",
     "sequence_iterator",
     "indexed_sequence_iterator",
 )
-
-from sonolus.std.values import alloc, new
 
 T = TypeVar("T")
 R = TypeVar("R")
 
 
 @sls_func
-def Map(f: Callable[[T], R], iterable: SlsIterable[T], /) -> SlsIterable[R]:
-    iterator = Iter(iterable)
+def select(f: Callable[[T], R], iterable: SlsIterable[T], /) -> SlsIterable[R]:
+    iterator = iter_of(iterable)
     return MappingIterator[
-        type(iterator), type(run_discarding(lambda: f(Next(iterator)))), f
-    ].from_iterator(Iter(iterable))
+        type(iterator), type(run_discarding(lambda: f(next_of(iterator)))), f
+    ].from_iterator(iter_of(iterable))
 
 
 @sls_func
-def SeqMap(f: Callable[[T], R], sequence: SlsSequence[T], /) -> SlsSequence[R]:
+def select_seq(f: Callable[[T], R], sequence: SlsSequence[T], /) -> SlsSequence[R]:
     result = Vector[
         type(run_discarding(lambda: f(sequence[0]))), sequence._max_size_()
     ].alloc()
-    result.size @= Len(sequence)
-    for i, v in Enumerate(sequence):
+    result.size @= len_of(sequence)
+    for i, v in indexed_of(sequence):
         result[i] @= f(v)
     return result
 
 
 @sls_func
-def Filter(f: Callable[[T], Bool], iterable: SlsIterable[T], /) -> SlsIterable[T]:
-    iterator = Iter(iterable)
+def where(f: Callable[[T], Bool], iterable: SlsIterable[T], /) -> SlsIterable[T]:
+    iterator = iter_of(iterable)
     return FilteringIterator[type(iterator), f].from_iterator(iterator)
 
 
 @sls_func
-def SeqFilter(f: Callable[[T], Bool], sequence: SlsSequence[T], /) -> SlsSequence[T]:
+def where_seq(f: Callable[[T], Bool], sequence: SlsSequence[T], /) -> SlsSequence[T]:
     result = alloc(Vector[sequence._contained_type_(), sequence._max_size_()])
     result.size @= 0
     for v in sequence:
@@ -78,21 +77,21 @@ def SeqFilter(f: Callable[[T], Bool], sequence: SlsSequence[T], /) -> SlsSequenc
 
 
 @overload
-def Count(iterator: SlsIterable, /) -> Num:
+def count_of(iterator: SlsIterable, /) -> Num:
     pass
 
 
 @overload
-def Count(f: Callable[[T], Bool], iterator: SlsIterable, /) -> Num:
+def count_of(f: Callable[[T], Bool], iterator: SlsIterable, /) -> Num:
     pass
 
 
 @sls_func(ast=False)
-def Count(*args):
+def count_of(*args):
     match len(args):
         case 1:
             if isinstance(args[0], SlsSequence):
-                return Len(args[0])
+                return len_of(args[0])
             return _count_simple(*args)
         case 2:
             return _count_cond(*args)
@@ -105,7 +104,7 @@ def Count(*args):
 @sls_func
 def _count_simple(iterable: SlsIterable[T], /, _ret: Num = new()) -> Num:
     count = +Num(0)
-    for _ in Iter(iterable):
+    for _ in iter_of(iterable):
         count += 1
     return count
 
@@ -115,46 +114,46 @@ def _count_cond(
     f: Callable[[T], Bool], iterable: SlsIterable[T], /, _ret: Num = new()
 ) -> Num:
     count = +Num(0)
-    for v in Iter(iterable):
+    for v in iter_of(iterable):
         if f(v):
             count += 1
     return count
 
 
 @sls_func
-def Any(
+def any_of(
     f: Callable[[T], Bool], iterable: SlsIterable[T], /, _ret: Bool = new()
 ) -> Bool:
-    for v in Iter(iterable):
+    for v in iter_of(iterable):
         if f(v):
             return True
     return False
 
 
 @sls_func
-def All(
+def all_of(
     f: Callable[[T], Bool], iterable: SlsIterable[T], /, _ret: Bool = new()
 ) -> Bool:
-    for v in Iter(iterable):
+    for v in iter_of(iterable):
         if not f(v):
             return False
     return True
 
 
 @overload
-def Max(
-    iterable: SlsIterable[T], /, *, key: Callable[[T], Any] = None, default: T = None
+def max_of(
+    iterable: SlsIterable[T], /, *, key: Callable[[T], any_of] = None, default: T = None
 ) -> T:
     pass
 
 
 @overload
-def Max(arg1: T, arg2: T, /, *args: T, key: Callable[[T], Any] = None) -> T:
+def max_of(arg1: T, arg2: T, /, *args: T, key: Callable[[T], any_of] = None) -> T:
     pass
 
 
 @sls_func(ast=False)
-def Max(*args, **kwargs):
+def max_of(*args, **kwargs):
     """
     If given a single iterable, returns a copy of the maximum value in the iterable.
     If given multiple values, returns a copy of the maximum of those values.
@@ -165,7 +164,7 @@ def Max(*args, **kwargs):
         iterable = args[0]
         key = kwargs.pop("key", None)
         default = kwargs.pop(
-            "default", type(Iter(iterable)._item_())._default_().copy()
+            "default", type(iter_of(iterable)._item_())._default_().copy()
         )
         if kwargs:
             raise TypeError(
@@ -180,7 +179,7 @@ def Max(*args, **kwargs):
         and all(isinstance(arg, (Num, int, float)) for arg in args)
         and not kwargs
     ):
-        return NumMax(*args)
+        return num_max(*args)
     else:
         args = [convert_literal(arg) for arg in args]
         key = kwargs.pop("key", None)
@@ -211,10 +210,10 @@ def Max(*args, **kwargs):
 
 @sls_func
 def _max_iterable(iterable: SlsIterable[T], /, *, _ret):
-    if IsEmpty(iterable):
+    if is_empty(iterable):
         return
-    iterator = Iter(iterable)
-    max_value = Next(iterator).copy()
+    iterator = iter_of(iterable)
+    max_value = next_of(iterator).copy()
     for v in iterator:
         if v > max_value:
             max_value @= v
@@ -223,10 +222,10 @@ def _max_iterable(iterable: SlsIterable[T], /, *, _ret):
 
 @sls_func
 def _max_iterable_key(iterable: SlsIterable[T], /, *, key: Callable, _ret):
-    if IsEmpty(iterable):
+    if is_empty(iterable):
         return
-    iterator = Iter(iterable)
-    max_value = Next(iterator).copy()
+    iterator = iter_of(iterable)
+    max_value = next_of(iterator).copy()
     max_key = key(max_value).copy()
     for v in iterator:
         keyed = key(v)
@@ -237,19 +236,19 @@ def _max_iterable_key(iterable: SlsIterable[T], /, *, key: Callable, _ret):
 
 
 @overload
-def Min(
-    iterable: SlsIterable[T], /, *, key: Callable[[T], Any] = None, default: T = None
+def min_of(
+    iterable: SlsIterable[T], /, *, key: Callable[[T], any_of] = None, default: T = None
 ) -> T:
     pass
 
 
 @overload
-def Min(arg1: T, arg2: T, /, *args: T, key: Callable[[T], Any] = None) -> T:
+def min_of(arg1: T, arg2: T, /, *args: T, key: Callable[[T], any_of] = None) -> T:
     pass
 
 
 @sls_func(ast=False)
-def Min(*args, **kwargs):
+def min_of(*args, **kwargs):
     """
     If given a single iterable, returns a copy of the minimum value in the iterable.
     If given multiple values, returns a copy of the minimum of those values.
@@ -260,7 +259,7 @@ def Min(*args, **kwargs):
         iterable = args[0]
         key = kwargs.pop("key", None)
         default = kwargs.pop(
-            "default", type(Iter(iterable)._item_())._default_().copy()
+            "default", type(iter_of(iterable)._item_())._default_().copy()
         )
         if kwargs:
             raise TypeError(
@@ -275,7 +274,7 @@ def Min(*args, **kwargs):
         and all(isinstance(arg, (Num, int, float)) for arg in args)
         and not kwargs
     ):
-        return NumMin(*args)
+        return num_min(*args)
     else:
         args = [convert_literal(arg) for arg in args]
         key = kwargs.pop("key", None)
@@ -306,10 +305,10 @@ def Min(*args, **kwargs):
 
 @sls_func
 def _min_iterable(iterable: SlsIterable[T], /, *, _ret):
-    if IsEmpty(iterable):
+    if is_empty(iterable):
         return
-    iterator = Iter(iterable)
-    min_value = Next(iterator).copy()
+    iterator = iter_of(iterable)
+    min_value = next_of(iterator).copy()
     for v in iterator:
         if v < min_value:
             min_value @= v
@@ -318,10 +317,10 @@ def _min_iterable(iterable: SlsIterable[T], /, *, _ret):
 
 @sls_func
 def _min_iterable_key(iterable: SlsIterable[T], /, *, key: Callable, _ret):
-    if IsEmpty(iterable):
+    if is_empty(iterable):
         return
-    iterator = Iter(iterable)
-    min_value = Next(iterator).copy()
+    iterator = iter_of(iterable)
+    min_value = next_of(iterator).copy()
     min_key = key(min_value).copy()
     for v in iterator:
         keyed = key(v)
@@ -332,7 +331,7 @@ def _min_iterable_key(iterable: SlsIterable[T], /, *, key: Callable, _ret):
 
 
 @sls_func(ast=False)
-def Reduce(
+def reduce(
     func: Callable[[R, T], R], iterable: SlsIterable[T], /, initializer: R = None
 ):
     """
@@ -340,7 +339,7 @@ def Reduce(
     """
     if initializer is None:
         return _reduce_no_initializer(
-            func, iterable, _ret=type(Iter(iterable)._item_())._default_().copy()
+            func, iterable, _ret=type(iter_of(iterable)._item_())._default_().copy()
         )
     else:
         initializer = convert_literal(initializer)
@@ -351,10 +350,10 @@ def Reduce(
 def _reduce_no_initializer(
     f: Callable[[T, T], T], iterable: SlsIterable[T], /, *, _ret: T
 ):
-    if IsEmpty(iterable):
+    if is_empty(iterable):
         return
-    iterator = Iter(iterable)
-    result = Next(iterator)
+    iterator = iter_of(iterable)
+    result = next_of(iterator)
     for v in iterator:
         result @= f(result, v)
     return result
@@ -365,21 +364,21 @@ def _reduce_with_initializer(
     f: Callable[[R, T], R], iterable: SlsIterable[T], /, *, _ret: R
 ):
     # _ret acts as the initializer
-    if IsEmpty(iterable):
+    if is_empty(iterable):
         return
-    for v in Iter(iterable):
+    for v in iter_of(iterable):
         _ret @= f(_ret, v)
     return
 
 
 @sls_func
-def IsEmpty(iterable: SlsIterable[T]) -> Bool:
-    return not Iter(iterable)._has_item_()
+def is_empty(iterable: SlsIterable[T]) -> Bool:
+    return not iter_of(iterable)._has_item_()
 
 
 @sls_func
-def IsNotEmpty(iterable: SlsIterable[T]) -> Bool:
-    return Iter(iterable)._has_item_()
+def is_not_empty(iterable: SlsIterable[T]) -> Bool:
+    return iter_of(iterable)._has_item_()
 
 
 class Range(Struct, SlsSequence[Num]):
@@ -406,9 +405,9 @@ class Range(Struct, SlsSequence[Num]):
     @sls_func
     def _len_(self, _ret: Num = new()):
         if self.step > 0:
-            return Max((self.stop - self.start - 1) // self.step + 1, 0)
+            return max_of((self.stop - self.start - 1) // self.step + 1, 0)
         else:
-            return Max((self.start - self.stop - 1) // -self.step + 1, 0)
+            return max_of((self.start - self.stop - 1) // -self.step + 1, 0)
 
     @sls_func
     def __contains__(self, item: Num, _ret: Bool = new()) -> Bool:

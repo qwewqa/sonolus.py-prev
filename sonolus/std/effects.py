@@ -2,19 +2,20 @@ from __future__ import annotations
 
 from enum import Enum
 
-from .function import sls_func
-from .number import Num
-from .boolean import Bool
-from .values import Void
+from sonolus.frontend.value import convert_value
+from sonolus.std.function import sls_func
+from sonolus.std.number import Num
+from sonolus.std.boolean import Bool
+from sonolus.std.values import Void
 from sonolus.frontend.struct import Struct
 from sonolus.frontend.primitive import invoke_builtin
 
 __all__ = (
-    "Play",
-    "PlayScheduled",
-    "HasEffectClip",
+    "play",
+    "play_scheduled",
+    "has_effect_clip",
     "EffectClipId",
-    "CustomEffectClipId",
+    "custom_effect_clip_id",
     "Clip",
 )
 
@@ -24,16 +25,16 @@ class Clip(Struct):
 
     @sls_func
     def play(self, dist: Num = 0):
-        return Play(self.id, dist)
+        return play(self.id, dist)
 
     @sls_func
     def play_scheduled(self, time: Num, dist: Num = 0):
-        return PlayScheduled(self.id, time, dist)
+        return play_scheduled(self.id, time, dist)
 
     @property
     @sls_func
     def available(self) -> Bool:
-        return HasEffectClip(self.id)
+        return has_effect_clip(self.id)
 
     @sls_func
     def __add__(self, other: Clip) -> Clip:
@@ -89,25 +90,37 @@ class Clip(Struct):
 
     @classmethod
     def custom(cls, engine_id: Num, clip_id: Num) -> Clip:
-        return cls(id=CustomEffectClipId(engine_id, clip_id))
+        return cls(id=custom_effect_clip_id(engine_id, clip_id))
 
 
 @sls_func(ast=False)
-def Play(id: Num, dist: Num) -> Void:
+def play(id: Num | Clip, dist: Num) -> Void:
+    if isinstance(id, Clip):
+        id = id.id
+    else:
+        id = convert_value(id, Num)
     return invoke_builtin("Play", [id, dist])
 
 
 @sls_func(ast=False)
-def PlayScheduled(id: Num, t: Num, dist: Num) -> Void:
+def play_scheduled(id: Num | Clip, t: Num, dist: Num) -> Void:
+    if isinstance(id, Clip):
+        id = id.id
+    else:
+        id = convert_value(id, Num)
     return invoke_builtin("PlayScheduled", [id, t, dist])
 
 
 @sls_func(ast=False)
-def HasEffectClip(id: Num) -> Bool:
+def has_effect_clip(id: Num | Clip) -> Bool:
+    if isinstance(id, Clip):
+        id = id.id
+    else:
+        id = convert_value(id, Num)
     return invoke_builtin("HasEffectClip", [id], Bool)
 
 
-def CustomEffectClipId(engine_id: Num, clip_id: Num) -> Num:
+def custom_effect_clip_id(engine_id: Num, clip_id: Num) -> Num:
     return 100000 + engine_id * 100 + clip_id
 
 

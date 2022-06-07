@@ -151,12 +151,12 @@ def While(test, body, else_=None):
 
 
 def For(iterator, /, body: Callable, else_=None, unpack: bool = False):
-    from sonolus.frontend.iterator import Iter, SlsIterator
+    from sonolus.frontend.iterator import iter_of, SlsIterator
 
     if else_ is None:
         else_ = Void()
     try:
-        iterator = Iter(iterator)
+        iterator = iter_of(iterator)
     except TypeError:
         pass
     if not isinstance(iterator, SlsIterator):

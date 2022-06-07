@@ -14,7 +14,7 @@ def process_ast_function(fn):
     from sonolus.frontend.control_flow import Execute, ExecuteVoid
     from sonolus.frontend.primitive import Bool, Num
     from sonolus.frontend.void import Void
-    from sonolus.frontend.iterator import Iter
+    from sonolus.frontend.iterator import iter_of
 
     source_file = inspect.getsourcefile(fn)
     lines, lnum = inspect.getsourcelines(fn)
@@ -53,7 +53,7 @@ def process_ast_function(fn):
             "_If_": cf.If,
             "_While_": cf.While,
             "_For_": cf.For,
-            "_Iter_": Iter,
+            "_Iter_": iter_of,
             "_And_": Bool.and_,
             "_Or_": Bool.or_,
             "_Not_": Bool.not_,

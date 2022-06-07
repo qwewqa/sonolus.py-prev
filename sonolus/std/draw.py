@@ -3,28 +3,30 @@ from __future__ import annotations
 from enum import Enum
 
 from sonolus.frontend.primitive import invoke_builtin, Num, Bool
-from .function import sls_func
-from .point import Point
-from .values import Struct, Array, Void
+from sonolus.std.function import sls_func
+from sonolus.std.point import Point
+from sonolus.std.values import Struct, Array, Void
 
 __all__ = (
     "Quad",
-    "Draw",
-    "DrawCurvedL",
-    "DrawCurvedR",
-    "DrawCurvedLR",
-    "DrawCurvedB",
-    "DrawCurvedT",
-    "DrawCurvedBT",
-    "SpawnParticleEffect",
-    "MoveParticleEffect",
-    "DestroyParticleEffect",
-    "HasSkinSprite",
-    "HasParticleEffect",
+    "draw",
+    "draw_curved_l",
+    "draw_curved_r",
+    "draw_curved_lr",
+    "draw_curved_b",
+    "draw_curved_t",
+    "draw_curved_bt",
+    "spawn_particle_effect",
+    "move_particle_effect",
+    "destroy_particle_effect",
+    "has_skin_sprite",
+    "has_particle_effect",
     "SpriteId",
-    "CustomSpriteId",
+    "custom_sprite_id",
     "ParticleEffectId",
 )
+
+from sonolus.frontend.value import convert_value
 
 
 class Quad(Struct):
@@ -81,22 +83,22 @@ class Quad(Struct):
 
 
 @sls_func(ast=False)
-def Draw(id: Num, quad: Quad, z: Num, a: Num) -> Void:
+def draw(id: Num, quad: Quad, z: Num, a: Num) -> Void:
     return invoke_builtin("Draw", [id, *quad.coords, z, a])
 
 
 @sls_func(ast=False)
-def DrawCurvedL(id: Num, quad: Quad, z: Num, a: Num, n: Num, l: Point) -> Void:
+def draw_curved_l(id: Num, quad: Quad, z: Num, a: Num, n: Num, l: Point) -> Void:
     return invoke_builtin("DrawCurvedL", [id, *quad.coords, z, a, n, l.x, l.y])
 
 
 @sls_func(ast=False)
-def DrawCurvedR(id: Num, quad: Quad, z: Num, a: Num, n: Num, r: Point) -> Void:
+def draw_curved_r(id: Num, quad: Quad, z: Num, a: Num, n: Num, r: Point) -> Void:
     return invoke_builtin("DrawCurvedR", [id, *quad.coords, z, a, n, r.x, r.y])
 
 
 @sls_func(ast=False)
-def DrawCurvedLR(
+def draw_curved_lr(
     id: Num, quad: Quad, z: Num, a: Num, n: Num, l: Point, r: Point
 ) -> Void:
     return invoke_builtin(
@@ -105,17 +107,17 @@ def DrawCurvedLR(
 
 
 @sls_func(ast=False)
-def DrawCurvedB(id: Num, quad: Quad, z: Num, a: Num, n: Num, b: Point) -> Void:
+def draw_curved_b(id: Num, quad: Quad, z: Num, a: Num, n: Num, b: Point) -> Void:
     return invoke_builtin("DrawCurvedB", [id, *quad.coords, z, a, n, b.x, b.y])
 
 
 @sls_func(ast=False)
-def DrawCurvedT(id: Num, quad: Quad, z: Num, a: Num, n: Num, t: Point) -> Void:
+def draw_curved_t(id: Num, quad: Quad, z: Num, a: Num, n: Num, t: Point) -> Void:
     return invoke_builtin("DrawCurvedT", [id, *quad.coords, z, a, n, t.x, t.y])
 
 
 @sls_func(ast=False)
-def DrawCurvedBT(
+def draw_curved_bt(
     id: Num, quad: Quad, z: Num, a: Num, n: Num, b: Point, t: Point
 ) -> Void:
     return invoke_builtin(
@@ -123,32 +125,56 @@ def DrawCurvedBT(
     )
 
 
-@sls_func(ast=False)
-def SpawnParticleEffect(id: Num, quad: Quad, t: Num, loop: Bool = False) -> Num:
-    return invoke_builtin("SpawnParticleEffect", [id, *quad.coords, t, loop], Num)
+class ParticleEffectInstance(Struct):
+    id: Num
+
+    @sls_func
+    def move(self, quad: Quad):
+        move_particle_effect(self.id, quad)
+
+    @sls_func
+    def destroy(self):
+        destroy_particle_effect(self.id)
 
 
 @sls_func(ast=False)
-def MoveParticleEffect(id: Num, quad: Quad) -> Void:
+def spawn_particle_effect(
+    id: Num, quad: Quad, t: Num, loop: Bool = False
+) -> ParticleEffectInstance:
+    return ParticleEffectInstance(
+        invoke_builtin("SpawnParticleEffect", [id, *quad.coords, t, loop], Num)
+    )
+
+
+@sls_func(ast=False)
+def move_particle_effect(id: Num | ParticleEffectInstance, quad: Quad) -> Void:
+    if isinstance(id, ParticleEffectInstance):
+        id = id.id
+    else:
+        id = convert_value(id, Num)
     return invoke_builtin("MoveParticleEffect", [id, *quad.coords])
 
 
 @sls_func(ast=False)
-def DestroyParticleEffect(id: Num) -> Void:
+def destroy_particle_effect(id: Num | ParticleEffectInstance) -> Void:
+    if isinstance(id, ParticleEffectInstance):
+        id = id.id
+    else:
+        id = convert_value(id, Num)
     return invoke_builtin("DestroyParticleEffect", [id])
 
 
 @sls_func(ast=False)
-def HasSkinSprite(id: Num) -> Bool:
+def has_skin_sprite(id: Num) -> Bool:
     return invoke_builtin("HasSkinSprite", [id], Bool)
 
 
 @sls_func(ast=False)
-def HasParticleEffect(id: Num) -> Bool:
+def has_particle_effect(id: Num) -> Bool:
     return invoke_builtin("HasParticleEffect", [id], Bool)
 
 
-def CustomSpriteId(engine_id: Num, sprite_id: Num) -> Num:
+def custom_sprite_id(engine_id: Num, sprite_id: Num) -> Num:
     return 100000 + engine_id * 100 + sprite_id
 
 

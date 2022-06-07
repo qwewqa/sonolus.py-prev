@@ -1,8 +1,8 @@
 from __future__ import annotations
 
-from .number import Num, Sin, Cos
-from .values import Struct
-from .function import sls_func
+from sonolus.std.number import Num, sin, cos
+from sonolus.std.values import Struct
+from sonolus.std.function import sls_func
 
 __all__ = ("Point",)
 
@@ -61,8 +61,8 @@ class Point(Struct):
 
     @sls_func
     def rotate(self, theta: Num, /) -> Point:
-        s = Sin(theta)
-        c = Cos(theta)
+        s = sin(theta)
+        c = cos(theta)
         return Point(self.x * c - self.y * s, self.x * s + self.y * c)
 
     @sls_func
@@ -72,4 +72,4 @@ class Point(Struct):
     @classmethod
     @sls_func
     def polar(cls, r: Num, theta: Num) -> Point:
-        return cls(Cos(theta) * r, Sin(theta) * r)
+        return cls(cos(theta) * r, sin(theta) * r)

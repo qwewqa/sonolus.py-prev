@@ -335,6 +335,16 @@ class Number(Primitive):
         return 0 - self
 
     @sls_func(ast=False)
+    def __abs__(self) -> Num:
+        return invoke_builtin("Abs", [self], Num)
+
+    @sls_func(ast=False)
+    def __round__(self, n=None):
+        if n not in {None, 0}:
+            raise NotImplementedError("Rounding with a precision is not supported.")
+        return invoke_builtin("Round", [self], Num)
+
+    @sls_func(ast=False)
     def to_boolean(self) -> Bool:
         return self != 0
 

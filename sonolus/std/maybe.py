@@ -77,7 +77,7 @@ class Maybe(GenericStruct, Generic[T], type_vars=MaybeTypeVars):
         match value:
             case cls():
                 return value
-            case Maybe() if value.type_vars.T is _Dummy:
+            case Maybe() if value.type_vars.T is _NothingDummy:
                 return cls(False)._set_parent_(value)
             case cls.type_vars.T():
                 return cls.some(value)
@@ -95,13 +95,13 @@ class _Some:
         return Maybe[item].some
 
 
-class _Dummy(Struct):
+class _NothingDummy(Struct):
     pass
 
 
 class _Nothing:
     def __call__(self) -> Maybe:
-        return Maybe[_Dummy].nothing()
+        return Maybe[_NothingDummy].nothing()
 
     def __getitem__(self, item: Type[T]) -> Callable[[], Maybe[T]]:
         return Maybe[item].nothing

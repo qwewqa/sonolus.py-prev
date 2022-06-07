@@ -105,7 +105,7 @@ class SequenceIterator(
     def for_sequence(cls, seq, /):
         if not (hasattr(seq, "__getitem__") and isinstance(seq, SlsSequence)):
             raise TypeError("Expected a sequence.")
-        return cls[type(seq)](seq, +Num(), Len(seq))
+        return cls[type(seq)](seq, +Num(), len_of(seq))
 
     def _iter_(self):
         return self
@@ -137,7 +137,7 @@ class IndexedSequenceIterator(
     def for_sequence(cls, seq, /):
         if not (hasattr(seq, "__getitem__") and isinstance(seq, SlsSequence)):
             raise TypeError("Expected a sequence.")
-        return cls[type(seq)](seq, +Num(), Len(seq))
+        return cls[type(seq)](seq, +Num(), len_of(seq))
 
     def _iter_(self):
         return self
@@ -194,24 +194,24 @@ class IndexedIteratorWrapper(
         return cls(i, +Num())
 
 
-def Len(v: SlsSequence, /):
+def len_of(v: SlsSequence, /):
     return v._len_()
 
 
-def Iter(seq: SlsIterable[T], /) -> SlsIterator[T]:
+def iter_of(seq: SlsIterable[T], /) -> SlsIterator[T]:
     if isinstance(seq, SlsIterable):
         return seq._iter_()
     raise TypeError(f"Value {seq} is not an Iterable.")
 
 
-def Next(iterator: SlsIterator[T], /) -> T:
+def next_of(iterator: SlsIterator[T], /) -> T:
     if isinstance(iterator, SlsIterator):
         return Execute(result := iterator._item_(), iterator._advance_(), result)
     raise TypeError(f"Value {iterator} is not a SonoIterator.")
 
 
-def Enumerate(seq: SlsIterable[T], /) -> SlsIterator[TupleStruct[Num, T]]:
+def indexed_of(seq: SlsIterable[T], /) -> SlsIterator[TupleStruct[Num, T]]:
     if hasattr(seq, "_enumerate_"):
         return seq._enumerate_()
-    iterator = Iter(seq)
+    iterator = iter_of(seq)
     return IndexedIteratorWrapper[type(iterator)].for_iterator(iterator)

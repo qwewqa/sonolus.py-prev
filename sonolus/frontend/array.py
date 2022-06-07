@@ -31,7 +31,7 @@ U = TypeVar("U")
 class Array(Value, Generic[T, U]):
     _typed_subclasses_: ClassVar[dict] = {}
 
-    def __init__(self):
+    def __init__(self, *args, **kwargs):
         super().__init__()
         if not self._is_concrete_:
             raise TypeError(

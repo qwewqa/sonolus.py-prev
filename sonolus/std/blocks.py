@@ -4,12 +4,12 @@ import warnings
 from enum import Enum
 from typing import Type, TypeVar, overload
 
-from .boolean import *
-from .draw import *
-from .number import *
-from .point import *
-from .values import *
-from ..backend.ir import MemoryBlock
+from sonolus.std.boolean import *
+from sonolus.std.draw import *
+from sonolus.std.number import *
+from sonolus.std.point import *
+from sonolus.std.values import *
+from sonolus.backend.ir import MemoryBlock
 
 __all__ = (
     "MemoryBlock",
@@ -22,18 +22,18 @@ __all__ = (
     "LevelScoreStruct",
     "LevelLifeStruct",
     "TouchDataStruct",
-    "GetLevelMemory",
-    "GetLevelData",
-    "GetCustomLevelData",
-    "GetLevelOptions",
-    "GetLevelTransform",
-    "GetLevelBackground",
-    "GetLevelUI",
-    "GetLevelUIConfiguration",
-    "GetLevelScore",
-    "GetLevelLife",
-    "GetEngineRom",
-    "GetTemporaryData",
+    "get_level_memory",
+    "get_full_level_data",
+    "get_custom_level_data",
+    "get_level_options",
+    "get_level_transform",
+    "get_level_background",
+    "get_level_ui",
+    "get_level_ui_configuration",
+    "get_level_score",
+    "get_level_life",
+    "get_engine_rom",
+    "get_temporary_data",
     "LevelData",
     "LevelTransform",
     "LevelBackground",
@@ -136,97 +136,97 @@ class TouchDataStruct(Struct):
     velocity_angle: Num
 
 
-def GetLevelMemory(type_: Type[T], /) -> T:
-    if type_._size_ > 255:
+def get_level_memory(type_: Type[T], /) -> T:
+    if type_._size_ > 4095:
         warnings.warn(f"Type {type_} may be too large for level memory.")
     return Pointer[type_](MemoryBlock.LEVEL_MEMORY, 0).deref()
 
 
 @overload
-def GetLevelData() -> LevelDataStruct:
+def get_full_level_data() -> LevelDataStruct:
     ...
 
 
 @overload
-def GetLevelData(type_: Type[T]) -> T:
+def get_full_level_data(type_: Type[T]) -> T:
     ...
 
 
-def GetLevelData(type_: Type[T] = LevelDataStruct, /) -> T:
-    if type_._size_ > 255:
+def get_full_level_data(type_: Type[T] = LevelDataStruct, /) -> T:
+    if type_._size_ > 4096:
         warnings.warn(f"Type {type_} may be too large for level data.")
     return Pointer[type_](MemoryBlock.LEVEL_DATA, 0).deref()
 
 
-def GetCustomLevelData(type_: Type[T], /) -> T:
-    if type_._size_ > 255 - LevelDataStruct._size_:
+def get_custom_level_data(type_: Type[T], /) -> T:
+    if type_._size_ > 4096 - LevelDataStruct._size_:
         warnings.warn(f"Type {type_} may be too large for level data.")
     return Pointer[type_](MemoryBlock.LEVEL_DATA, LevelDataStruct._size_).deref()
 
 
-def GetLevelOptions(type_: Type[T], /) -> T:
+def get_level_options(type_: Type[T], /) -> T:
     return Pointer[type_](MemoryBlock.LEVEL_OPTION, 0).deref()
 
 
 @overload
-def GetLevelTransform() -> Array[Num, 4, 4]:
+def get_level_transform() -> Array[Num, 4, 4]:
     ...
 
 
 @overload
-def GetLevelTransform(type_: Type[T]) -> T:
+def get_level_transform(type_: Type[T]) -> T:
     ...
 
 
-def GetLevelTransform(type_: Type[T] = Array[Array[Num, 4], 4], /) -> T:
+def get_level_transform(type_: Type[T] = Array[Array[Num, 4], 4], /) -> T:
     if type_._size_ != 16:
         warnings.warn(f"Type {type_} may have an incorrect size for level transform.")
     return Pointer[type_](MemoryBlock.LEVEL_MEMORY, 0).deref()
 
 
 @overload
-def GetLevelBackground() -> Quad:
+def get_level_background() -> Quad:
     ...
 
 
 @overload
-def GetLevelBackground(type_: Type[T]) -> T:
+def get_level_background(type_: Type[T]) -> T:
     ...
 
 
-def GetLevelBackground(type_: Type[T] = Quad, /) -> T:
+def get_level_background(type_: Type[T] = Quad, /) -> T:
     if type_._size_ != 8:
         warnings.warn(f"Type {type_} may have an incorrect size for level background.")
     return Pointer[type_](MemoryBlock.LEVEL_BACKGROUND, 0).deref()
 
 
 @overload
-def GetLevelUI() -> LevelUIStruct:
+def get_level_ui() -> LevelUIStruct:
     ...
 
 
 @overload
-def GetLevelUI(type_: Type[T]) -> T:
+def get_level_ui(type_: Type[T]) -> T:
     ...
 
 
-def GetLevelUI(type_: Type[T] = LevelUIStruct, /) -> T:
+def get_level_ui(type_: Type[T] = LevelUIStruct, /) -> T:
     if type_._size_ != 80:
         warnings.warn(f"Type {type_} may have an incorrect size for level ui.")
     return Pointer[type_](MemoryBlock.LEVEL_UI, 0).deref()
 
 
 @overload
-def GetLevelUIConfiguration() -> LevelUIConfigurationStruct:
+def get_level_ui_configuration() -> LevelUIConfigurationStruct:
     ...
 
 
 @overload
-def GetLevelUIConfiguration(type_: Type[T]) -> T:
+def get_level_ui_configuration(type_: Type[T]) -> T:
     ...
 
 
-def GetLevelUIConfiguration(type_: Type[T] = LevelUIConfigurationStruct, /) -> T:
+def get_level_ui_configuration(type_: Type[T] = LevelUIConfigurationStruct, /) -> T:
     if type_._size_ != 10:
         warnings.warn(
             f"Type {type_} may have an incorrect size for level ui configuration."
@@ -235,62 +235,62 @@ def GetLevelUIConfiguration(type_: Type[T] = LevelUIConfigurationStruct, /) -> T
 
 
 @overload
-def GetLevelScore() -> LevelScoreStruct:
+def get_level_score() -> LevelScoreStruct:
     ...
 
 
 @overload
-def GetLevelScore(type_: Type[T]) -> T:
+def get_level_score(type_: Type[T]) -> T:
     ...
 
 
-def GetLevelScore(type_: Type[T] = LevelScoreStruct, /) -> T:
+def get_level_score(type_: Type[T] = LevelScoreStruct, /) -> T:
     if type_._size_ != 12:
         warnings.warn(f"Type {type_} may have an incorrect size for level score.")
     return Pointer[type_](MemoryBlock.LEVEL_SCORE, 0).deref()
 
 
 @overload
-def GetLevelLife() -> LevelLifeStruct:
+def get_level_life() -> LevelLifeStruct:
     ...
 
 
 @overload
-def GetLevelLife(type_: Type[T]) -> T:
+def get_level_life(type_: Type[T]) -> T:
     ...
 
 
-def GetLevelLife(type_: Type[T] = LevelLifeStruct, /) -> T:
+def get_level_life(type_: Type[T] = LevelLifeStruct, /) -> T:
     if type_._size_ != 6:
         warnings.warn(f"Type {type_} may have an incorrect size for level life.")
     return Pointer[type_](MemoryBlock.LEVEL_LIFE, 0).deref()
 
 
-def GetEngineRom(type_: Type[T], /) -> T:
+def get_engine_rom(type_: Type[T], /) -> T:
     return Pointer[type_](MemoryBlock.ENGINE_ROM, 0).deref()
 
 
 @overload
-def GetTemporaryData() -> TouchDataStruct:
+def get_temporary_data() -> TouchDataStruct:
     ...
 
 
 @overload
-def GetTemporaryData(type_: Type[T]) -> T:
+def get_temporary_data(type_: Type[T]) -> T:
     ...
 
 
-def GetTemporaryData(type_: Type[T] = TouchDataStruct, /) -> T:
+def get_temporary_data(type_: Type[T] = TouchDataStruct, /) -> T:
     if type_._size_ != 15:
         warnings.warn(f"Type {type_} may have an incorrect size for temporary data.")
     return Pointer[type_](MemoryBlock.TEMPORARY_DATA, 0).deref()
 
 
-LevelData = GetLevelData(LevelDataStruct)
-LevelTransform = GetLevelTransform(Array[Array[Num, 4], 4])
-LevelBackground = GetLevelBackground(Quad)
-LevelUI = GetLevelUI(LevelUIStruct)
-LevelUIConfiguration = GetLevelUIConfiguration(LevelUIConfigurationStruct)
-LevelScore = GetLevelScore(LevelScoreStruct)
-LevelLife = GetLevelLife(LevelLifeStruct)
-TouchData = GetTemporaryData(TouchDataStruct)
+LevelData = get_full_level_data(LevelDataStruct)
+LevelTransform = get_level_transform(Array[Array[Num, 4], 4])
+LevelBackground = get_level_background(Quad)
+LevelUI = get_level_ui(LevelUIStruct)
+LevelUIConfiguration = get_level_ui_configuration(LevelUIConfigurationStruct)
+LevelScore = get_level_score(LevelScoreStruct)
+LevelLife = get_level_life(LevelLifeStruct)
+TouchData = get_temporary_data(TouchDataStruct)

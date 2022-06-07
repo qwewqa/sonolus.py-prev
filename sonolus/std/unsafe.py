@@ -3,7 +3,7 @@ from typing import TypeVar, Type
 from sonolus.frontend.struct import Struct
 from sonolus.frontend.value import Transmute, _new_temp_loc
 
-__all__ = ("Transmute", "Unknown", "NewTemp")
+__all__ = ("Transmute", "Unknown", "new_temp")
 
 T = TypeVar("T")
 
@@ -13,5 +13,5 @@ class Unknown(Struct):
         return Transmute(self, type_)
 
 
-def NewTemp(name: str) -> Unknown:
+def new_temp(name: str) -> Unknown:
     return Unknown._create_(_new_temp_loc(name))

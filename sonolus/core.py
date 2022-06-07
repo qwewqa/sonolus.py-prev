@@ -16,7 +16,7 @@ from sonolus import (
     Script,
     callback_function,
     Statement,
-    Len,
+    len_of,
 )
 
 __all__ = (
@@ -37,5 +37,5 @@ __all__ = (
     "sls_func",
     "Script",
     "callback_function",
-    "Len",
+    "len_of",
 )

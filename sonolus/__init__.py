@@ -1,1 +1,1 @@
-from .std import *
+from sonolus.std import *
