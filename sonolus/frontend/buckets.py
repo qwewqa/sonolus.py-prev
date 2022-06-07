@@ -5,7 +5,7 @@ from typing import Protocol
 
 from sonolus.backend.ir import Location, MemoryBlock, IRConst
 from sonolus.frontend.sls_func import sls_func
-from sonolus.frontend.primitive import Num
+from sonolus.frontend.primitive import Num, invoke_builtin
 from sonolus.frontend.struct import Struct
 
 
@@ -54,6 +54,38 @@ class BucketData(Struct):
     @sls_func
     def late(cls, perfect, great, good):
         return BucketData(0, perfect, 0, great, 0, good)
+
+    @sls_func
+    def __truediv__(self, other: Num) -> BucketData:
+        return BucketData(
+            self.min_perfect / other,
+            self.max_perfect / other,
+            self.min_great / other,
+            self.max_great / other,
+            self.min_good / other,
+            self.max_good / other,
+        )
+
+    @sls_func
+    def judge(self, src: Num, dst: Num) -> Num:
+        return invoke_builtin(
+            "Judge",
+            [
+                src,
+                dst,
+                self.min_perfect,
+                self.max_perfect,
+                self.min_great,
+                self.max_great,
+                self.min_good,
+                self.max_good,
+            ],
+            Num,
+        )
+
+    @sls_func
+    def judge_ms(self, src: Num, dst: Num) -> Num:
+        return (self / 1000).judge(src, dst)
 
 
 class _BucketDataWithMetadata(Protocol):
