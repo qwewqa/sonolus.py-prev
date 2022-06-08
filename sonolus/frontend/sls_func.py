@@ -11,18 +11,18 @@ T = TypeVar("T", bound=Callable)
 
 
 @overload
-def sls_func(fn: T, *, ast: bool = True) -> T:
+def sls_func(fn: T, *, ast: bool = True, return_parameter: str = None) -> T:
     pass
 
 
 @overload
-def sls_func(*, ast: bool = True) -> Callable[[T], T]:
+def sls_func(*, ast: bool = True, return_parameter: str = None) -> Callable[[T], T]:
     pass
 
 
-def sls_func(fn=None, *, ast: bool = True):
+def sls_func(fn=None, *, ast: bool = True, return_parameter: str = None):
     def wrap(fn):
-        return _lazy_process(fn, ast)
+        return _lazy_process(fn, ast, return_parameter)
 
     if fn is None:
         return wrap
@@ -30,7 +30,7 @@ def sls_func(fn=None, *, ast: bool = True):
     return wrap(fn)
 
 
-def _lazy_process(fn, ast):
+def _lazy_process(fn, ast, return_parameter):
     processed = None
     started = False
 
@@ -38,14 +38,24 @@ def _lazy_process(fn, ast):
     def get_processed():
         nonlocal processed
         nonlocal started
+        nonlocal return_parameter
         if processed is None:
+            signature = inspect.signature(fn)
+            if return_parameter is None:
+                if "_ret" in signature.parameters:
+                    return_parameter = "_ret"
+            else:
+                if return_parameter not in signature.parameters:
+                    raise ValueError(
+                        f"Return parameter {return_parameter} not found in function signature."
+                    )
             if started:
                 raise RuntimeError("Recursive function calls are not supported.")
             started = True
             if ast:
-                processed = _process_function(process_ast_function(fn))
+                processed = _process_function(process_ast_function(fn, return_parameter), return_parameter)
             else:
-                processed = _process_function(fn)
+                processed = _process_function(fn, return_parameter)
         return processed
 
     @functools.wraps(fn)
@@ -58,7 +68,7 @@ def _lazy_process(fn, ast):
     return wrapped
 
 
-def _process_function(fn):
+def _process_function(fn, return_parameter: str | None):
     from sonolus.frontend.control_flow import Execute
 
     hints = get_type_hints(fn)
@@ -69,16 +79,13 @@ def _process_function(fn):
             return lambda x: convert_value(x, hint)
         return lambda x: x
 
-    ret_param = False
     converters = {}
 
     for param_name, parameter in signature.parameters.items():
         hint = hints.get(param_name)
-        if param_name == "_ret" and hint is None:
+        if param_name == return_parameter and hint is None:
             hint = hints.get("return")
         converters[param_name] = get_converter(hint)
-        if param_name == "_ret":
-            ret_param = True
 
     return_converter = get_converter(hints.get("return"))
 
@@ -113,8 +120,8 @@ def _process_function(fn):
 
         result = fn(*bound.args, **bound.kwargs)
 
-        if ret_param:
-            ret_value = bound.arguments["_ret"]
+        if return_parameter is not None:
+            ret_value = bound.arguments[return_parameter]
             return return_converter(Execute(*evaluated_arguments, result, ret_value))
         elif isinstance(result, FunctionType):
 

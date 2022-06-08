@@ -343,7 +343,7 @@ def reduce(
         )
     else:
         initializer = convert_literal(initializer)
-        return _reduce_with_initializer(func, iterable, _ret=initializer.copy())
+        return _reduce_with_initializer(func, iterable, initializer=initializer.copy())
 
 
 @sls_func
@@ -359,15 +359,14 @@ def _reduce_no_initializer(
     return result
 
 
-@sls_func
+@sls_func(return_parameter="initializer")
 def _reduce_with_initializer(
-    f: Callable[[R, T], R], iterable: SlsIterable[T], /, *, _ret: R
+    f: Callable[[R, T], R], iterable: SlsIterable[T], /, *, initializer: R
 ):
-    # _ret acts as the initializer
     if is_empty(iterable):
         return
     for v in iter_of(iterable):
-        _ret @= f(_ret, v)
+        initializer @= f(initializer, v)
     return
 
 

@@ -9,7 +9,7 @@ from typing import TypeVar, Callable, Any
 T = TypeVar("T", bound=Callable)
 
 
-def process_ast_function(fn):
+def process_ast_function(fn, return_parameter: str | None):
     import sonolus.frontend.control_flow as cf
     from sonolus.frontend.control_flow import Execute, ExecuteVoid
     from sonolus.frontend.primitive import Bool, Num
@@ -22,8 +22,7 @@ def process_ast_function(fn):
     increment_lineno(tree, lnum - 1)
     try:
         signature = inspect.signature(fn)
-        ret_param_name = "_ret" if "_ret" in signature.parameters else None
-        transformed = _AstFunctionTransformer(ret_param_name).visit(tree)
+        transformed = _AstFunctionTransformer(return_parameter).visit(tree)
     except ValueError as e:
         # Shorten the traceback.
         raise ValueError(*e.args)
@@ -69,11 +68,11 @@ def process_ast_function(fn):
 
 
 class _AstFunctionTransformer(NodeTransformer):
-    def __init__(self, ret_param_name):
+    def __init__(self, return_parameter):
         self.inside_function = False
         self.final_return = False
         self.function_name = ""
-        self.ret_param_name = ret_param_name
+        self.ret_param_name = return_parameter
         self.temp_var_index = 0
 
     def visit_FunctionDef(self, node: FunctionDef) -> Any:
@@ -122,12 +121,12 @@ class _AstFunctionTransformer(NodeTransformer):
             # Terminal returns are already process by the time this function is called,
             # so node must be an early return.
             raise ValueError(
-                "Early returns are not allowed in functions with a final return but no _ret parameter."
+                "Early returns are not allowed in functions with a final return but no return parameter."
             )
         if node.value:
             if self.ret_param_name is None:
                 raise ValueError(
-                    "Early returns with a value are not allowed in functions with no _ret parameter."
+                    "Early returns with a value are not allowed in functions with no return parameter."
                 )
             args = [
                 Call(
@@ -150,8 +149,8 @@ class _AstFunctionTransformer(NodeTransformer):
     def visit_Assign(self, node: Assign) -> Any:
         if len(node.targets) > 1 or not isinstance(node.targets[0], Name):
             raise ValueError("Complex assignments are not supported.")
-        if node.targets[0].id == "_ret":
-            raise ValueError("Cannot assign to _ret.")
+        if node.targets[0].id == self.ret_param_name:
+            raise ValueError(f"Cannot shadow return parameter {self.ret_param_name}.")
         return self.visit_NamedExpr(NamedExpr(node.targets[0], node.value))
 
     def visit_AugAssign(self, node: AugAssign) -> Any:
