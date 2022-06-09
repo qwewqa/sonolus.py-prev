@@ -127,6 +127,9 @@ class Primitive(Value):
                 f"Potential invalid write to block {self._value_.ref} in callback {callback_type.name}."
             )
 
+    def __str__(self):
+        return f"{self._value_}"
+
 
 class Boolean(Primitive):
     _is_concrete_ = True
@@ -207,7 +210,6 @@ class Boolean(Primitive):
             else None
         )
         return result
-
 
 class Number(Primitive):
     """

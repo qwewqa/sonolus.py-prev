@@ -125,6 +125,9 @@ class Struct(Value):
     def __hash__(self):
         return id(self)
 
+    def __str__(self):
+        return f"{type(self).__name__}({', '.join(f'{f.name}={getattr(self, f.name)}' for f in self._struct_fields_)})"
+
 
 @dataclass
 class StructField:

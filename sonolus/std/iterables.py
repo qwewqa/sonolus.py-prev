@@ -492,6 +492,10 @@ class Vector(SlsSequence[T], GenericStruct, Generic[T], type_vars=VectorTypeVars
     def __getitem__(self, item) -> T:
         return self.values[item]
 
+    # This could use a custom _assign_() that accounts for length,
+    # but it's not clear at which point the overhead of a loop
+    # is outweighed by a reduced number of assignments.
+
 
 TOut = TypeVar("TOut")
 TSrc = TypeVar("TSrc")

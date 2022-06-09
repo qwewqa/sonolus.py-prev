@@ -53,7 +53,9 @@ def _lazy_process(fn, ast, return_parameter):
                 raise RuntimeError("Recursive function calls are not supported.")
             started = True
             if ast:
-                processed = _process_function(process_ast_function(fn, return_parameter), return_parameter)
+                processed = _process_function(
+                    process_ast_function(fn, return_parameter), return_parameter
+                )
             else:
                 processed = _process_function(fn, return_parameter)
         return processed

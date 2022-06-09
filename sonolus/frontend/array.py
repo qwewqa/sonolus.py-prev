@@ -311,6 +311,9 @@ def _create_typed_array_class(type_: Type[Value]):
                     def __hash__(self):
                         return id(self)
 
+                    def __str__(self):
+                        return f"{type(self).__name__}([{', '.join(str(v) for v in self)}])"
+
                 SizedArray.__name__ = f"Array_{type_.__name__}_{size}"
                 SizedArray.__qualname__ = SizedArray.__name__
 
