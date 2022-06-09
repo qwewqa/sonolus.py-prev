@@ -41,22 +41,22 @@ def process_ast_function(fn, return_parameter: str | None):
 
     gbl.update(
         {
-            "_Boolean_": Bool,
-            "_Number_": Num,
-            "_Execute_": Execute,
-            "_ExecuteVoid_": ExecuteVoid,
-            "_Void_": Void,
-            "_Break_": cf.Break,
-            "_Continue_": cf.Continue,
-            "_Return_": cf.Return,
-            "_If_": cf.If,
-            "_While_": cf.While,
-            "_For_": cf.For,
-            "_Iter_": iter_of,
-            "_And_": Bool.and_,
-            "_Or_": Bool.or_,
-            "_Not_": Bool.not_,
-            "_In_": lambda a, b: Execute(a, b, b.__contains__(a)),
+            "$Boolean": Bool,
+            "$Number": Num,
+            "$Execute": Execute,
+            "$ExecuteVoid": ExecuteVoid,
+            "$Void": Void,
+            "$Break": cf.Break,
+            "$Continue": cf.Continue,
+            "$Return": cf.Return,
+            "$If": cf.If,
+            "$While": cf.While,
+            "$For": cf.For,
+            "$Iter": iter_of,
+            "$And": Bool.and_,
+            "$Or": Bool.or_,
+            "$Not": Bool.not_,
+            "$In": lambda a, b: Execute(a, b, b.__contains__(a)),
         }
     )
 
@@ -91,7 +91,7 @@ class _AstFunctionTransformer(NodeTransformer):
             self.final_return = True
             body[-1] = final_stmt.value
         else:
-            body.append(Call(Name("_Void_", Load()), [], []))
+            body.append(Call(Name("$Void", Load()), [], []))
         header = list(
             itertools.takewhile(lambda n: isinstance(n, (Import, ImportFrom)), body)
         )
@@ -100,7 +100,7 @@ class _AstFunctionTransformer(NodeTransformer):
             *header,
             Return(
                 Call(
-                    Name("_Execute_" if is_final_return else "_ExecuteVoid_", Load()),
+                    Name("$Execute" if is_final_return else "$ExecuteVoid", Load()),
                     self.visit_nodes(body),
                     []
                     if is_final_return
@@ -134,11 +134,11 @@ class _AstFunctionTransformer(NodeTransformer):
                     [self.visit(node.value)],
                     [],
                 ),
-                Call(Name("_Return_", Load()), [], []),
+                Call(Name("$Return", Load()), [], []),
             ]
-            return Call(Name("_ExecuteVoid_", Load()), args, [])
+            return Call(Name("$ExecuteVoid", Load()), args, [])
         else:
-            return Call(Name("_Return_", Load()), [], [])
+            return Call(Name("$Return", Load()), [], [])
 
     def visit_ClassDef(self, node: ClassDef) -> Any:
         raise ValueError("Class definitions are not supported.")
@@ -196,7 +196,7 @@ class _AstFunctionTransformer(NodeTransformer):
 
     def visit_AnnAssign(self, node: AnnAssign) -> Any:
         if not node.value:
-            return Call(Name("_Void_", Load()), [], [])
+            return Call(Name("$Void", Load()), [], [])
         return self.visit_Assign(Assign([node.target], node.value))
 
     def visit_For(self, node: For) -> Any:
@@ -232,13 +232,13 @@ class _AstFunctionTransformer(NodeTransformer):
         )
         orelse = self.scope_expr(self.visit_block(node.orelse))
 
-        return Call(Name("_For_", Load()), [iter, body, orelse, Constant(unpack)], [])
+        return Call(Name("$For", Load()), [iter, body, orelse, Constant(unpack)], [])
 
     def visit_If(self, node: If) -> Any:
         test = self.visit(node.test)
         body = self.scope_expr(self.visit_block(node.body))
         orelse = self.scope_expr(self.visit_block(node.orelse))
-        return copy_location(Call(Name("_If_", Load()), [test, body, orelse], []), node)
+        return copy_location(Call(Name("$If", Load()), [test, body, orelse], []), node)
 
     def visit_With(self, node: With) -> Any:
         raise ValueError("With statements are not supported.")
@@ -278,9 +278,9 @@ class _AstFunctionTransformer(NodeTransformer):
         rhs = self.visit(node.values[-1])
         match node.op:
             case And():
-                return Call(Name("_And_", Load()), [lhs, rhs], [])
+                return Call(Name("$And", Load()), [lhs, rhs], [])
             case Or():
-                return Call(Name("_Or_", Load()), [lhs, rhs], [])
+                return Call(Name("$Or", Load()), [lhs, rhs], [])
 
     def visit_NamedExpr(self, node: NamedExpr) -> Any:
         if not isinstance(node.target, Name):
@@ -291,13 +291,13 @@ class _AstFunctionTransformer(NodeTransformer):
 
     def visit_UnaryOp(self, node: UnaryOp) -> Any:
         if isinstance(node.op, Not):
-            return Call(Name("_Not_", Load()), [self.visit(node.operand)], [])
+            return Call(Name("$Not", Load()), [self.visit(node.operand)], [])
         else:
             return self.generic_visit(node)
 
     def visit_IfExp(self, node: IfExp) -> Any:
         return Call(
-            Name("_If_", Load()),
+            Name("$If", Load()),
             [self.visit(node.test), self.visit(node.body), self.visit(node.orelse)],
             [],
         )
@@ -316,7 +316,7 @@ class _AstFunctionTransformer(NodeTransformer):
                 )
             if isinstance(node.ops[0], In):
                 return self.visit(
-                    Call(Name("_In_", Load()), [node.left, node.comparators[0]], [])
+                    Call(Name("$In", Load()), [node.left, node.comparators[0]], [])
                 )
             return self.generic_visit(node)
         right_name = self.temp_identifier()
@@ -329,16 +329,16 @@ class _AstFunctionTransformer(NodeTransformer):
         test = self.visit(node.test)
         body = self.scope_expr(self.visit_block(node.body))
         orelse = self.scope_expr(self.visit_block(node.orelse))
-        return Call(Name("_While_", Load()), [test, body, orelse], [])
+        return Call(Name("$While", Load()), [test, body, orelse], [])
 
     def visit_Pass(self, node: Pass) -> Any:
-        return Call(Name("_Void_", Load()), [], [])
+        return Call(Name("$Void", Load()), [], [])
 
     def visit_Break(self, node: Return) -> Any:
-        return Call(Name("_Break_", Load()), [], [])
+        return Call(Name("$Break", Load()), [], [])
 
     def visit_Continue(self, node: Return) -> Any:
-        return Call(Name("_Continue_", Load()), [], [])
+        return Call(Name("$Continue", Load()), [], [])
 
     def visit_nodes(self, nodes):
         return [copy_location(self.convert_statement(self.visit(n)), n) for n in nodes]
@@ -364,12 +364,12 @@ class _AstFunctionTransformer(NodeTransformer):
         )
 
     def visit_block(self, nodes):
-        return Call(Name("_ExecuteVoid_", Load()), self.visit_nodes(nodes), [])
+        return Call(Name("$ExecuteVoid", Load()), self.visit_nodes(nodes), [])
 
     def temp_identifier(self):
         index = self.temp_var_index
         self.temp_var_index += 1
-        return f"_temp_{index}_"
+        return f"$temp{index}"
 
     @staticmethod
     def combine_scopes(*args: dict):
