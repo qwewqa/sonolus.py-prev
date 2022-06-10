@@ -76,7 +76,7 @@ class Array(Value, Generic[T, U]):
     @classmethod
     def of(cls, *args):
         """
-        Returns an allocated Array with automatically determined type and size.
+        Returns an unallocated Array with automatically determined type and size.
         """
         elements = [convert_literal(arg) for arg in args]
         types = {type(element) for element in elements}
@@ -84,7 +84,7 @@ class Array(Value, Generic[T, U]):
             raise TypeError("Array elements must be of the same type.")
 
         # Argument evaluation handled by Array constructor
-        return Array[types.pop(), len(elements)]([*elements]).copy()
+        return Array[types.pop(), len(elements)]([*elements])
 
     def __getitem__(self, item) -> T:
         raise NotImplementedError
