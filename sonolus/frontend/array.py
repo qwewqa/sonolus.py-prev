@@ -302,6 +302,7 @@ def _create_typed_array_class(type_: Type[Value]):
                                 return NotImplemented
 
                     def _const_evaluate_(self, runner):
+                        self._was_evaluated_ = True
                         return type(self)([v._const_evaluate_(runner) for v in self])
 
                     def __eq__(self, other):

@@ -97,6 +97,7 @@ class Primitive(Value):
         return result
 
     def _const_evaluate_(self, runner):
+        self._was_evaluated_ = True
         return type(self)(runner(self.ir()))._set_static_()
 
     def _check_readable(self):

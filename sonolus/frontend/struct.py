@@ -111,6 +111,7 @@ class Struct(Value):
         return {f.name: getattr(self, f.name) for f in self._struct_fields_}
 
     def _const_evaluate_(self, runner):
+        self._was_evaluated_ = True
         return self._create_(
             tuple(v._const_evaluate_(runner) for v in self._as_tuple_())
         )
