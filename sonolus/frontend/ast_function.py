@@ -4,7 +4,7 @@ import inspect
 import itertools
 import textwrap
 from ast import *
-from typing import TypeVar, Callable, Any
+from typing import TypeVar, Callable, Any, ParamSpec
 
 T = TypeVar("T", bound=Callable)
 

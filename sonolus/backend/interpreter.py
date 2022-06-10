@@ -18,8 +18,9 @@ from math import (
     atan,
     acos,
 )
-from typing import Callable
+from typing import Callable, TypeVar
 
+from sonolus import Value
 from sonolus.backend.cfg import CFG
 from sonolus.backend.cfg_traversal import traverse_cfg
 from sonolus.backend.evaluation import evaluate_statement
@@ -35,7 +36,8 @@ from sonolus.backend.ir import (
     IRFunc,
 )
 from sonolus.backend.optimization.get_temp_ref_sizes import get_temp_ref_sizes
-from sonolus.frontend.statement import Statement
+
+TValue = TypeVar("TValue", bound=Value)
 
 
 class CFGInterpreter:
@@ -44,7 +46,7 @@ class CFGInterpreter:
         *,
         blocks: dict[TempRef | int, list[float]] = None,
         functions: dict[str, Callable[[list[float]], float]] = None,
-        allow_uninitialized_reads: bool = False,
+        allow_uninitialized_reads: bool = True,  # _assign_ implementations can copy uninitialized memory safely
         seed=None,
     ):
         if functions is None:
@@ -320,13 +322,23 @@ class CFGInterpreter:
                 raise ValueError(f"Unexpected reference type: {ref}.")
 
 
-def run_statement(
-    statement: Statement, *, blocks: dict[TempRef | int, list[float]] = None, **kwargs
+def run_value(
+    value: TValue, *, blocks: dict[TempRef | int, list[float]] | None = None, **kwargs
+) -> TValue:
+    cfg = evaluate_statement(value)
+    if blocks is None:
+        blocks = {}
+    for ref, size in get_temp_ref_sizes(cfg).items():
+        if ref not in blocks:
+            blocks[ref] = [0] * size
+    interpreter = CFGInterpreter(blocks=blocks, **kwargs)
+    interpreter.run(cfg)
+    return value._const_evaluate_(interpreter.run_node)
+
+
+def run_cfg(
+    cfg: CFG, *, blocks: dict[TempRef | int, list[float]] | None = None, **kwargs
 ):
-    return run_cfg(evaluate_statement(statement), blocks=blocks, **kwargs)
-
-
-def run_cfg(cfg: CFG, *, blocks: dict[TempRef | int, list[float]] = None, **kwargs):
     if blocks is None:
         blocks = {}
     for ref, size in get_temp_ref_sizes(cfg).items():
@@ -336,7 +348,9 @@ def run_cfg(cfg: CFG, *, blocks: dict[TempRef | int, list[float]] = None, **kwar
     return interpreter.run(cfg)
 
 
-def run_ir(ir: IRNode, *, blocks: dict[TempRef | int, list[float]] = None, **kwargs):
+def run_ir(
+    ir: IRNode, *, blocks: dict[TempRef | int, list[float]] | None = None, **kwargs
+):
     if blocks is None:
         blocks = {}
     interpreter = CFGInterpreter(blocks=blocks, **kwargs)

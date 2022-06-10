@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from typing import overload, Callable
 
+from typing_extensions import Self
+
 from sonolus.frontend.sls_func import convert_literal
 from sonolus.frontend.array import Array
 from sonolus.frontend.control_flow import If
@@ -443,9 +445,16 @@ class Vector(SlsSequence[T], GenericStruct, Generic[T], type_vars=VectorTypeVars
     # noinspection PyUnresolvedReferences
     values: Array[T, max_size]
 
+    @classmethod
+    @sls_func
+    def empty(cls: Self) -> Self:
+        result = alloc(cls)
+        result.size @= 0
+        return result
+
     @generic_method
     @sls_func
-    def append(self, value: T) -> Bool:
+    def append(self, value: T, _ret=new()) -> Bool:
         if self.size >= self.type_vars.max_size:
             return False
         self.append_unsafe(value)

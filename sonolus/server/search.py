@@ -53,9 +53,3 @@ SearchOption = Annotated[
 
 class Search(BaseModel):
     options: list[SearchOption]
-
-
-x = Search(
-    options=[SearchToggleOption(query="toggle", name="toggle", default=1)]
-).dict()
-Search(**x)

@@ -211,6 +211,13 @@ class Boolean(Primitive):
         )
         return result
 
+    def _dump_(self):
+        value = self.constant()
+        if value is None:
+            raise ValueError("Boolean does not have a constant value.")
+        return bool(value)
+
+
 class Number(Primitive):
     """
     A floating-point number.
@@ -349,6 +356,12 @@ class Number(Primitive):
     @sls_func(ast=False)
     def to_boolean(self) -> Bool:
         return self != 0
+
+    def _dump_(self):
+        value = self.constant()
+        if value is None:
+            raise ValueError("Number does not have a constant value.")
+        return float(value)
 
 
 def invoke_builtin(

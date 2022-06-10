@@ -93,3 +93,6 @@ class TupleStruct(
         if isinstance(value, Sequence):
             value = cls.of(*value)
         return super()._convert_(value)
+
+    def _dump_(self):
+        return [v._dump_() for v in self._values_]

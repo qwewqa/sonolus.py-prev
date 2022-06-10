@@ -107,6 +107,9 @@ class Struct(Value):
             )
         )
 
+    def _dump_(self):
+        return {f.name: getattr(self, f.name) for f in self._struct_fields_}
+
     def _const_evaluate_(self, runner):
         return self._create_(
             tuple(v._const_evaluate_(runner) for v in self._as_tuple_())

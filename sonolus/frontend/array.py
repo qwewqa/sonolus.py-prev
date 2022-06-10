@@ -182,16 +182,17 @@ def _create_typed_array_class(type_: Type[Value]):
                                     loc.offset
                                 ) + idx * Num._create_(self.contained_type._size_)
                                 parent = ExecuteVoid(self, idx, new_offset)
-                                if self.size > 0 and loc.span is not None:
-                                    new_span = (
-                                        loc.span
-                                        + (self.size - 1) * self.contained_type._size_
-                                    )
-                                else:
-                                    if isinstance(loc.ref, TempRef):
-                                        raise ValueError(
-                                            "Cannot subscript zero-length temporary array."
+                                if loc.span is not None:
+                                    if self.size > 0:
+                                        new_span = (
+                                            loc.span
+                                            + (self.size - 1)
+                                            * self.contained_type._size_
                                         )
+                                    else:
+                                        # This should never actually be accessed since it's a zero length array
+                                        new_span = loc.span
+                                else:
                                     new_span = None
                                 return self.contained_type._create_(
                                     Location(
@@ -275,6 +276,9 @@ def _create_typed_array_class(type_: Type[Value]):
                                 for i in range(0, len(flat), cls.contained_type._size_)
                             ]
                         )
+
+                    def _dump_(self) -> list:
+                        return [v._dump_() for v in self.as_tuple()]
 
                     def _enumerate_(self):
                         if isinstance(self._value_, tuple):

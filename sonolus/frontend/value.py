@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import dataclasses
 from typing import TypeVar, Type, ClassVar, Any, ParamSpec, Callable
 
 from sonolus.backend.evaluation import CompilationInfo
@@ -44,6 +43,14 @@ class Value(Statement):
         Creates a value from a list of IRNodes.
         """
         raise NotImplementedError
+
+    def _dump_(self) -> Any:
+        """
+        Returns some representation of this value.
+        Raises an exception if this value is not a constant.
+        The returned value supports value equality comparison.
+        """
+        pass
 
     def _set_static_(self: TValue, value=True) -> TValue:
         """
