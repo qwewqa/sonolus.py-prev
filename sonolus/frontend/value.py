@@ -99,6 +99,11 @@ class Value(Statement):
         Converts the given value to this type.
         Returns NotImplemented if the conversion is not supported.
         """
+        if cls is Value:
+            from sonolus.frontend.sls_func import convert_literal
+
+            return convert_literal(value)
+
         if isinstance(value, cls):
             return value
         else:
