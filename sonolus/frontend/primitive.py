@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import warnings
-from typing import Optional, Any, Sequence, Type, TYPE_CHECKING
+from typing import Optional, Any, Sequence, Type, TYPE_CHECKING, Union
 
 from sonolus.backend.ir import (
     IRSet,
@@ -377,9 +377,11 @@ def invoke_builtin(
         )
 
 
-if TYPE_CHECKING:
-    Bool = Boolean | bool
-    Num = Number | int | float
-else:
+if not TYPE_CHECKING:
     Bool = Boolean
     Num = Number
+else:
+    # Pycharm doesn't like the | syntax for some reason here
+    # and fails to recognize the result properly.
+    Bool = Union[Boolean, bool]
+    Num = Union[Number, float, int]
