@@ -126,6 +126,7 @@ class Script(Statement):
         result.input = EntityInput._create_(
             Location(MemoryBlock.ENTITY_INPUT, IRConst(0), 0, 1)
         )._set_static_()
+        result._attributes_.is_static = True
         return result
 
     @classmethod
