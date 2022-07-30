@@ -77,7 +77,7 @@ def new(value=None, /):
         case None:
             return _NewValue()
         case list():
-            return Array.of(*value)
+            return Array.of(*value).copy()
         case type() if Value.is_value_class(value):
             return value._default_().copy()
         case Value():
