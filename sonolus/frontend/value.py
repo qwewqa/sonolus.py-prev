@@ -105,15 +105,19 @@ class Value(Statement):
                     return value
                 case list():
                     from sonolus import Array
+
                     return Array.of(*value)
                 case tuple():
                     from sonolus import TupleStruct
+
                     return TupleStruct.of(*value)
                 case bool() as boolean:
                     from sonolus import Bool
+
                     return Bool(boolean)
                 case int() | float() as number:
                     from sonolus import Num
+
                     return Num(number)
                 case _:
                     return NotImplemented

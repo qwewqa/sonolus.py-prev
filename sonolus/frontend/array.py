@@ -11,15 +11,16 @@ from typing import (
     overload,
 )
 
-from sonolus.backend.ir import Location, TempRef
-from sonolus.frontend.sls_func import convert_literal
+from sonolus.backend.ir import Location
 from sonolus.frontend.control_flow import ExecuteVoid
 from sonolus.frontend.iterator import (
     SequenceIterator,
     IndexedSequenceIterator,
     SlsIterator,
+    SlsSequence,
 )
 from sonolus.frontend.primitive import Num, Bool, invoke_builtin
+from sonolus.frontend.sls_func import convert_literal
 from sonolus.frontend.tuple import TupleStruct
 from sonolus.frontend.value import Value, convert_value
 from sonolus.frontend.void import Void
@@ -28,7 +29,7 @@ T = TypeVar("T")
 U = TypeVar("U")
 
 
-class Array(Value, Generic[T, U]):
+class Array(Value, SlsSequence[T], Generic[T, U]):
     _typed_subclasses_: ClassVar[dict] = {}
 
     def __init__(self, *args, **kwargs):

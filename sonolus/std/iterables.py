@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import overload, Callable
+from typing import overload, Callable, Any
 
 from typing_extensions import Self
 
@@ -43,8 +43,14 @@ T = TypeVar("T")
 R = TypeVar("R")
 
 
+# The map/filter functions are already Python builtins,
+# so instead we use select/where.
+# Similarly, _of suffixes are added to other functions
+# to avoid name conflicts with vanilla Python.
+
+
 @sls_func
-def select(f: Callable[[T], R], iterable: SlsIterable[T], /) -> SlsIterable[R]:
+def select(f: Callable[[T], R], iterable: SlsIterable[T], /) -> SlsIterator[R]:
     iterator = iter_of(iterable)
     return MappingIterator[
         type(iterator), type(run_discarding(lambda: f(next_of(iterator)))), f
@@ -63,7 +69,7 @@ def select_seq(f: Callable[[T], R], sequence: SlsSequence[T], /) -> SlsSequence[
 
 
 @sls_func
-def where(f: Callable[[T], Bool], iterable: SlsIterable[T], /) -> SlsIterable[T]:
+def where(f: Callable[[T], Bool], iterable: SlsIterable[T], /) -> SlsIterator[T]:
     iterator = iter_of(iterable)
     return FilteringIterator[type(iterator), f].from_iterator(iterator)
 
@@ -138,13 +144,13 @@ def all_of(f: Callable[[T], Bool], iterable: SlsIterable[T], /, _ret=new()) -> B
 
 @overload
 def max_of(
-    iterable: SlsIterable[T], /, *, key: Callable[[T], any_of] = None, default: T = None
+    iterable: SlsIterable[T], /, *, key: Callable[[T], Any] = None, default: T = None
 ) -> T:
     pass
 
 
 @overload
-def max_of(arg1: T, arg2: T, /, *args: T, key: Callable[[T], any_of] = None) -> T:
+def max_of(arg1: T, arg2: T, /, *args: T, key: Callable[[T], Any] = None) -> T:
     pass
 
 
@@ -159,8 +165,16 @@ def max_of(*args, **kwargs):
     elif len(args) == 1:
         iterable = args[0]
         key = kwargs.pop("key", None)
-        default = kwargs.pop(
-            "default", type(iter_of(iterable)._item_())._default_().copy()
+        default = (
+            (
+                kwargs.pop(
+                    "default",
+                    None,
+                )
+                or type(run_discarding(lambda: iter_of(iterable)._item_()))
+            )
+            ._default_()
+            .copy()
         )
         if kwargs:
             raise TypeError(
@@ -233,13 +247,13 @@ def _max_iterable_key(iterable: SlsIterable[T], /, *, key: Callable, _ret):
 
 @overload
 def min_of(
-    iterable: SlsIterable[T], /, *, key: Callable[[T], any_of] = None, default: T = None
+    iterable: SlsIterable[T], /, *, key: Callable[[T], Any] = None, default: T = None
 ) -> T:
     pass
 
 
 @overload
-def min_of(arg1: T, arg2: T, /, *args: T, key: Callable[[T], any_of] = None) -> T:
+def min_of(arg1: T, arg2: T, /, *args: T, key: Callable[[T], Any] = None) -> T:
     pass
 
 
@@ -254,8 +268,16 @@ def min_of(*args, **kwargs):
     elif len(args) == 1:
         iterable = args[0]
         key = kwargs.pop("key", None)
-        default = kwargs.pop(
-            "default", type(iter_of(iterable)._item_())._default_().copy()
+        default = (
+            (
+                kwargs.pop(
+                    "default",
+                    None,
+                )
+                or type(run_discarding(lambda: iter_of(iterable)._item_()))
+            )
+            ._default_()
+            .copy()
         )
         if kwargs:
             raise TypeError(
@@ -329,13 +351,17 @@ def _min_iterable_key(iterable: SlsIterable[T], /, *, key: Callable, _ret):
 @sls_func(ast=False)
 def reduce(
     func: Callable[[R, T], R], iterable: SlsIterable[T], /, initializer: R = None
-):
+) -> R:
     """
     Returns a copy of the result of the reduction of the iterable using the given function.
     """
     if initializer is None:
         return _reduce_no_initializer(
-            func, iterable, _ret=type(iter_of(iterable)._item_())._default_().copy()
+            func,
+            iterable,
+            _ret=type(run_discarding(lambda: iter_of(iterable)._item_()))
+            ._default_()
+            .copy(),
         )
     else:
         initializer = convert_literal(initializer)
@@ -448,6 +474,9 @@ class Vector(SlsSequence[T], GenericStruct, Generic[T], type_vars=VectorTypeVars
     @classmethod
     @sls_func
     def empty(cls: Self) -> Self:
+        """
+        Returns an empty mutable vector.
+        """
         result = alloc(cls)
         result.size @= 0
         return result

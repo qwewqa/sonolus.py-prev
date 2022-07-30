@@ -10,6 +10,7 @@ from sonolus.std.function import *
 from sonolus.std.maybe import *
 from sonolus.std.number import *
 from sonolus.std.point import *
+from sonolus.std.query import *
 from sonolus.std.script import *
 from sonolus.std.iterables import *
 from sonolus.std.values import *
