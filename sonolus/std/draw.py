@@ -30,6 +30,12 @@ from sonolus.frontend.value import convert_value
 
 
 class Quad(Struct):
+    """
+    A convex quadrilateral.
+
+    If not convex, some methods may not work correctly, including drawing methods.
+    """
+
     bl: Point
     tl: Point
     tr: Point

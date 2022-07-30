@@ -104,7 +104,7 @@ def count_of(*args):
 
 
 @sls_func
-def _count_simple(iterable: SlsIterable[T], /, _ret: Num = new()) -> Num:
+def _count_simple(iterable: SlsIterable[T], /, _ret=new()) -> Num:
     count = +Num(0)
     for _ in iter_of(iterable):
         count += 1
@@ -112,9 +112,7 @@ def _count_simple(iterable: SlsIterable[T], /, _ret: Num = new()) -> Num:
 
 
 @sls_func
-def _count_cond(
-    f: Callable[[T], Bool], iterable: SlsIterable[T], /, _ret: Num = new()
-) -> Num:
+def _count_cond(f: Callable[[T], Bool], iterable: SlsIterable[T], /, _ret=new()) -> Num:
     count = +Num(0)
     for v in iter_of(iterable):
         if f(v):
@@ -123,9 +121,7 @@ def _count_cond(
 
 
 @sls_func
-def any_of(
-    f: Callable[[T], Bool], iterable: SlsIterable[T], /, _ret: Bool = new()
-) -> Bool:
+def any_of(f: Callable[[T], Bool], iterable: SlsIterable[T], /, _ret=new()) -> Bool:
     for v in iter_of(iterable):
         if f(v):
             return True
@@ -133,9 +129,7 @@ def any_of(
 
 
 @sls_func
-def all_of(
-    f: Callable[[T], Bool], iterable: SlsIterable[T], /, _ret: Bool = new()
-) -> Bool:
+def all_of(f: Callable[[T], Bool], iterable: SlsIterable[T], /, _ret=new()) -> Bool:
     for v in iter_of(iterable):
         if not f(v):
             return False
@@ -404,14 +398,14 @@ class Range(Struct, SlsSequence[Num]):
         super().__init__(start, stop, step)
 
     @sls_func
-    def _len_(self, _ret: Num = new()):
+    def _len_(self, _ret=new()) -> Num:
         if self.step > 0:
             return max_of((self.stop - self.start - 1) // self.step + 1, 0)
         else:
             return max_of((self.start - self.stop - 1) // -self.step + 1, 0)
 
     @sls_func
-    def __contains__(self, item: Num, _ret: Bool = new()) -> Bool:
+    def __contains__(self, item: Num, _ret=new()) -> Bool:
         if self.step > 0:
             return (
                 self.start <= item < self.stop and (item - self.start) % self.step == 0
@@ -474,14 +468,14 @@ class Vector(SlsSequence[T], GenericStruct, Generic[T], type_vars=VectorTypeVars
 
     @generic_method
     @sls_func
-    def pop(self, _ret: T = new()) -> Maybe[T]:
+    def pop(self, _ret=new()) -> Maybe[T]:
         if self.size == 0:
             return Nothing()
         return Some(self.pop_unsafe())
 
     @generic_method
     @sls_func
-    def pop_unsafe(self, _ret: T = new()):
+    def pop_unsafe(self, _ret=new()) -> T:
         """
         Removes and returns the last element of the array without checking the size.
         May lead to undefined behavior if the current size is 0.

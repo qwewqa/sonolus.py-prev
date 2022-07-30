@@ -69,6 +69,10 @@ class Point(Struct):
     def rotate_about(self, pivot: Point, theta: Num):
         return (self - pivot).rotate(theta) + pivot
 
+    @sls_func
+    def dot(self, other: Point) -> Num:
+        return self.x * other.x + self.y * other.y
+
     @classmethod
     @sls_func
     def polar(cls, r: Num, theta: Num) -> Point:
