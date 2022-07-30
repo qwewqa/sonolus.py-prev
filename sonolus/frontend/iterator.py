@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from abc import abstractmethod
 from typing import (
     Protocol,
     runtime_checkable,
@@ -22,6 +23,7 @@ T = TypeVar("T")
 
 @runtime_checkable
 class SlsIterable(Protocol[T]):
+    @abstractmethod
     def _iter_(self) -> SlsIterator[T]:
         ...
 
@@ -32,6 +34,7 @@ class SlsIterable(Protocol[T]):
 
 @runtime_checkable
 class SlsEnumerable(SlsIterable[T], Protocol[T]):
+    @abstractmethod
     def _enumerate_(self) -> SlsIterator[TupleStruct[Num, T]]:
         ...
 
@@ -41,27 +44,34 @@ class SlsIterator(SlsIterable[T], Protocol[T]):
     def _iter_(self) -> SlsIterator[T]:
         return self
 
+    @abstractmethod
     def _has_item_(self) -> Bool:
         ...
 
+    @abstractmethod
     def _item_(self) -> T:
         ...
 
+    @abstractmethod
     def _advance_(self) -> Void:
         ...
 
 
 @runtime_checkable
 class SlsSequence(SlsEnumerable[T], Protocol[T]):
+    @abstractmethod
     def _len_(self) -> Num:
         ...
 
+    @abstractmethod
     def _contained_type_(self) -> Type[T]:
         ...
 
+    @abstractmethod
     def _max_size_(self) -> int:
         ...
 
+    @abstractmethod
     def __getitem__(self, item) -> T:
         ...
 

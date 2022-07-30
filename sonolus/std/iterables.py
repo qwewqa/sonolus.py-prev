@@ -404,6 +404,12 @@ class Range(Struct, SlsSequence[Num]):
         else:
             return max_of((self.start - self.stop - 1) // -self.step + 1, 0)
 
+    def _contained_type_(self):
+        return Num
+
+    def _max_size_(self) -> int:
+        raise NotImplementedError("Range does not have a max size.")
+
     @sls_func
     def __contains__(self, item: Num, _ret=new()) -> Bool:
         if self.step > 0:
