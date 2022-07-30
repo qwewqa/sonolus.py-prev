@@ -90,8 +90,6 @@ class _AstFunctionTransformer(NodeTransformer):
         if is_final_return:
             self.final_return = True
             body[-1] = final_stmt.value
-        else:
-            body.append(Call(Name("$Void", Load()), [], []))
         header = list(
             itertools.takewhile(lambda n: isinstance(n, (Import, ImportFrom)), body)
         )
