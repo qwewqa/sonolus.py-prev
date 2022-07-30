@@ -62,7 +62,11 @@ def _lazy_process(fn, ast, return_parameter):
 
     @functools.wraps(fn)
     def wrapped(*args, **kwargs):
-        return get_processed()(*args, **kwargs)
+        try:
+            f = get_processed()
+        except Exception as e:
+            raise ValueError(f"Error processing function {fn}.") from e
+        return f(*args, **kwargs)
 
     wrapped.__wrapped__ = fn
     wrapped._get_processed_ = get_processed

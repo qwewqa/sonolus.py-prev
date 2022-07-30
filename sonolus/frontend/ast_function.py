@@ -20,15 +20,8 @@ def process_ast_function(fn, return_parameter: str | None):
     lines, lnum = inspect.getsourcelines(fn)
     tree = parse(textwrap.dedent("".join(lines)))
     increment_lineno(tree, lnum - 1)
-    try:
-        signature = inspect.signature(fn)
-        transformed = _AstFunctionTransformer(return_parameter).visit(tree)
-    except ValueError as e:
-        # Shorten the traceback.
-        raise ValueError(*e.args)
-
+    transformed = _AstFunctionTransformer(return_parameter).visit(tree)
     fix_missing_locations(transformed)
-
     closure = inspect.getclosurevars(fn)
 
     gbl = {}
