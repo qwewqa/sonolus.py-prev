@@ -40,10 +40,9 @@ class TestRange:
     @given(
         start=st.integers(-1000, 1000),
         end=st.integers(-1000, 1000),
-        step=st.integers(-100, 100),
+        step=st.integers(-100, 100).filter(lambda x: x != 0),
     )
     def test_range_start_end_step(self, start, end, step):
-        assume(step != 0)
         expected_values = [*range(start, end, step)]
         expected = Array[Num, len(expected_values)](expected_values)
         event(f"empty: {not expected_values}")
@@ -55,12 +54,11 @@ class TestRange:
     @given(
         start=st.integers(-100, 100),
         end=st.integers(-100, 100),
-        step=st.integers(-10, 10),
+        step=st.integers(-10, 10).filter(lambda x: x != 0),
         test=st.integers(-100, 100),
     )
     @settings(max_examples=500)
     def test_range_contains(self, start, end, step, test):
-        assume(step != 0)
         expected = test in range(start, end, step)
         event(f"expected: {expected}")
         result = run_function(self.range_contains, start, end, step, test=test)
