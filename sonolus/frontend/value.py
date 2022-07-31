@@ -207,13 +207,11 @@ class Value(Statement):
         return self._dup_(self._assign_(self ^ other))
 
 
-def convert_value(value, target_type: Type[T]) -> T:
-    if not Value.is_value_class(target_type):
-        raise TypeError(f"Cannot convert to {target_type}, expected a Value class.")
+def convert_value(value, target_type: Type[T] = Value) -> T:
     result = NotImplemented
     if hasattr(value, "_convert_to_"):
         result = value._convert_to_(target_type)
-    if result is NotImplemented:
+    if result is NotImplemented and hasattr(target_type, "_convert_"):
         result = target_type._convert_(value)
     if result is NotImplemented:
         raise TypeError(f"Cannot convert {value} to {target_type}.")
