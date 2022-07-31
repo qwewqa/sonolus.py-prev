@@ -69,11 +69,6 @@ class CompilationInfo:
             raise RuntimeError("No compilation is currently active.")
         return cls._current
 
-    @classmethod
-    @property
-    def active(cls):
-        return cls._current is not None
-
     def __enter__(self):
         if CompilationInfo._current is not None:
             raise RuntimeError("A compilation is already active.")
@@ -210,8 +205,16 @@ class DeadScope(Scope):
         return self
 
     def evaluate(self, statement):
-        if statement is not None:
-            statement._was_evaluated_ = True
+        if statement is None:
+            return self
+        if statement._attributes_.is_static:
+            return self
+        if statement._attributes_.is_discarded:
+            raise ValueError("Statement was marked discarded but was still evaluated.")
+        statement._was_evaluated_ = True
+        if statement._parent_statement_ and not statement._parent_statement_._was_evaluated_:
+            self.evaluate(statement._parent_statement_)
+        statement._evaluate_(self)
         return self
 
     def add(self, node: IRNode):
