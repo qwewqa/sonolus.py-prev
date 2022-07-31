@@ -9,6 +9,7 @@ __all__ = ("Maybe", "Some", "Nothing")
 from sonolus.frontend.primitive import Bool
 from sonolus.frontend.sls_func import sls_func
 from sonolus.frontend.struct import Struct
+from sonolus.frontend.value import convert_value
 
 T = TypeVar("T")
 
@@ -25,18 +26,13 @@ class Maybe(GenericStruct, Generic[T], type_vars=MaybeTypeVars):
     @classmethod
     @sls_func
     def some(cls, value: T) -> Maybe[T]:
-        result = cls._allocate_()
-        result._exists @= True
-        result._value @= value
-        return result
+        return cls(True, value)
 
     @generic_method
     @classmethod
     @sls_func
     def nothing(cls) -> Maybe[T]:
-        result = cls._allocate_()
-        result._exists @= False
-        return result
+        return cls(False)
 
     @property
     @sls_func
@@ -89,6 +85,7 @@ class Maybe(GenericStruct, Generic[T], type_vars=MaybeTypeVars):
 
 class _Some:
     def __call__(self, value: T) -> Maybe[T]:
+        value = convert_value(value)
         return Maybe[type(value)].some(value)
 
     def __getitem__(self, item: Type[T]) -> Callable[[T], Maybe[T]]:
