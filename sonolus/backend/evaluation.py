@@ -212,7 +212,10 @@ class DeadScope(Scope):
         if statement._attributes_.is_discarded:
             raise ValueError("Statement was marked discarded but was still evaluated.")
         statement._was_evaluated_ = True
-        if statement._parent_statement_ and not statement._parent_statement_._was_evaluated_:
+        if (
+            statement._parent_statement_
+            and not statement._parent_statement_._was_evaluated_
+        ):
             self.evaluate(statement._parent_statement_)
         statement._evaluate_(self)
         return self

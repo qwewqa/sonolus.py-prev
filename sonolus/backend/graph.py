@@ -13,10 +13,14 @@ from sonolus.backend.ir import IRNode, SSARef
 
 def get_flat_cfg(cfg: CFG) -> FlatCfg:
     nodes = [*traverse_preorder(cfg)]
+    no_exit = False
     if cfg.entry_node != cfg.exit_node:
         if cfg.exit_node in nodes:
             nodes.remove(cfg.exit_node)
-        nodes.append(cfg.exit_node)
+        if cfg.edges_by_to[cfg.exit_node]:
+            nodes.append(cfg.exit_node)
+        else:
+            no_exit = True
     node_indexes = {node: i for i, node in enumerate(nodes)}
     flat_nodes = []
     for i, node in enumerate(nodes):
@@ -44,6 +48,8 @@ def get_flat_cfg(cfg: CFG) -> FlatCfg:
                 },
             )
         )
+    if no_exit:
+        flat_nodes.append(FlatCfgNode(len(flat_nodes), [], None, None, {}))
     return FlatCfg(flat_nodes)
 
 

@@ -26,8 +26,9 @@ SimpleNode = ValueNode | FunctionNode
 def finalize_cfg(cfg: CFG) -> SimpleNode:
     nodes = [*traverse_preorder(cfg)]
     mapping = {node: i for i, node in enumerate(nodes)}
+    no_exit = False
     if cfg.exit_node not in mapping:
-        mapping[cfg.exit_node] = len(mapping)
+        no_exit = True
     elif mapping[cfg.exit_node] != len(mapping) - 1:
         mapping[nodes[-1]], mapping[cfg.exit_node] = (
             mapping[cfg.exit_node],
@@ -37,6 +38,8 @@ def finalize_cfg(cfg: CFG) -> SimpleNode:
     transformer = FinalizeTransformer(cfg, mapping)
     for node, i in mapping.items():
         nodes[i] = transformer.visit(node)
+    if no_exit:
+        nodes.append(ValueNode(0))
     if len(nodes) == 1:
         return nodes[0]
     else:
