@@ -8,12 +8,12 @@ from sonolus.backend.cfg import CFGNode, CFG, CFGEdge
 from sonolus.backend.ir import IRNode
 
 if TYPE_CHECKING:
-    from sonolus.frontend.statement import Statement
+    from sonolus.scripting.internal.statement import Statement
     from sonolus.backend.callback import CallbackType
 
 
 def evaluate_statement(statement: Statement) -> CFG:
-    from sonolus.frontend.primitive import Primitive
+    from sonolus.scripting.internal.primitive import Primitive
 
     start = Scope().activate(entry=True)
     end = start.evaluate(statement)

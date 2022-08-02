@@ -6,8 +6,8 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import TypeVar, Generic, Protocol
 
-from sonolus.frontend.script import ScriptMetadata
-from sonolus.frontend.value import convert_value
+from sonolus.scripting.internal.script import ScriptMetadata
+from sonolus.scripting.internal.value import convert_value
 
 T = TypeVar("T")
 

@@ -19,11 +19,11 @@ from sonolus.engine.level import (
     Entity,
 )
 from sonolus.engine.ui import UIConfig
-from sonolus.frontend.buckets import BucketConfig, Bucket
-from sonolus.frontend.control_flow import Execute
-from sonolus.frontend.options import OptionConfig, Option
-from sonolus.frontend.primitive import Primitive, Num
-from sonolus.frontend.script import Script
+from sonolus.scripting.internal.buckets import BucketConfig, Bucket
+from sonolus.scripting.internal.control_flow import Execute
+from sonolus.scripting.internal.options import OptionConfig, Option
+from sonolus.scripting.internal.primitive import Primitive, Num
+from sonolus.scripting.internal.script import Script
 
 
 class Engine:

@@ -20,7 +20,6 @@ from math import (
 )
 from typing import Callable, TypeVar
 
-from sonolus import Value
 from sonolus.backend.cfg import CFG
 from sonolus.backend.cfg_traversal import traverse_cfg
 from sonolus.backend.evaluation import evaluate_statement
@@ -36,6 +35,7 @@ from sonolus.backend.ir import (
     IRFunc,
 )
 from sonolus.backend.optimization.get_temp_ref_sizes import get_temp_ref_sizes
+from sonolus.scripting.internal.value import Value
 
 TValue = TypeVar("TValue", bound=Value)
 

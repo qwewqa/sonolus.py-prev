@@ -1,4 +1,4 @@
-from sonolus import (
+from sonolus.scripting import (
     Num,
     Bool,
     sls_func,

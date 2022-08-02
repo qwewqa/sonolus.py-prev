@@ -1,9 +1,9 @@
 from typing import ParamSpec, TypeVar, Callable, Any
 
 from sonolus.backend.interpreter import run_value
-from sonolus.frontend.primitive import invoke_builtin
-from sonolus.frontend.value import Value
-from sonolus.std.debug import debug_compilation
+from sonolus.scripting.internal.primitive import invoke_builtin
+from sonolus.scripting.internal.value import Value
+from sonolus.scripting.debug import debug_compilation
 
 __all__ = (
     "run_function",
