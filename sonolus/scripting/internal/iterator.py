@@ -50,6 +50,10 @@ class SlsIterator(SlsIterable[T], Protocol[T]):
 
     @abstractmethod
     def _item_(self) -> T:
+        """
+        Returns the current item.
+        _has_item_() must be called before calling this function.
+        """
         ...
 
     @abstractmethod

@@ -31,6 +31,15 @@ class Maybe(GenericStruct, Generic[T], type_vars=MaybeTypeVars):
     def nothing(cls) -> Maybe[T]:
         return cls(False)
 
+    @classmethod
+    def take_if(cls, value: T, condition: Bool, /) -> Maybe[T]:
+        if cls is Maybe:
+            return cls[type(value)](condition, value)
+        else:
+            if not isinstance(value, cls.type_vars.T):
+                raise TypeError(f"{value} is not an instance of {cls.type_vars.T}.")
+            return cls(condition, value)
+
     @property
     @sls_func
     def is_some(self) -> Bool:

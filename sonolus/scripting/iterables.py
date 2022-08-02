@@ -54,7 +54,7 @@ def select(f: Callable[[T], R], iterable: SlsIterable[T], /) -> SlsIterator[R]:
     iterator = iter_of(iterable)
     return MappingIterator[
         type(iterator), type(run_discarding(lambda: f(next_of(iterator)))), f
-    ].from_iterator(iter_of(iterable))
+    ](iter_of(iterable))
 
 
 @sls_func
@@ -71,7 +71,7 @@ def select_seq(f: Callable[[T], R], sequence: SlsSequence[T], /) -> SlsSequence[
 @sls_func
 def where(f: Callable[[T], Bool], iterable: SlsIterable[T], /) -> SlsIterator[T]:
     iterator = iter_of(iterable)
-    return FilteringIterator[type(iterator), f].from_iterator(iterator)
+    return FilteringIterator[type(iterator), f](iterator)
 
 
 @sls_func
@@ -553,10 +553,6 @@ class MappingIterator(
 ):
     source: TSrc
 
-    @classmethod
-    def from_iterator(cls, iterator):
-        return cls(iterator)
-
     @sls_func
     def _has_item_(self) -> Bool:
         return self.source._has_item_()
@@ -580,15 +576,9 @@ class FilteringIterator(
 ):
     source: TSrc
 
-    @classmethod
-    @sls_func
-    def from_iterator(cls, iterator):
-        result = cls(iterator)
-        result._advance_until_valid()
-        return result
-
     @sls_func
     def _has_item_(self) -> Bool:
+        self._advance_until_valid()
         return self.source._has_item_()
 
     @sls_func
@@ -598,7 +588,6 @@ class FilteringIterator(
     @sls_func
     def _advance_(self):
         self.source._advance_()
-        self._advance_until_valid()
 
     @sls_func
     def _advance_until_valid(self):
