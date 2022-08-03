@@ -554,6 +554,13 @@ class MappingIterator(
     source: TSrc
 
     @sls_func
+    def _for_each_(self, body, else_):
+        for item in self.source:
+            body(self.type_vars.map(item))
+        else:
+            else_()
+
+    @sls_func
     def _has_item_(self) -> Bool:
         return self.source._has_item_()
 
@@ -577,6 +584,14 @@ class FilteringIterator(
     source: TSrc
 
     @sls_func
+    def _for_each_(self, body, else_):
+        for item in self.source:
+            if self.type_vars.filter(item):
+                body(item)
+        else:
+            else_()
+
+    @sls_func
     def _has_item_(self) -> Bool:
         self._advance_until_valid()
         return self.source._has_item_()
@@ -591,9 +606,9 @@ class FilteringIterator(
 
     @sls_func
     def _advance_until_valid(self):
-        while self.source._has_item_() and not self.type_vars.filter(
-            self.source._item_()
-        ):
+        while self.source._has_item_():
+            if self.type_vars.filter(self.source._item_()):
+                break
             self.source._advance_()
 
 

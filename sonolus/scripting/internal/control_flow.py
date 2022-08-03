@@ -174,28 +174,12 @@ def For(iterator, /, body: Callable, else_=None, unpack: bool = False):
                     statements.append(else_)
             return ExecuteStatement(statements)
         raise TypeError("Expected a SonoIterator.")
-    iterator_has_next = iterator._has_item_()
-    iterator_item = iterator._item_()
-    iterator_advance = iterator._advance_()
-    if unpack:
-        items = [*iterator_item]
-        return ExecuteVoid(
-            iterator,
-            While(
-                iterator_has_next,
-                ExecuteVoid(*items, iterator_advance, body(*items)),
-                else_,
-            ),
-        )
-    else:
-        return ExecuteVoid(
-            iterator,
-            While(
-                iterator_has_next,
-                ExecuteVoid(iterator_item, iterator_advance, body(iterator_item)),
-                else_,
-            ),
-        )
+    return ExecuteVoid(
+        iterator,
+        iterator._for_each_(
+            lambda item: body(*item) if unpack else body(item), lambda: else_
+        ),
+    )
 
 
 def ensure_statement(value):

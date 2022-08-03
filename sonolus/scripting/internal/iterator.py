@@ -11,10 +11,10 @@ from typing import (
     Type,
 )
 
-from sonolus.scripting.internal.sls_func import sls_func
 from sonolus.scripting.internal.control_flow import Execute
 from sonolus.scripting.internal.generic_struct import GenericStruct
 from sonolus.scripting.internal.primitive import Bool, Num
+from sonolus.scripting.internal.sls_func import sls_func
 from sonolus.scripting.internal.tuple import TupleStruct
 from sonolus.scripting.internal.void import Void
 
@@ -43,6 +43,14 @@ class SlsEnumerable(SlsIterable[T], Protocol[T]):
 class SlsIterator(SlsIterable[T], Protocol[T]):
     def _iter_(self) -> SlsIterator[T]:
         return self
+
+    @sls_func
+    def _for_each_(self, body, else_):
+        while self._has_item_():
+            body(self._item_())
+            self._advance_()
+        else:
+            else_()
 
     @abstractmethod
     def _has_item_(self) -> Bool:
