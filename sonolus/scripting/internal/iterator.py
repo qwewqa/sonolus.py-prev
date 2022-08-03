@@ -47,8 +47,9 @@ class SlsIterator(SlsIterable[T], Protocol[T]):
     @sls_func
     def _for_each_(self, body, else_):
         while self._has_item_():
-            body(self._item_())
+            item = self._item_()
             self._advance_()
+            body(item)
         else:
             else_()
 
