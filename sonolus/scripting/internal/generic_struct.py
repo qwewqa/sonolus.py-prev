@@ -39,8 +39,10 @@ class GenericStruct(Struct, _no_init_struct_=True):
                 raise TypeError("Expected type_vars to be a namedtuple type.")
 
     def __class_getitem__(cls, item):
-        if cls.type_vars is not None:
-            raise TypeError("Class is already a constructed generic.")
+        if cls.type_vars is not None and item != cls.type_vars:
+            raise TypeError(
+                "Class is already a constructed generic and given type parameters don't match."
+            )
         if not isinstance(item, tuple):
             item = (item,)
         item = cls._type_arg_type_(*item)
@@ -50,6 +52,12 @@ class GenericStruct(Struct, _no_init_struct_=True):
 
     @classmethod
     def _create_typed_subclass(cls, type_vars):
+        if any(isinstance(t, TypeVar) for t in type_vars):
+            # A convenience to allow simple use cases for type vars for type checking
+            # without resulting in an error.
+            # Won't help for a nested type var, but good enough for now.
+            return cls
+
         globalns = dict(getattr(sys.modules.get(cls.__module__, None), "__dict__", {}))
         localns = dict(vars(cls))
         for field in cls._type_arg_type_._fields:
