@@ -5,7 +5,7 @@ from typing import Callable, TypeVar, get_type_hints, overload
 
 from sonolus.scripting.internal.ast_function import process_ast_function
 from sonolus.scripting.internal.statement import Statement
-from sonolus.scripting.internal.value import convert_value
+from sonolus.scripting.internal.value import convert_value, Value
 
 T = TypeVar("T", bound=Callable)
 
@@ -143,19 +143,12 @@ def _process_function(fn, return_parameter: str | None):
     return wrapped
 
 
-def convert_literal(value: Statement | float | bool):
+def convert_literal(value: Statement | float | bool | list | tuple):
     """
-    Converts python literal floats and booleans to their respective Value types.
+    Converts common Python values to their respective Value types.
     Otherwise, returns the value as-is.
     """
-    match value:
-        case bool() as boolean:
-            from sonolus.scripting.internal.primitive import Bool
-
-            return Bool(boolean)
-        case int() | float() as number:
-            from sonolus.scripting.internal.primitive import Num
-
-            return Num(number)
-        case _:
-            return value
+    converted = Value._convert_(value)
+    if converted is NotImplemented:
+        return value
+    return converted

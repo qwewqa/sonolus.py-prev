@@ -4,15 +4,15 @@ from typing import overload, Callable, Any
 
 from typing_extensions import Self
 
-from sonolus.scripting.internal.sls_func import convert_literal
+from sonolus.scripting import Maybe, Nothing, Some
 from sonolus.scripting.internal.array import Array
 from sonolus.scripting.internal.control_flow import If
 from sonolus.scripting.internal.generic_struct import generic_method
 from sonolus.scripting.internal.iterator import *
 from sonolus.scripting.internal.primitive import Num, Bool
+from sonolus.scripting.internal.sls_func import convert_literal
 from sonolus.scripting.internal.statement import run_discarding
 from sonolus.scripting.internal.struct import Struct
-from sonolus.scripting import Maybe, Nothing, Some
 from sonolus.scripting.number import num_max, num_min
 from sonolus.scripting.values import alloc, new
 
@@ -34,6 +34,7 @@ __all__ = (
     "reduce",
     "is_empty",
     "is_not_empty",
+    "next_copy_of",
     "Vector",
     "sequence_iterator",
     "indexed_sequence_iterator",
@@ -53,7 +54,7 @@ R = TypeVar("R")
 def select(f: Callable[[T], R], iterable: SlsIterable[T], /) -> SlsIterator[R]:
     iterator = iter_of(iterable)
     return MappingIterator[
-        type(iterator), type(run_discarding(lambda: f(next_of(iterator)))), f
+        type(iterator), type(run_discarding(lambda: f(iterator._item_()))), f
     ](iter_of(iterable))
 
 
@@ -166,16 +167,14 @@ def max_of(*args, **kwargs):
         iterable = args[0]
         key = kwargs.pop("key", None)
         default = (
-            (
-                kwargs.pop(
-                    "default",
-                    None,
-                )
-                or type(run_discarding(lambda: iter_of(iterable)._item_()))
+            kwargs.pop(
+                "default",
+                None,
             )
-            ._default_()
-            .copy()
+            or type(run_discarding(lambda: iter_of(iterable)._item_()))._default_()
         )
+        default = convert_literal(default).copy()
+
         if kwargs:
             raise TypeError(
                 f"Max() got an unexpected keyword argument {list(kwargs.keys())[0]}"
@@ -220,29 +219,23 @@ def max_of(*args, **kwargs):
 
 @sls_func
 def _max_iterable(iterable: SlsIterable[T], /, *, _ret):
-    if is_empty(iterable):
-        return
     iterator = iter_of(iterable)
-    max_value = next_of(iterator).copy()
+    next_copy_of(iterator, _ret=_ret)
     for v in iterator:
-        if v > max_value:
-            max_value @= v
-    return max_value
+        if v > _ret:
+            _ret @= v
 
 
 @sls_func
 def _max_iterable_key(iterable: SlsIterable[T], /, *, key: Callable, _ret):
-    if is_empty(iterable):
-        return
     iterator = iter_of(iterable)
-    max_value = next_of(iterator).copy()
-    max_key = key(max_value).copy()
+    next_copy_of(iterator, _ret=_ret)
+    max_key = key(_ret).copy()
     for v in iterator:
         keyed = key(v)
         if keyed > max_key:
-            max_value @= v
+            _ret @= v
             max_key @= keyed
-    return max_value
 
 
 @overload
@@ -269,16 +262,14 @@ def min_of(*args, **kwargs):
         iterable = args[0]
         key = kwargs.pop("key", None)
         default = (
-            (
-                kwargs.pop(
-                    "default",
-                    None,
-                )
-                or type(run_discarding(lambda: iter_of(iterable)._item_()))
+            kwargs.pop(
+                "default",
+                None,
             )
-            ._default_()
-            .copy()
+            or type(run_discarding(lambda: iter_of(iterable)._item_()))._default_()
         )
+        default = convert_literal(default).copy()
+
         if kwargs:
             raise TypeError(
                 f"Min() got an unexpected keyword argument {list(kwargs.keys())[0]}"
@@ -323,29 +314,23 @@ def min_of(*args, **kwargs):
 
 @sls_func
 def _min_iterable(iterable: SlsIterable[T], /, *, _ret):
-    if is_empty(iterable):
-        return
     iterator = iter_of(iterable)
-    min_value = next_of(iterator).copy()
+    next_copy_of(iterator, _ret=_ret)
     for v in iterator:
-        if v < min_value:
-            min_value @= v
-    return min_value
+        if v < _ret:
+            _ret @= v
 
 
 @sls_func
 def _min_iterable_key(iterable: SlsIterable[T], /, *, key: Callable, _ret):
-    if is_empty(iterable):
-        return
     iterator = iter_of(iterable)
-    min_value = next_of(iterator).copy()
-    min_key = key(min_value).copy()
+    next_copy_of(iterator, _ret=_ret)
+    min_key = key(_ret).copy()
     for v in iterator:
         keyed = key(v)
         if keyed < min_key:
-            min_value @= v
+            _ret @= v
             min_key @= keyed
-    return min_value
 
 
 @sls_func(ast=False)
@@ -365,31 +350,25 @@ def reduce(
         )
     else:
         initializer = convert_literal(initializer)
-        return _reduce_with_initializer(func, iterable, initializer=initializer.copy())
+        return _reduce_with_initializer(func, iterable, _ret=initializer.copy())
 
 
 @sls_func
 def _reduce_no_initializer(
     f: Callable[[T, T], T], iterable: SlsIterable[T], /, *, _ret: T
 ):
-    if is_empty(iterable):
-        return
     iterator = iter_of(iterable)
-    result = next_of(iterator)
+    next_copy_of(iterator, _ret=_ret)
     for v in iterator:
-        result @= f(result, v)
-    return result
+        _ret @= f(_ret, v)
 
 
-@sls_func(return_parameter="initializer")
+@sls_func
 def _reduce_with_initializer(
-    f: Callable[[R, T], R], iterable: SlsIterable[T], /, *, initializer: R
+    f: Callable[[R, T], R], iterable: SlsIterable[T], /, *, _ret: R
 ):
-    if is_empty(iterable):
-        return
     for v in iter_of(iterable):
-        initializer @= f(initializer, v)
-    return
+        _ret @= f(_ret, v)
 
 
 @sls_func
@@ -400,6 +379,25 @@ def is_empty(iterable: SlsIterable[T]) -> Bool:
 @sls_func
 def is_not_empty(iterable: SlsIterable[T]) -> Bool:
     return iter_of(iterable)._has_item_()
+
+
+def next_copy_of(iterator: SlsIterator[T], /, *, _ret=None) -> T:
+    """
+    Return a copy of the next item in the iterator.
+    May perform better than next_of().
+    If the iterator is empty, does nothing.
+    """
+    if isinstance(iterator, SlsIterator):
+        if _ret is None:
+            _ret = run_discarding(lambda: iterator._item_())._default_().copy()
+        return Execute(
+            iterator,
+            _ret,
+            # If the iterator is empty, _for_each_ should have no effect.
+            iterator._for_each_(lambda i: Execute(_ret @ i, Break()), lambda: Void()),
+            _ret,
+        )
+    raise TypeError(f"Value {iterator} is not a SonoIterator.")
 
 
 class Range(Struct, SlsSequence[Num]):
@@ -656,8 +654,8 @@ class TakingIterator(
     def _advance_(self):
         self.index += 1
         self.source._advance_()
-        
-        
+
+
 class DroppingIterator(
     SlsIterator[TSrc], GenericStruct, Generic[TSrc], type_vars=IteratorWrapperTypeVars
 ):

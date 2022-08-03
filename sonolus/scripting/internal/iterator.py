@@ -234,7 +234,12 @@ def iter_of(seq: SlsIterable[T], /) -> SlsIterator[T]:
 
 def next_of(iterator: SlsIterator[T], /) -> T:
     if isinstance(iterator, SlsIterator):
-        return Execute(iterator._has_item_(), result := iterator._item_(), iterator._advance_(), result)
+        return Execute(
+            iterator._has_item_(),
+            result := iterator._item_(),
+            iterator._advance_(),
+            result,
+        )
     raise TypeError(f"Value {iterator} is not a SonoIterator.")
 
 

@@ -23,7 +23,8 @@ from sonolus.scripting.iterables import (
     reduce,
     Vector,
     is_not_empty,
-    TakingIterator, DroppingIterator,
+    TakingIterator,
+    DroppingIterator,
 )
 from sonolus.scripting.maybe import Some, Nothing, Maybe
 from typing_extensions import Self
@@ -62,7 +63,7 @@ class Query(Statement, Generic[T]):
 
     def any(self, f: Callable[[T], Bool] = None, /) -> Bool:
         if f is None:
-            return is_not_empty(self._iterator)
+            f = lambda _: True
         return any_of(f, self._iterator)
 
     def none(self, f: Callable[[T], Bool] = None, /) -> Bool:
@@ -104,6 +105,8 @@ class Query(Statement, Generic[T]):
         return type(self)(TakingIterator.new(self._iterator, limit), self._max_size)
 
     def take_fixed(self, limit: int, /) -> SeqQuery[T]:
+        if limit < 0:
+            raise ValueError("limit must be non-negative.")
         max_size = self._max_size and min(limit, self._max_size) or limit
         return SeqQuery(TakingIterator.new(self._iterator, limit), max_size)
 
