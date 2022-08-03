@@ -46,6 +46,11 @@ class SlsIterator(SlsIterable[T], Protocol[T]):
 
     @sls_func
     def _for_each_(self, body, else_):
+        """
+        Called internally by for loops.
+        Highly recommended to override for iterators that wrap other iterators
+        to avoid high generated code size.
+        """
         while self._has_item_():
             item = self._item_()
             self._advance_()

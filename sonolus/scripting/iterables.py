@@ -612,5 +612,93 @@ class FilteringIterator(
             self.source._advance_()
 
 
+class IteratorWrapperTypeVars(NamedTuple):
+    TSrc: type
+
+
+class TakingIterator(
+    SlsIterator[TSrc], GenericStruct, Generic[TSrc], type_vars=IteratorWrapperTypeVars
+):
+    source: TSrc
+    index: Num
+    limit: Num
+
+    @classmethod
+    @sls_func
+    def new(cls, iterator: SlsIterator[T], limit: Num, /) -> TakingIterator[T]:
+        return cls[type(iterator)](iterator, +Num(0), +limit)
+
+    @sls_func
+    def _for_each_(self, body, else_):
+        if self.index >= self.limit:
+            else_()
+            return
+        for item in self.source:
+            # Sonolus uses floating point numbers, so we don't need to worry about overflow.
+            # Even if we did, it would be a very rare case.
+            self.index += 1
+            body(item)
+            if self.index >= self.limit:
+                else_()
+                return
+        else:
+            else_()
+
+    @sls_func
+    def _has_item_(self) -> Bool:
+        return self.index < self.limit and self.source._has_item_()
+
+    @sls_func
+    def _item_(self):
+        return self.source._item_()
+
+    @sls_func
+    def _advance_(self):
+        self.index += 1
+        self.source._advance_()
+        
+        
+class DroppingIterator(
+    SlsIterator[TSrc], GenericStruct, Generic[TSrc], type_vars=IteratorWrapperTypeVars
+):
+    source: TSrc
+    limit: Num
+
+    @classmethod
+    @sls_func
+    def new(cls, iterator: SlsIterator[T], limit: Num, /) -> DroppingIterator[T]:
+        return cls[type(iterator)](iterator, +limit)
+
+    @sls_func
+    def _for_each_(self, body, else_):
+        for item in self.source:
+            self.limit -= 1
+            if self.limit >= 0:
+                continue
+            body(item)
+        else:
+            else_()
+
+    @sls_func
+    def _has_item_(self) -> Bool:
+        self._advance_until_valid()
+        return self.source._has_item_()
+
+    @sls_func
+    def _item_(self):
+        return self.source._item_()
+
+    @sls_func
+    def _advance_(self):
+        self.source._advance_()
+
+    @sls_func
+    def _advance_until_valid(self):
+        while self.limit > 0:
+            self.limit -= 1
+            if self.source._has_item_():
+                self.source._advance_()
+
+
 sequence_iterator = SequenceIterator.for_sequence
 indexed_sequence_iterator = IndexedSequenceIterator.for_sequence

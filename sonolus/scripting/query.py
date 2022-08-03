@@ -22,6 +22,8 @@ from sonolus.scripting.iterables import (
     min_of,
     reduce,
     Vector,
+    is_not_empty,
+    TakingIterator, DroppingIterator,
 )
 from sonolus.scripting.maybe import Some, Nothing, Maybe
 from typing_extensions import Self
@@ -58,8 +60,13 @@ class Query(Statement, Generic[T]):
         else:
             return count_of(f, self._iterator)
 
-    def any(self, f: Callable[[T], Bool], /) -> Bool:
+    def any(self, f: Callable[[T], Bool] = None, /) -> Bool:
+        if f is None:
+            return is_not_empty(self._iterator)
         return any_of(f, self._iterator)
+
+    def none(self, f: Callable[[T], Bool] = None, /) -> Bool:
+        return ~self.any(f)
 
     def all(self, f: Callable[[T], Bool], /) -> Bool:
         return all_of(f, self._iterator)
@@ -92,6 +99,16 @@ class Query(Statement, Generic[T]):
     def _last(self, _ret):
         for item in self._iterator:
             _ret @= item
+
+    def take(self, limit: Num, /) -> Self[T]:
+        return type(self)(TakingIterator.new(self._iterator, limit), self._max_size)
+
+    def take_fixed(self, limit: int, /) -> SeqQuery[T]:
+        max_size = self._max_size and min(limit, self._max_size) or limit
+        return SeqQuery(TakingIterator.new(self._iterator, limit), max_size)
+
+    def drop(self, limit: Num, /) -> Self[T]:
+        return type(self)(DroppingIterator.new(self._iterator, limit), self._max_size)
 
     def max_or_nothing(self, *, key: Callable[[T], Any] = None) -> Maybe[T]:
         return self._or_nothing(self.max(key=key))
