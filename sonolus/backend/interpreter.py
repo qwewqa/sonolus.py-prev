@@ -125,10 +125,6 @@ class CFGInterpreter:
             case "Execute":
                 args = [self.run_node(arg) for arg in args]
                 return args[-1]
-            case "Execute0":
-                for arg in args:
-                    self.run_node(arg)
-                return 0
             case "If":
                 if self.run_node(args[0]):
                     return self.run_node(args[1])
