@@ -114,26 +114,32 @@ class Query(Statement, Generic[T]):
         return type(self)(DroppingIterator.new(self._iterator, limit), self._max_size)
 
     def max_or_nothing(self, *, key: Callable[[T], Any] = None) -> Maybe[T]:
-        return self._or_nothing(self.max(key=key))
+        if key is None:
+            return self.select(lambda x: Some(x)).max(key=lambda x: x.unwrap_direct())
+        else:
+            return self.select(lambda x: Some(x)).max(
+                key=lambda x: key(x.unwrap_direct())
+            )
 
     def min_or_nothing(self, *, key: Callable[[T], Any] = None) -> Maybe[T]:
-        return self._or_nothing(self.min(key=key))
+        if key is None:
+            return self.select(lambda x: Some(x)).min(key=lambda x: x.unwrap_direct())
+        else:
+            return self.select(lambda x: Some(x)).min(
+                key=lambda x: key(x.unwrap_direct())
+            )
 
-    def reduce_or_nothing(self, f: Callable[[R, T], R]) -> Maybe[R]:
-        return self._or_nothing(self.reduce(f))
+    def reduce_or_nothing(self, f: Callable[[T, T], T]) -> Maybe[T]:
+        return self.reduce(
+            lambda a, v: Some(f(a.unwrap_direct(), v.unwrap_direct())),
+            initializer=+Nothing[self._contained_type()](),
+        )
 
     def first_or_nothing(self) -> Maybe[T]:
-        return self._or_nothing(self._first())
+        return self.select(lambda x: Some(x)).first()
 
     def last_or_nothing(self) -> Maybe[T]:
-        return self._or_nothing(self._last())
-
-    def _or_nothing(self, value):
-        return Execute(
-            result := +Nothing[self._contained_type()](),
-            If(self.is_not_empty(), result._assign_(Some(value))),
-            result,
-        )
+        return self.select(lambda x: Some(x)).last()
 
     def iter(self):
         return self._iterator
