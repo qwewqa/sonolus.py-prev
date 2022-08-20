@@ -119,8 +119,6 @@ class Scope:
             return scope
         if statement._attributes_.is_static:
             return scope
-        if statement._attributes_.is_discarded:
-            raise ValueError("Statement was marked discarded but was still evaluated.")
         statement._was_evaluated_ = True
         scope = scope.evaluate(statement._parent_statement_)
         if statement in scope.evaluated:
@@ -209,8 +207,6 @@ class DeadScope(Scope):
             return self
         if statement._attributes_.is_static:
             return self
-        if statement._attributes_.is_discarded:
-            raise ValueError("Statement was marked discarded but was still evaluated.")
         statement._was_evaluated_ = True
         if (
             statement._parent_statement_

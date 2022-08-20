@@ -6,7 +6,7 @@ from typing_extensions import Self
 
 from sonolus.scripting import Maybe, Nothing, Some
 from sonolus.scripting.internal.array import Array
-from sonolus.scripting.internal.control_flow import If
+from sonolus.scripting.internal.control_flow import If, Break
 from sonolus.scripting.internal.generic_struct import generic_method
 from sonolus.scripting.internal.iterator import *
 from sonolus.scripting.internal.primitive import Num, Bool
@@ -389,7 +389,7 @@ def next_copy_of(iterator: SlsIterator[T], /, *, _ret=None) -> T:
     """
     if isinstance(iterator, SlsIterator):
         if _ret is None:
-            _ret = run_discarding(lambda: iterator._item_())._default_().copy()
+            _ret = type(run_discarding(lambda: iterator._item_()))._default_().copy()
         return Execute(
             iterator,
             _ret,

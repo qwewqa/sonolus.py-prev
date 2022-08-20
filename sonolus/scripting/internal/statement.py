@@ -5,7 +5,7 @@ from dataclasses import dataclass
 from typing import TypeVar, Callable
 from warnings import warn
 
-from sonolus.backend.evaluation import Scope
+from sonolus.backend.evaluation import Scope, DeadScope
 
 TStatement = TypeVar("TStatement", bound="Statement")
 
@@ -24,8 +24,6 @@ class Statement:
         self._attributes_ = (
             attributes and dataclasses.replace(attributes) or StatementAttributes()
         )
-        if _discarding:
-            self._attributes_.is_discarded = True
 
     def _evaluate_(self, scope: Scope) -> Scope:
         return scope
@@ -43,7 +41,6 @@ class Statement:
         if (
             not self._was_evaluated_
             and not self._attributes_.is_static
-            and not self._attributes_.is_discarded
             and not Statement.__unevaluated_warning_shown
         ):
             warn("Some statement(s) were not evaluated.", RuntimeWarning)
@@ -53,19 +50,12 @@ class Statement:
 @dataclass
 class StatementAttributes:
     is_static: bool = False
-    is_discarded: bool = False
-
-
-_discarding = False
 
 
 T = TypeVar("T", bound="Statement")
 
 
 def run_discarding(fn: Callable[[], T]) -> T:
-    global _discarding
-    _discarding = True
-    try:
-        return fn()
-    finally:
-        _discarding = False
+    result = fn()
+    DeadScope().evaluate(result)
+    return result
