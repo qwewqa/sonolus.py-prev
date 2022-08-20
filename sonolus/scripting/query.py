@@ -130,7 +130,7 @@ class Query(Statement, Generic[T]):
             )
 
     def reduce_or_nothing(self, f: Callable[[T, T], T]) -> Maybe[T]:
-        return self.reduce(
+        return self.select(lambda x: Some(x)).reduce(
             lambda a, v: Some(f(a.unwrap_direct(), v.unwrap_direct())),
             initializer=+Nothing[self._contained_type()](),
         )
