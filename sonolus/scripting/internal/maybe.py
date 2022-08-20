@@ -32,6 +32,12 @@ class Maybe(GenericStruct, Generic[T], type_vars=MaybeTypeVars):
         return cls(False)
 
     @classmethod
+    def new(cls, value: T | None = None) -> Maybe[T]:
+        if value is None:
+            return +cls.nothing()
+        return +cls.some(value)
+
+    @classmethod
     def take_if(cls, value: T, condition: Bool, /) -> Maybe[T]:
         if cls is Maybe:
             return cls[type(value)](condition, value)
@@ -53,6 +59,7 @@ class Maybe(GenericStruct, Generic[T], type_vars=MaybeTypeVars):
     @generic_method
     @sls_func
     def unwrap(self) -> T:
+        # For symmetry with unwrap_or, we return a copy of the value.
         return self._value.copy()
 
     @generic_method

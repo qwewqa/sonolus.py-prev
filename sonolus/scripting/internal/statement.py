@@ -55,7 +55,6 @@ class StatementAttributes:
 T = TypeVar("T", bound="Statement")
 
 
-def run_discarding(fn: Callable[[], T]) -> T:
-    result = fn()
-    DeadScope().evaluate(result)
-    return result
+def discard(statement: TStatement) -> TStatement:
+    DeadScope().evaluate(statement)
+    return statement

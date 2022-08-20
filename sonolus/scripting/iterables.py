@@ -11,7 +11,7 @@ from sonolus.scripting.internal.generic_struct import generic_method
 from sonolus.scripting.internal.iterator import *
 from sonolus.scripting.internal.primitive import Num, Bool
 from sonolus.scripting.internal.sls_func import convert_literal
-from sonolus.scripting.internal.statement import run_discarding
+from sonolus.scripting.internal.statement import discard
 from sonolus.scripting.internal.struct import Struct
 from sonolus.scripting.number import num_max, num_min
 from sonolus.scripting.values import alloc, new
@@ -54,14 +54,14 @@ R = TypeVar("R")
 def select(f: Callable[[T], R], iterable: SlsIterable[T], /) -> SlsIterator[R]:
     iterator = iter_of(iterable)
     return MappingIterator[
-        type(iterator), type(run_discarding(lambda: f(iterator._item_()))), f
+        type(iterator), type(discard(f(iterator._item_()))), f
     ](iter_of(iterable))
 
 
 @sls_func
 def select_seq(f: Callable[[T], R], sequence: SlsSequence[T], /) -> SlsSequence[R]:
     result = Vector[
-        type(run_discarding(lambda: f(sequence[0]))), sequence._max_size_()
+        type(discard(f(sequence[0]))), sequence._max_size_()
     ].alloc()
     result.size @= len_of(sequence)
     for i, v in indexed_of(sequence):
@@ -171,7 +171,7 @@ def max_of(*args, **kwargs):
                 "default",
                 None,
             )
-            or type(run_discarding(lambda: iter_of(iterable)._item_()))._default_()
+            or type(discard(iter_of(iterable)._item_()))._default_()
         )
         default = convert_literal(default).copy()
 
@@ -266,7 +266,7 @@ def min_of(*args, **kwargs):
                 "default",
                 None,
             )
-            or type(run_discarding(lambda: iter_of(iterable)._item_()))._default_()
+            or type(discard(iter_of(iterable)._item_()))._default_()
         )
         default = convert_literal(default).copy()
 
@@ -344,7 +344,7 @@ def reduce(
         return _reduce_no_initializer(
             func,
             iterable,
-            _ret=type(run_discarding(lambda: iter_of(iterable)._item_()))
+            _ret=type(discard(iter_of(iterable)._item_()))
             ._default_()
             .copy(),
         )
@@ -389,7 +389,7 @@ def next_copy_of(iterator: SlsIterator[T], /, *, _ret=None) -> T:
     """
     if isinstance(iterator, SlsIterator):
         if _ret is None:
-            _ret = type(run_discarding(lambda: iterator._item_()))._default_().copy()
+            _ret = type(discard(iterator._item_()))._default_().copy()
         return Execute(
             iterator,
             _ret,

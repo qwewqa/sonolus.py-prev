@@ -11,7 +11,7 @@ from sonolus.scripting.internal.iterator import (
 )
 from sonolus.scripting.internal.primitive import Num, Bool
 from sonolus.scripting.internal.sls_func import sls_func
-from sonolus.scripting.internal.statement import Statement, run_discarding
+from sonolus.scripting.internal.statement import Statement, discard
 from sonolus.scripting.iterables import (
     select,
     where,
@@ -150,7 +150,7 @@ class Query(Statement, Generic[T]):
             f(item)
 
     def _contained_type(self):
-        return type(run_discarding(lambda: next_of(self._iterator)))
+        return type(discard(next_of(self._iterator)))
 
 
 class SeqQuery(Query[T]):
